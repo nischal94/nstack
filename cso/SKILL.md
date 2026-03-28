@@ -353,10 +353,21 @@ For each finding:
 
 For leaked secrets: include incident response playbook (revoke → rotate → scrub history → audit exposure window).
 
-For top findings, use AskUserQuestion to present remediation options:
-- A) Fix now
-- B) Mitigate with workaround
-- C) Accept risk (document why, set review date)
+For top findings, present remediation options and ask the user to choose:
+
+```
+Finding N: [Title]
+Context: [severity, exploit scenario in one sentence]
+RECOMMENDATION: Choose A — [reason]
+
+Options:
+A) Fix now — [specific code change, ~N min]
+B) Mitigate — [workaround that reduces risk]
+C) Accept risk — [document why, set review date]
+D) Defer — add to backlog with security label
+```
+
+Wait for the user's choice before moving to the next finding.
 
 ---
 
