@@ -1,6 +1,6 @@
 # nstack
 
-> Security auditing, QA, and retrospectives for AI-native projects.
+> Security auditing, QA, bug triage, release notes, and retrospectives for AI-native projects.
 > Zero dependencies. Superpowers-compatible.
 
 Most security tools were built before LLMs existed. They find SQL injection.
@@ -70,6 +70,54 @@ Claude: WEEK OF 2026-03-24
         Test health: 47 → 51 tests (+4). Coverage stable at 78%.
 
         Next week: 3 open /cso findings still unresolved (HIGH × 2, MEDIUM × 1)
+
+You:    /investigate "costs spiked after yesterday's deploy"
+
+Claude: INVESTIGATION REPORT
+        ════════════════════
+        Symptom:     LLM API costs 4× higher since last deploy
+        First seen:  Commit a3f9b12 — "feat: add context to every message"
+        Suspect:     api/chat.py:67
+
+        HYPOTHESIS
+        ──────────
+        The new context injection loads the full user history into every message
+        in the conversation loop, turning O(n) into O(n²) token usage. A 10-turn
+        conversation now sends 10× the tokens it did before.
+
+        Confidence:  9/10
+        Evidence:
+          - git diff shows `context = load_history(user_id)` added inside the loop
+          - anthropic call site at line 67 now includes context on every iteration
+
+        HAND OFF
+        ────────
+        Use superpowers:systematic-debugging to fix the loop.
+
+You:    /document-release
+
+Claude: ## v0.4.0 — 2026-03-27
+
+        ### New
+        - Streaming responses for chat endpoint with retry and timeout handling
+        - Rate limiting on all /api/* routes (100 req/min per user)
+
+        ### Fixed
+        - Prompt injection vector in system prompt builder
+        - Settings page 500 error on incomplete user profile
+
+        ### Internal
+        - Test suite: 47 → 51 tests
+
+        RELEASE SUMMARY
+        ═══════════════
+        Version:    v0.4.0  (MINOR bump from v0.3.2)
+        Commits:    23 commits since v0.3.2
+        CHANGELOG.md updated. ✓
+
+        Next steps:
+          git tag v0.4.0
+          git push origin v0.4.0
 ```
 
 ## Install
@@ -87,6 +135,8 @@ That's it. No build step. No package manager. No binaries. Works immediately.
 | `/cso` | 14-phase security audit. OWASP Top 10, STRIDE, secrets archaeology, CI/CD pipeline security, LLM/AI security. 8/10 confidence gate — zero noise by default. |
 | `/qa` | Browser QA via Claude-in-Chrome. Find bugs, fix with atomic commits, generate regression tests, re-verify. |
 | `/retro` | Weekly retrospective from git history. What shipped, lines added, test health, files touched most, open findings. |
+| `/investigate` | Bug triage when you don't know where to start. Reconstructs the timeline, diffs the suspect range, builds a hypothesis with confidence rating. Hands off to superpowers:systematic-debugging. |
+| `/document-release` | Release notes from git history. Groups and consolidates commits, determines semver bump, updates CHANGELOG.md. Never tags without confirmation. |
 
 ## Usage
 
@@ -104,6 +154,16 @@ That's it. No build step. No package manager. No binaries. Works immediately.
 # Retrospective
 /retro                  # This week
 /retro --month          # This month
+
+# Bug triage
+/investigate                         # Triage most recent breakage
+/investigate "costs spiked"          # Investigate a specific symptom
+/investigate --since 2026-03-20      # Scope to changes after a date
+
+# Release notes
+/document-release                    # Since last git tag
+/document-release --since v0.3.0     # Since a specific tag
+/document-release --draft            # Write notes, don't tag
 ```
 
 ## Why not just use gstack?
@@ -121,7 +181,7 @@ nstack makes a different set of tradeoffs:
 | LLM security | First-class (built for AI-native) | Phase 7 of 14 |
 | superpowers | Designed to complement | Separate system |
 | Browser automation | Claude-in-Chrome (already installed) | Playwright daemon (faster, more capable) |
-| Scope | 3 focused skills | 28 skills, full sprint workflow |
+| Scope | 5 focused skills | 28 skills, full sprint workflow |
 
 **Use nstack if:** You want security + QA + retro with zero setup, and you're building AI-native projects.
 
