@@ -148,6 +148,7 @@ That's it. No build step. No package manager. No binaries. Works immediately.
 | `/autoplan` | Plan review pipeline before execution. Scope challenge, architecture review, AI-native checks, and test matrix. Outputs a BLOCKED / READY verdict with specific gaps to resolve. |
 | `/evals` | LLM output quality testing. Create and run structured eval suites with string checks and LLM-as-judge scoring. Baseline comparison across prompt or model changes. Essential for AI-native projects. |
 | `/context` | Claude Code configuration audit. Finds stale file references, contradictory rules, missing commands, and bloated instructions across CLAUDE.md, rules files, and memory. |
+| `/migrate` | Database migration safety. Reviews migrations for data loss risk, missing rollback, and lock contention on large tables. Runs with dry-run, backup check, and post-migration verification. |
 
 ## Usage
 
@@ -217,6 +218,12 @@ That's it. No build step. No package manager. No binaries. Works immediately.
 /context                             # Full config audit
 /context --memory                    # Memory files only
 /context --fix                       # Apply safe fixes automatically
+
+# Database migrations
+/migrate                             # Review and run next pending migration
+/migrate --review                    # Review only, don't run
+/migrate --dry-run                   # Show what would happen without applying
+/migrate --verify                    # Post-migration checks only
 ```
 
 ## Why not just use gstack?
@@ -234,7 +241,7 @@ nstack makes a different set of tradeoffs:
 | LLM security | First-class (built for AI-native) | Phase 7 of 14 |
 | superpowers | Designed to complement | Separate system |
 | Browser automation | Claude-in-Chrome (already installed) | Playwright daemon (faster, more capable) |
-| Scope | 16 focused skills | 28 skills, full sprint workflow |
+| Scope | 17 focused skills | 28 skills, full sprint workflow |
 
 **Use nstack if:** You want security + QA + retro with zero setup, and you're building AI-native projects.
 
