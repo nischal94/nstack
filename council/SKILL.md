@@ -25,20 +25,13 @@ Do not use it for questions with clear correct answers.
 
 ## The Members
 
-### Depth-heavy (Opus)
-
 | Member | Method | Sees | Misses | Pick when... |
 |--------|--------|------|--------|--------------|
 | **Socrates** | Assumption destruction | Hidden premises everyone accepts | Can spiral into infinite questioning without committing | You suspect the question itself is wrong. Everyone agrees too quickly. Assumptions need destroying before moving forward. |
 | **Aristotle** | Categorization and structure | What category something belongs to | Misses emergent behavior that resists classification | Things are muddled and need clear categories. "What type of problem is this actually?" Before any architecture decision. |
 | **Marcus Aurelius** | Resilience and moral clarity | What you control vs what you don't | Under-weights competitive and external dynamics | Fear, pressure, or external noise is driving the decision. You need to separate what you control from what you don't. |
-| **Lao Tzu** | Non-action and emergence | When the solution is to stop trying | Misses situations that genuinely require decisive action | The solution keeps getting more complex. Every fix creates a new problem. "Should we stop doing this entirely?" |
-| **Alan Watts** | Perspective dissolution | When the problem is the framing | Can dissolve real problems that deserve concrete solutions | The problem feels unsolvable. You're stuck in a frame that might be the real problem. |
-
-### Speed-critical (Sonnet)
-
-| Member | Method | Sees | Misses | Pick when... |
-|--------|--------|------|--------|--------------|
+| **Lao Tzu** | Non-action and emergence | When the solution is to stop trying | Misses situations that genuinely require decisive action | The solution keeps getting more complex. Every fix creates a new problem. "Should we stop doing this entirely?" Do not pair with Alan Watts — redundant dissolution. |
+| **Alan Watts** | Perspective dissolution | When the problem is the framing | Can dissolve real problems that deserve concrete solutions | The problem feels unsolvable. You're stuck in a frame that might be the real problem. Do not pair with Lao Tzu — redundant dissolution. |
 | **Feynman** | First-principles debugging | Unexplained complexity | Dismisses domain knowledge that shortcuts first-principles work | Something is more complex than it should be. You need to strip away abstraction and find the actual mechanism. |
 | **Sun Tzu** | Adversarial strategy | Terrain and competitive dynamics | Under-weights internal resilience and long-term sustainability | Competitors, users, or external actors matter. You're making a move that others will respond to. |
 | **Ada Lovelace** | Formal systems | What can and cannot be mechanized | Misses human factors that resist formalization | You need formal guarantees. Type systems, contracts, invariants. "It works in practice" isn't enough. |
@@ -67,7 +60,7 @@ Do not use it for questions with clear correct answers.
 
 ---
 
-## Step 1: Domain Detection (if no flag provided)
+## Setup: Domain Detection (if no flag provided)
 
 Read the question and select the matching triad from the table above.
 
@@ -82,7 +75,7 @@ State your triad selection and why before proceeding.
 
 ---
 
-## Step 2: `--full` Confirmation
+## Setup: `--full` Confirmation
 
 If `--full` is requested, pause before dispatching and tell the user:
 
@@ -92,9 +85,9 @@ Do not dispatch until the user confirms.
 
 ---
 
-## Step 3: Round 1 — Independent Analysis (parallel)
+## Round 1 — Independent Analysis (parallel)
 
-Dispatch each selected member as a parallel subagent with this system prompt structure:
+Dispatch each selected member as a parallel subagent with this prompt:
 
 ```
 You are [Member Name], brought in to advise on a complex decision.
@@ -127,19 +120,31 @@ Run all members in parallel. Collect all Round 1 outputs before proceeding.
 
 ---
 
-## Step 4: Round 2 — Cross-Examination (sequential)
+## Round 2 — Cross-Examination (sequential)
 
-Each member receives all Round 1 outputs and must answer (300 words max):
+Dispatch members one at a time. Each member receives the Round 1 outputs AND all Round 2 responses submitted so far, so later members can engage with earlier cross-examinations.
 
+Prompt for each member:
+
+```
+You are [Member Name], in Round 2 of a council deliberation.
+
+Here are all Round 1 analyses:
+[paste all Round 1 outputs]
+
+Here are the Round 2 responses submitted so far (may be empty for the first member):
+[paste Round 2 outputs submitted so far]
+
+Answer the following (300 words max):
 1. Which position do you most disagree with, and why?
 2. Which insight from another member strengthens your own position?
-3. Did anything change your view? If so, what?
+3. Did anything — including Round 2 responses above — change your view? If so, what?
 4. Restate your position in one sentence.
 
-**Rules:**
-- Must engage at least 2 other members by name
-- Sequential execution — later members can reference earlier cross-examinations
-- This is where real value emerges: Feynman must explain why he disagrees with Socrates
+Rules:
+- Engage at least 2 other members by name.
+- You may engage with Round 2 responses if any exist.
+```
 
 **Anti-recursion enforcement:**
 
@@ -150,7 +155,7 @@ Each member receives all Round 1 outputs and must answer (300 words max):
 
 ---
 
-## Step 5: Round 3 — Synthesis
+## Round 3 — Synthesis
 
 Each member states their final position in 100 words or fewer. No new arguments. Crystallization only.
 
@@ -160,7 +165,7 @@ Each member states their final position in 100 words or fewer. No new arguments.
 
 ---
 
-## Step 6: Council Verdict
+## Council Verdict
 
 ```
 COUNCIL VERDICT
@@ -192,9 +197,9 @@ RECOMMENDED NEXT STEPS
 ```
 
 **Consensus rules:**
-- 2/3 majority = consensus. Record minority in Minority Report.
-- No majority = present the dilemma. Do not force consensus.
-- Tiebreaker: if no 2/3 majority, the member whose domain most directly matches the problem casts the deciding vote.
+- 2/3 majority = consensus (at least 2 of 3 members agree, or proportional equivalent for larger councils). Record minority in Minority Report.
+- No majority = present the dilemma clearly. Do not force consensus.
+- Tiebreaker for even splits: the member with the highest stated CONFIDENCE from Round 1 casts the deciding vote.
 
 ---
 
