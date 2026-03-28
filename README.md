@@ -251,7 +251,7 @@ nstack makes a different set of tradeoffs:
 
 ## Compatibility
 
-nstack is designed to complement [superpowers](https://github.com/anthropics/claude-code).
+nstack is designed to complement [superpowers](https://github.com/obra/superpowers).
 No overlapping skill names. No conflicting workflows. nstack hands off to superpowers
 at natural boundaries — debugging a finding, verifying a fix, reviewing remediation code.
 
