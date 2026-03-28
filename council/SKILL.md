@@ -148,10 +148,9 @@ Rules:
 
 **Anti-recursion enforcement:**
 
-- **Hemlock rule (Socrates-specific):** If Socrates re-asks a question another member already answered with evidence, the coordinator forces a 50-word position statement from Socrates. No more questions.
-- **3-level depth limit (Socrates-specific):** Question a premise → question the response → question once more. After 3 levels, Socrates must state his own position.
+- **Socrates depth rule:** Socrates may question up to 3 levels deep (premise → response → once more). If he re-asks something already answered with evidence at any level, the coordinator cuts immediately. After 3 levels regardless, Socrates must state his own position in 50 words. No further questions.
 - **Universal deflection rule (all members):** Any member who deflects with "it depends", "the timing isn't right", "perhaps the question itself...", or equivalent non-committal language gets a coordinator intervention: forced 50-word position statement. This applies to all members — Lao Tzu dissolving, Musashi deferring timing, Aristotle re-categorizing, Aurelius retreating to stoicism, Chanakya hedging on actors.
-- **Tunnel rule:** If a member's Round 2 response addresses only one other member and ignores the rest, the coordinator prompts them to engage the full council before their response is accepted.
+- **Tunnel rule:** If a member's Round 2 response addresses only one other member, the coordinator prompts them to engage at least 2 members before their response is accepted — consistent with Round 2's minimum engagement requirement.
 
 ---
 
