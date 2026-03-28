@@ -42,7 +42,7 @@ Do not use it for questions with clear correct answers.
 | **Feynman** | First-principles debugging | Unexplained complexity | Dismisses domain knowledge that shortcuts first-principles work | Something is more complex than it should be. You need to strip away abstraction and find the actual mechanism. |
 | **Sun Tzu** | Adversarial strategy | Terrain and competitive dynamics | Under-weights internal resilience and long-term sustainability | Competitors, users, or external actors matter. You're making a move that others will respond to. |
 | **Ada Lovelace** | Formal systems | What can and cannot be mechanized | Misses human factors that resist formalization | You need formal guarantees. Type systems, contracts, invariants. "It works in practice" isn't enough. |
-| **Machiavelli** | Power dynamics | How actors actually behave | Can over-weight cynicism, miss genuine good faith | Incentives and human behavior matter more than the technical solution. Pricing, adoption, org dynamics. |
+| **Chanakya** | Statecraft and resource strategy | How actors actually behave + long-term structural advantage | Can over-weight realpolitik, miss genuine good faith or collaborative solutions | Incentives, power structures, and resource allocation matter. Pricing, adoption, org dynamics, long-game strategy. |
 | **Torvalds** | Pragmatic engineering | What ships vs what sounds good | Dismisses theoretical elegance that matters at scale | The debate is getting too theoretical. "What actually ships?" When elegance is being prioritized over working software. |
 | **Musashi** | Strategic timing | The decisive moment | Waiting for perfect timing can become inaction | Timing is the real question. Not what to do, but when. |
 
@@ -53,16 +53,16 @@ Do not use it for questions with clear correct answers.
 | Domain | Triad | Tension |
 |--------|-------|---------|
 | `architecture` | Aristotle + Ada + Feynman | classify → formalize → simplicity-test |
-| `strategy` | Sun Tzu + Machiavelli + Aurelius | terrain → incentives → moral grounding |
+| `strategy` | Sun Tzu + Chanakya + Aurelius | terrain → statecraft → moral grounding |
 | `ethics` | Aurelius + Socrates + Lao Tzu | duty → questioning → natural order |
 | `debugging` | Feynman + Socrates + Ada | bottom-up → assumptions → formal verify |
 | `innovation` | Ada + Lao Tzu + Aristotle | abstraction → emergence → classification |
 | `risk` | Sun Tzu + Aurelius + Feynman | threats → resilience → empirical verify |
 | `shipping` | Torvalds + Musashi + Feynman | pragmatism → timing → first-principles |
-| `product` | Torvalds + Machiavelli + Watts | ship it → incentives → reframing |
+| `product` | Torvalds + Chanakya + Watts | ship it → incentives + long-game → reframing |
 | `founder` | Musashi + Sun Tzu + Torvalds | timing → terrain → engineering reality |
 | `llm-design` | Ada + Feynman + Socrates | formal constraints → unexplained complexity → hidden assumptions |
-| `prompt-strategy` | Machiavelli + Torvalds + Watts | how users actually behave → what ships → is this the right problem |
+| `prompt-strategy` | Chanakya + Torvalds + Watts | how users actually behave → what ships → is this the right problem |
 | `agent-architecture` | Aristotle + Ada + Lao Tzu | classify agent boundaries → formalize interfaces → when to not orchestrate |
 
 ---
@@ -145,7 +145,7 @@ Each member receives all Round 1 outputs and must answer (300 words max):
 
 - **Hemlock rule (Socrates-specific):** If Socrates re-asks a question another member already answered with evidence, the coordinator forces a 50-word position statement from Socrates. No more questions.
 - **3-level depth limit (Socrates-specific):** Question a premise → question the response → question once more. After 3 levels, Socrates must state his own position.
-- **Universal deflection rule (all members):** Any member who deflects with "it depends", "the timing isn't right", "perhaps the question itself...", or equivalent non-committal language gets a coordinator intervention: forced 50-word position statement. This applies to all members — Lao Tzu dissolving, Musashi deferring timing, Aristotle re-categorizing, Aurelius retreating to stoicism, Machiavelli hedging on actors.
+- **Universal deflection rule (all members):** Any member who deflects with "it depends", "the timing isn't right", "perhaps the question itself...", or equivalent non-committal language gets a coordinator intervention: forced 50-word position statement. This applies to all members — Lao Tzu dissolving, Musashi deferring timing, Aristotle re-categorizing, Aurelius retreating to stoicism, Chanakya hedging on actors.
 - **2-message cutoff:** If any pair of members exchanges more than 2 messages, cut them off and advance to Round 3.
 
 ---
