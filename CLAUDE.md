@@ -10,6 +10,11 @@ qa/SKILL.md                ← /qa browser QA skill
 retro/SKILL.md             ← /retro retrospective skill
 investigate/SKILL.md       ← /investigate bug triage skill
 document-release/SKILL.md  ← /document-release release notes skill
+ship/SKILL.md              ← /ship full release checklist skill
+careful/SKILL.md           ← /careful destructive command guardrails
+freeze/SKILL.md            ← /freeze directory edit lock
+guard/SKILL.md             ← /guard careful + freeze combined
+unfreeze/SKILL.md          ← /unfreeze remove directory lock
 ETHOS.md                   ← principles injected into skill preambles
 ARCHITECTURE.md            ← why nstack is built this way
 CONTRIBUTING.md            ← how to contribute

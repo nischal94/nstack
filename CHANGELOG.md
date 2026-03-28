@@ -12,6 +12,11 @@ All notable changes to nstack are documented here.
 - `/retro` — Weekly retrospective from git history and Claude Code logs. Lines added/removed, commits, test health trend, files touched most, what shipped summary.
 - `/investigate` — Bug triage when you don't know where to start. Timeline reconstruction, suspect diff analysis, AI-native regression patterns (cost spikes, output degradation, prompt changes), structured hypothesis report with confidence rating. Hands off to superpowers:systematic-debugging.
 - `/document-release` — Release notes from git history. Consolidates commits into user-facing entries, determines semver bump from Conventional Commits, updates CHANGELOG.md. Never tags or pushes without confirmation.
+- `/ship` — Full release checklist in one command: tests → self-review → code review → version bump → CHANGELOG → push → PR. Stops on any failure. Delegates review to superpowers:requesting-code-review.
+- `/careful` — Destructive command guardrails. Intercepts `rm -rf`, `DROP TABLE`, force-push, `kubectl delete`, `terraform destroy`, and other hard-to-reverse operations before they run. Requires explicit confirmation.
+- `/freeze` — Directory edit lock. Restricts all writes and edits to a specified path for the session. Reads remain unrestricted. Blocks silently on violation.
+- `/guard` — Full safety mode: `/careful` + `/freeze` combined. For high-stakes sessions on production code or shared infrastructure.
+- `/unfreeze` — Remove the active directory lock from `/freeze` or `/guard`. Careful mode remains active until explicitly disabled.
 - `ETHOS.md` — AI-native builder philosophy injected into every skill preamble.
 - `ARCHITECTURE.md` — Why zero dependencies, why Claude-in-Chrome, why superpowers-compatible.
 - `CONTRIBUTING.md` — Skill quality bar, testing guidance, PR process.

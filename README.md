@@ -1,6 +1,6 @@
 # nstack
 
-> Security auditing, QA, bug triage, release notes, and retrospectives for AI-native projects.
+> Security auditing, QA, bug triage, release notes, retrospectives, and safety guardrails for AI-native projects.
 > Zero dependencies. Superpowers-compatible.
 
 Most security tools were built before LLMs existed. They find SQL injection.
@@ -137,6 +137,11 @@ That's it. No build step. No package manager. No binaries. Works immediately.
 | `/retro` | Weekly retrospective from git history. What shipped, lines added, test health, files touched most, open findings. |
 | `/investigate` | Bug triage when you don't know where to start. Reconstructs the timeline, diffs the suspect range, builds a hypothesis with confidence rating. Hands off to superpowers:systematic-debugging. |
 | `/document-release` | Release notes from git history. Groups and consolidates commits, determines semver bump, updates CHANGELOG.md. Never tags without confirmation. |
+| `/ship` | Full release checklist in one command: tests → self-review → code review → version bump → CHANGELOG → push → PR. Stops on any failure. |
+| `/careful` | Destructive command guardrails. Warns before `rm -rf`, `DROP TABLE`, force-push, `kubectl delete`, and other hard-to-reverse operations. |
+| `/freeze [path]` | Lock all edits to a specific directory for the session. Reads remain unrestricted. |
+| `/guard [path]` | Full safety mode: `/careful` + `/freeze` combined. For high-stakes sessions on production code. |
+| `/unfreeze` | Remove a `/freeze` or `/guard` directory lock. |
 
 ## Usage
 
@@ -164,6 +169,18 @@ That's it. No build step. No package manager. No binaries. Works immediately.
 /document-release                    # Since last git tag
 /document-release --since v0.3.0     # Since a specific tag
 /document-release --draft            # Write notes, don't tag
+
+# Ship
+/ship                                # Full release checklist
+/ship --draft                        # Open draft PR
+/ship --skip-review                  # Skip code review step
+/ship --no-bump                      # Don't bump version
+
+# Safety guardrails
+/careful                             # Warn before destructive commands
+/freeze src/api/                     # Lock edits to one directory
+/guard src/api/                      # careful + freeze combined
+/unfreeze                            # Remove directory lock
 ```
 
 ## Why not just use gstack?
@@ -181,7 +198,7 @@ nstack makes a different set of tradeoffs:
 | LLM security | First-class (built for AI-native) | Phase 7 of 14 |
 | superpowers | Designed to complement | Separate system |
 | Browser automation | Claude-in-Chrome (already installed) | Playwright daemon (faster, more capable) |
-| Scope | 5 focused skills | 28 skills, full sprint workflow |
+| Scope | 10 focused skills | 28 skills, full sprint workflow |
 
 **Use nstack if:** You want security + QA + retro with zero setup, and you're building AI-native projects.
 
