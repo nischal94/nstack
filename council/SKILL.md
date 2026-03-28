@@ -160,7 +160,7 @@ Each member states their final position in 100 words or fewer. No new arguments.
 
 **Execution order:**
 - All members except Socrates run in parallel first.
-- Socrates runs last, after seeing all other syntheses. He must crystallize his position in 100 words — no new questions. If he cannot commit without questioning, the coordinator states his position on his behalf based on his Round 2 response.
+- Socrates runs last, after seeing all other syntheses. He must crystallize his position in 100 words — no new questions. If he cannot commit without questioning, the coordinator states his position on his behalf based on his Round 2 response. (This handles cases where Socrates' Round 2 response was still questioning within the 3-level limit — the depth rule extracted no committed position, so the coordinator reconstructs one.)
 
 ---
 
