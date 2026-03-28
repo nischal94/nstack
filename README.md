@@ -149,6 +149,7 @@ That's it. No build step. No package manager. No binaries. Works immediately.
 | `/evals` | LLM output quality testing. Create and run structured eval suites with string checks and LLM-as-judge scoring. Baseline comparison across prompt or model changes. Essential for AI-native projects. |
 | `/context` | Claude Code configuration audit. Finds stale file references, contradictory rules, missing commands, and bloated instructions across CLAUDE.md, rules files, and memory. |
 | `/migrate` | Database migration safety. Reviews migrations for data loss risk, missing rollback, and lock contention on large tables. Runs with dry-run, backup check, and post-migration verification. |
+| `/council` | Multi-agent adversarial deliberation for complex decisions. 11 personas (Socrates, Feynman, Torvalds, etc.) run a 3-round protocol: independent analysis → cross-examination → synthesis. Triads by default. Use for architecture choices, strategic pivots, build-vs-buy — decisions where a single perspective isn't enough. |
 
 ## Usage
 
@@ -219,6 +220,12 @@ That's it. No build step. No package manager. No binaries. Works immediately.
 /context --memory                    # Memory files only
 /context --fix                       # Apply safe fixes automatically
 
+# Multi-agent deliberation
+/council "should we migrate to GraphQL?"          # Auto-detect domain, pick triad
+/council --triad architecture "monorepo or poly?" # Use specific triad
+/council --members socrates,feynman,ada "why does our cache keep failing?"
+/council --full "is this acquisition worth pursuing?"  # All 11 members (expensive)
+
 # Database migrations
 /migrate                             # Review and run next pending migration
 /migrate --review                    # Review only, don't run
@@ -241,7 +248,7 @@ nstack makes a different set of tradeoffs:
 | LLM security | First-class (built for AI-native) | Phase 7 of 14 |
 | superpowers | Designed to complement | Separate system |
 | Browser automation | Claude-in-Chrome (already installed) | Playwright daemon (faster, more capable) |
-| Scope | 17 focused skills | 28 skills, full sprint workflow |
+| Scope | 18 focused skills | 28 skills, full sprint workflow |
 
 **Use nstack if:** You want security + QA + retro with zero setup, and you're building AI-native projects.
 
