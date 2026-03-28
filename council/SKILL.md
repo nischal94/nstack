@@ -151,7 +151,7 @@ Rules:
 - **Hemlock rule (Socrates-specific):** If Socrates re-asks a question another member already answered with evidence, the coordinator forces a 50-word position statement from Socrates. No more questions.
 - **3-level depth limit (Socrates-specific):** Question a premise → question the response → question once more. After 3 levels, Socrates must state his own position.
 - **Universal deflection rule (all members):** Any member who deflects with "it depends", "the timing isn't right", "perhaps the question itself...", or equivalent non-committal language gets a coordinator intervention: forced 50-word position statement. This applies to all members — Lao Tzu dissolving, Musashi deferring timing, Aristotle re-categorizing, Aurelius retreating to stoicism, Chanakya hedging on actors.
-- **2-message cutoff:** If any pair of members exchanges more than 2 messages, cut them off and advance to Round 3.
+- **Tunnel rule:** If a member's Round 2 response addresses only one other member and ignores the rest, the coordinator prompts them to engage the full council before their response is accepted.
 
 ---
 
@@ -161,7 +161,7 @@ Each member states their final position in 100 words or fewer. No new arguments.
 
 **Execution order:**
 - All members except Socrates run in parallel first.
-- Socrates runs last, after seeing all other syntheses. He gets exactly one question, then must state his position.
+- Socrates runs last, after seeing all other syntheses. He must crystallize his position in 100 words — no new questions. If he cannot commit without questioning, the coordinator states his position on his behalf based on his Round 2 response.
 
 ---
 
@@ -199,7 +199,7 @@ RECOMMENDED NEXT STEPS
 **Consensus rules:**
 - 2/3 majority = consensus (at least 2 of 3 members agree, or proportional equivalent for larger councils). Record minority in Minority Report.
 - No majority = present the dilemma clearly. Do not force consensus.
-- Tiebreaker for even splits: the member with the highest stated CONFIDENCE from Round 1 casts the deciding vote.
+- Tiebreaker for even splits (councils of 4+ members only): the member with the highest stated CONFIDENCE from Round 1 casts the deciding vote. Note: 3-member triads always produce a 2/3 majority or a 3-way disagreement — even splits are impossible, so the tiebreaker never applies.
 
 ---
 
