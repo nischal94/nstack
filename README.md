@@ -146,6 +146,8 @@ That's it. No build step. No package manager. No binaries. Works immediately.
 | `/land` | Merge, deploy, and verify in one command. Waits for CI → confirms → merges → waits for deploy → health checks production. Offers rollback on failure. |
 | `/review` | Inline staff engineer code review of the current diff. AUTO-FIX commits for obvious issues (debug statements, unused imports, clear null dereferences). FLAGS security issues and logic questions for user decision. |
 | `/autoplan` | Plan review pipeline before execution. Scope challenge, architecture review, AI-native checks, and test matrix. Outputs a BLOCKED / READY verdict with specific gaps to resolve. |
+| `/evals` | LLM output quality testing. Create and run structured eval suites with string checks and LLM-as-judge scoring. Baseline comparison across prompt or model changes. Essential for AI-native projects. |
+| `/context` | Claude Code configuration audit. Finds stale file references, contradictory rules, missing commands, and bloated instructions across CLAUDE.md, rules files, and memory. |
 
 ## Usage
 
@@ -205,6 +207,16 @@ That's it. No build step. No package manager. No binaries. Works immediately.
 /land                                # Detect PR, wait for CI, merge, deploy, verify
 /land 123                            # Land a specific PR number
 /land --url https://myapp.com        # Health check against a specific URL
+
+# LLM output quality
+/evals                               # Run existing eval suite
+/evals --create                      # Create eval suite from scratch
+/evals --compare                     # Compare two prompt/model configurations
+
+# Claude Code configuration
+/context                             # Full config audit
+/context --memory                    # Memory files only
+/context --fix                       # Apply safe fixes automatically
 ```
 
 ## Why not just use gstack?
@@ -222,7 +234,7 @@ nstack makes a different set of tradeoffs:
 | LLM security | First-class (built for AI-native) | Phase 7 of 14 |
 | superpowers | Designed to complement | Separate system |
 | Browser automation | Claude-in-Chrome (already installed) | Playwright daemon (faster, more capable) |
-| Scope | 14 focused skills | 28 skills, full sprint workflow |
+| Scope | 16 focused skills | 28 skills, full sprint workflow |
 
 **Use nstack if:** You want security + QA + retro with zero setup, and you're building AI-native projects.
 

@@ -19,6 +19,8 @@ premise/SKILL.md           ← /premise challenge whether to build something
 land/SKILL.md              ← /land merge + deploy + health check
 review/SKILL.md            ← /review inline staff engineer code review
 autoplan/SKILL.md          ← /autoplan plan review before execution
+evals/SKILL.md             ← /evals LLM output quality testing
+context/SKILL.md           ← /context Claude Code configuration audit
 ETHOS.md                   ← principles injected into skill preambles
 ARCHITECTURE.md            ← why nstack is built this way
 CONTRIBUTING.md            ← how to contribute
