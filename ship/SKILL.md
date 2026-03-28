@@ -39,9 +39,32 @@ If there are uncommitted changes: ask the user whether to commit them first or s
 
 ---
 
-## Step 2: Run the test suite
+## Step 2: Merge base branch first
 
-Run whichever test runner the project uses:
+**Always merge the base branch into your feature branch before running tests.**
+This ensures you're testing the merged state — not your branch in isolation.
+A branch that passes tests alone but fails after merge is not ready to ship.
+
+```bash
+# Fetch latest base branch
+git fetch origin
+
+# Detect base branch
+BASE=$(git remote show origin | grep "HEAD branch" | awk '{print $NF}')
+
+# Merge base into current branch
+git merge origin/$BASE --no-edit
+```
+
+If merge conflicts arise: **stop**. Resolve conflicts manually, then re-run `/ship`.
+
+If the merge produced no changes (branch is already up to date): note it and continue.
+
+---
+
+## Step 3: Run the test suite
+
+Run whichever test runner the project uses **after** the base branch merge:
 
 ```bash
 # Detect and run tests
@@ -52,14 +75,28 @@ cargo test 2>/dev/null || \
 bundle exec rspec 2>/dev/null
 ```
 
-If tests fail: **stop**. Do not proceed. Report which tests failed.
-Use `superpowers:systematic-debugging` to fix, then re-run `/ship`.
+**Test failure triage:** If tests fail, classify them before stopping:
+
+- **New failures** (introduced by your branch or the merge): stop and fix. These are your responsibility.
+- **Pre-existing failures** (present on base branch before your changes): report them separately. Don't let pre-existing failures block your ship — but do flag them.
+
+```bash
+# Check if failure exists on base branch too
+git stash
+git checkout $BASE
+npm test 2>/dev/null  # or equivalent
+git checkout -
+git stash pop
+```
+
+If pre-existing failures confirmed: note them, continue shipping, add a follow-up task.
+If new failures: **stop**. Use `superpowers:systematic-debugging` to fix, then re-run `/ship`.
 
 If no tests found: warn the user and ask whether to continue anyway.
 
 ---
 
-## Step 3: Self-review the diff
+## Step 4: Self-review the diff
 
 ```bash
 # What are we actually shipping?
@@ -77,7 +114,7 @@ If any found: list them and ask the user whether to fix before shipping.
 
 ---
 
-## Step 4: Code review (unless --skip-review)
+## Step 5: Code review (unless --skip-review)
 
 Dispatch `superpowers:requesting-code-review` with the current diff as context.
 
@@ -91,7 +128,7 @@ If MINOR issues only: list them, ask whether to fix now or file as follow-up.
 
 ---
 
-## Step 5: Version bump (unless --no-bump)
+## Step 6: Version bump (unless --no-bump)
 
 Detect versioning scheme:
 
@@ -128,7 +165,7 @@ Wait for confirmation before writing anything.
 
 ---
 
-## Step 6: Update CHANGELOG.md
+## Step 7: Update CHANGELOG.md
 
 Run `/document-release --draft` logic inline:
 - Group commits by type
@@ -139,7 +176,7 @@ If no CHANGELOG.md exists, create one.
 
 ---
 
-## Step 7: Commit the release artifacts
+## Step 8: Commit the release artifacts
 
 ```bash
 git add CHANGELOG.md
@@ -150,7 +187,7 @@ git commit -m "chore: bump version to vX.Y.Z and update CHANGELOG"
 
 ---
 
-## Step 8: Push and open PR
+## Step 9: Push and open PR
 
 ```bash
 git push origin $(git branch --show-current)

@@ -18,7 +18,11 @@ All notable changes to nstack are documented here.
 - `/guard` — Full safety mode: `/careful` + `/freeze` combined. For high-stakes sessions on production code or shared infrastructure.
 - `/unfreeze` — Remove the active directory lock from `/freeze` or `/guard`. Careful mode remains active until explicitly disabled.
 - `/premise` — Premise challenge before building. Five structured challenges (status quo, assumption killer, minimum wedge, existing leverage, regret test) with one question at a time. Outputs a CONFIRMED / NARROWED / CHALLENGED / DEFER verdict with a recommended next step.
-- `/land` — Merge, deploy, and verify in one command. CI gate → merge confirmation → squash merge → deploy detection and wait → production health check → rollback offer on failure. Supports Vercel, Fly.io, Railway, Render, Netlify, and generic GitHub Actions deploy workflows.
+- `/land` — Merge, deploy, and verify in one command.
+- `/review` — Inline staff engineer code review of the current diff. Classifies findings as AUTO-FIX (applied immediately with atomic commits) or FLAG (presented for user decision). Never auto-fixes security issues. Cites file and line for every finding.
+- `/autoplan` — Plan review pipeline before execution. Three passes: scope challenge (minimum change set, 8-file smell, existing leverage), architecture review (data flow, dependency direction, error paths, AI-native checks), and test matrix (traces every behavior to a test, adds missing tests to the plan). Outputs BLOCKED / READY verdict.
+- **fix(/investigate):** Added 3-strike rule — after 3 failed hypotheses, stops and surfaces options (instrumentation, bisect, escalate, scope expansion) rather than thrashing. Added scope lock step that declares the investigation boundary before forming any hypothesis.
+- **fix(/ship):** Added base-branch merge before running tests (Step 2). Tests now run on the merged state, not the branch in isolation. Added test failure triage to distinguish new failures (blocking) from pre-existing failures (flagged, non-blocking). CI gate → merge confirmation → squash merge → deploy detection and wait → production health check → rollback offer on failure. Supports Vercel, Fly.io, Railway, Render, Netlify, and generic GitHub Actions deploy workflows.
 - `ETHOS.md` — AI-native builder philosophy injected into every skill preamble.
 - `ARCHITECTURE.md` — Why zero dependencies, why Claude-in-Chrome, why superpowers-compatible.
 - `CONTRIBUTING.md` — Skill quality bar, testing guidance, PR process.

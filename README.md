@@ -144,6 +144,8 @@ That's it. No build step. No package manager. No binaries. Works immediately.
 | `/unfreeze` | Remove a `/freeze` or `/guard` directory lock. |
 | `/premise` | Premise challenge before building. Five structured challenges: status quo, assumption killer, minimum wedge, existing leverage, regret test. Outputs a CONFIRMED / NARROWED / CHALLENGED / DEFER verdict. |
 | `/land` | Merge, deploy, and verify in one command. Waits for CI → confirms → merges → waits for deploy → health checks production. Offers rollback on failure. |
+| `/review` | Inline staff engineer code review of the current diff. AUTO-FIX commits for obvious issues (debug statements, unused imports, clear null dereferences). FLAGS security issues and logic questions for user decision. |
+| `/autoplan` | Plan review pipeline before execution. Scope challenge, architecture review, AI-native checks, and test matrix. Outputs a BLOCKED / READY verdict with specific gaps to resolve. |
 
 ## Usage
 
@@ -184,6 +186,16 @@ That's it. No build step. No package manager. No binaries. Works immediately.
 /guard src/api/                      # careful + freeze combined
 /unfreeze                            # Remove directory lock
 
+# Plan review
+/autoplan                            # Review plan.md before executing
+/autoplan path/to/plan.md            # Review a specific plan file
+/autoplan --quick                    # Architecture and scope only
+
+# Code review (inline)
+/review                              # Review all changes since main
+/review --staged                     # Review only staged changes
+/review --report-only                # Report findings, no auto-fixes
+
 # Premise challenge
 /premise "add multi-tenant support"  # Challenge a specific idea
 /premise                             # Challenge whatever you just described
@@ -210,7 +222,7 @@ nstack makes a different set of tradeoffs:
 | LLM security | First-class (built for AI-native) | Phase 7 of 14 |
 | superpowers | Designed to complement | Separate system |
 | Browser automation | Claude-in-Chrome (already installed) | Playwright daemon (faster, more capable) |
-| Scope | 12 focused skills | 28 skills, full sprint workflow |
+| Scope | 14 focused skills | 28 skills, full sprint workflow |
 
 **Use nstack if:** You want security + QA + retro with zero setup, and you're building AI-native projects.
 

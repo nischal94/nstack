@@ -98,12 +98,31 @@ Error rate increases:
 
 ---
 
-## Step 5: Hypothesis report
+## Step 5: Scope lock
+
+Before forming a hypothesis, lock to the narrowest directory containing the suspect files.
+This prevents investigation drift — accidentally reading or modifying unrelated code.
+
+State the scope explicitly:
+```
+SCOPE LOCK
+══════════
+Investigating within: [path/to/suspect/directory/]
+Reads outside this scope are allowed for context.
+No code modifications in this session until hand-off to superpowers:systematic-debugging.
+```
+
+---
+
+## Step 6: Hypothesis report
+
+Track hypotheses with a strike counter. You get **3 strikes** — if 3 hypotheses fail to
+be confirmed by evidence, stop and report rather than thrash.
 
 Output a structured triage report:
 
 ```
-INVESTIGATION REPORT
+INVESTIGATION REPORT  [Hypothesis #N of 3]
 ════════════════════
 Symptom:     [What's broken]
 First seen:  [Approximate time / commit]
@@ -126,14 +145,49 @@ WHAT TO CHECK NEXT
 HAND OFF
 ────────
 Once confirmed: use superpowers:systematic-debugging to fix.
-If hypothesis is wrong: [alternative to investigate]
+If hypothesis is wrong: [alternative to investigate — strike N of 3]
 ```
 
 ---
 
-## Step 6: Quick verification (optional, non-destructive)
+## Step 7: Three-strike rule
 
-Before handing off, try to confirm or rule out the hypothesis without changing code:
+**Strike** = a hypothesis that the evidence does not support after verification.
+
+After each failed hypothesis, increment the strike counter and state it clearly:
+```
+Strike 1 of 3 — Hypothesis ruled out. [Why it didn't hold.]
+Moving to next hypothesis...
+```
+
+**After 3 strikes — STOP:**
+
+```
+3-STRIKE STOP
+═════════════
+Three hypotheses have been ruled out:
+  1. [hypothesis 1] — ruled out because [reason]
+  2. [hypothesis 2] — ruled out because [reason]
+  3. [hypothesis 3] — ruled out because [reason]
+
+The root cause is not in the obvious places. Options:
+
+A) Add instrumentation — insert logging at key points and re-run the failing scenario
+B) Bisect — use `git bisect` to find the exact commit that introduced the regression
+C) Escalate — describe the failure in detail and use superpowers:systematic-debugging
+   with the full investigation context attached
+D) Expand scope — the bug may be outside [current scope]. Approve scope expansion.
+
+What would you like to do?
+```
+
+Wait for the user's choice. Do not form a 4th hypothesis without explicit instruction.
+
+---
+
+## Step 8: Quick verification (non-destructive)
+
+Before handing off, confirm or rule out the current hypothesis without changing code:
 
 - Read the suspect file at the suspect line
 - Check if the pattern appears elsewhere (variant search)
@@ -154,5 +208,7 @@ Do NOT run the app, run tests, or modify any files in this phase.
 - **Hypothesis first, fix second.** Never suggest a fix until you have evidence.
 - **One hypothesis at a time.** Don't list 5 possibilities — pick the most likely one.
 - **Confidence must be earned.** If you can't find evidence, say confidence is 3/10, not 8/10.
+- **3 strikes = stop.** Thrashing through hypotheses wastes time. Surface the impasse and ask.
+- **Scope lock is not optional.** State the investigation boundary before forming any hypothesis.
 - **AI-native regressions are subtle.** Model output degrading is not always a code bug — it may be a prompt change, a model version change, or a context length issue. Check all three.
 - **Hand off, don't fix.** This skill ends at hypothesis + verification steps. Use superpowers:systematic-debugging for the fix.
