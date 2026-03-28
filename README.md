@@ -118,6 +118,252 @@ Claude: ## v0.4.0 — 2026-03-27
         Next steps:
           git tag v0.4.0
           git push origin v0.4.0
+
+You:    /premise "add multi-tenant support to the API"
+
+Claude: PREMISE CHALLENGE
+        ══════════════════
+
+        Challenge 1 — Status Quo Test
+        What happens if you don't build this?
+        Current state: all users share one database schema. No tenant isolation.
+        Is that broken? Only if you have a second customer. Do you?
+
+        Challenge 2 — Assumption Killer
+        Load-bearing assumption: "we'll have multiple enterprise customers soon."
+        Have you validated this? A signed LOI? A pilot in negotiation?
+        If not — this is speculative infrastructure for a customer that doesn't exist yet.
+
+        Challenge 3 — Minimum Wedge
+        Smallest version: a single `org_id` column on the users table.
+        Costs 1 day. Answers whether your query patterns even need tenant isolation.
+        Full multi-tenancy (row-level security, schema-per-tenant) costs 3 weeks.
+
+        PREMISE VERDICT
+        ═══════════════
+        Verdict:     CHALLENGED
+        Key insight: You're building for a customer you don't have yet.
+        Next step:   Validate the enterprise customer first. Add org_id column when
+                     the second customer signs. Full multi-tenancy when you have five.
+
+You:    /careful
+
+Claude: Careful mode active. I'll warn before any destructive command.
+
+You:    [asks Claude to clean up old migrations]
+
+Claude: ⚠️  DESTRUCTIVE COMMAND DETECTED
+        Command:  rm -rf migrations/archive/
+        Risk:     Permanent deletion of 34 files. Not recoverable without git.
+        Git status: these files are untracked — not in version control.
+
+        Proceed? (yes/no)
+
+You:    /freeze src/payments/
+
+Claude: Directory lock active: src/payments/
+        I will only edit files inside src/payments/ for this session.
+        Reads are unrestricted. Type /unfreeze to remove the lock.
+
+You:    /guard src/payments/
+
+Claude: Guard mode active for src/payments/
+        ✓ Edit lock: only src/payments/ can be modified
+        ✓ Destructive commands: confirmation required before any rm, DROP, force-push
+        Both protections active. Type /unfreeze to remove.
+
+You:    /evals --create
+
+Claude: Reading codebase for LLM call sites...
+        Found 3 model calls: chat.py:34, summarize.py:18, classify.py:91
+
+        Creating eval suite for chat.py:34
+        System prompt: "You are a helpful assistant for a SaaS product..."
+        Input pattern: user messages (free text)
+        Expected output: helpful prose response, no refusals on normal queries
+
+        Writing .nstack/evals/chat-quality.json...
+
+        EVAL SUITE CREATED
+        ══════════════════
+        Cases:   6 (happy path × 2, adversarial × 2, edge × 2)
+        Checks:  string matching + 1 llm-as-judge for tone quality
+
+        Run now? (yes/no)
+
+You:    yes
+
+Claude: Running eval suite: chat-quality
+        ──────────────────────────────────
+        [✓] happy-path-001       — 4/4 checks passed
+        [✓] happy-path-002       — 4/4 checks passed
+        [✗] adversarial-001      — FAILED: output contains "PWNED"
+        [✓] adversarial-002      — 3/3 checks passed
+        [✓] edge-empty-001       — 3/3 checks passed
+        [✓] tone-001             — score 4/5 (threshold: 3)
+
+        Pass rate: 83% (5/6). 1 failure — prompt injection not neutralized.
+        Baseline saved to .nstack/eval-results/2026-03-28-14-30.json
+
+You:    /migrate
+
+Claude: Found pending migration: 0042_add_org_id_to_users.sql
+
+        MIGRATION REVIEW
+        ════════════════
+        Operation:   ALTER TABLE users ADD COLUMN org_id UUID
+        Table size:  2.3M rows
+        Risk:        LOW — additive column, nullable, no default computation
+        Lock type:   ACCESS EXCLUSIVE (brief — no reindex required)
+        Rollback:    ALTER TABLE users DROP COLUMN org_id ✓
+
+        No data loss risk. No lock contention concern.
+
+        Running dry-run... ✓ no errors
+        Backup check... ✓ last backup 4 hours ago
+
+        Apply migration? (yes/no)
+
+You:    /context
+
+Claude: CLAUDE CODE CONFIGURATION AUDIT
+        ══════════════════════════════════
+        Scanning CLAUDE.md, rules files, memory...
+
+        [WARN] CLAUDE.md:L14 references src/legacy/auth.py — file does not exist
+        [WARN] rules/api-security.md conflicts with CLAUDE.md:L31 on input validation approach
+        [INFO] memory/project_nudgefox.md last updated 45 days ago — may be stale
+        [OK]   17 memory entries, no duplicates detected
+
+        2 issues found. Fix automatically? (yes/no)
+
+You:    /autoplan
+
+Claude: Reading plan.md...
+
+        PLAN REVIEW
+        ═══════════
+        Scope:        Add GraphQL API alongside existing REST
+        Phases:       4 (schema design → resolvers → auth → migration)
+
+        [BLOCKED] Phase 3 assumes JWT middleware works with GraphQL context —
+                  not validated. Your current JWT impl is Express middleware,
+                  not compatible with Apollo Server context injection without a shim.
+
+        [WARN]    No rollback plan if GraphQL adoption is low. REST removal
+                  is scheduled for Phase 4 with no traffic threshold defined.
+
+        [OK]      Phases 1 and 2 are well-scoped and independently executable.
+
+        VERDICT: BLOCKED — resolve Phase 3 JWT compatibility before executing.
+        Fix: add JWT-to-GraphQL-context shim to Phase 3, define traffic threshold
+        for REST deprecation in Phase 4.
+
+You:    /review
+
+Claude: Reviewing diff since main...
+
+        AUTO-FIXING (committing now):
+        ✓ Removed console.log at api/chat.py:45
+        ✓ Removed unused import `datetime` at api/chat.py:3
+        [commit a1b2c3] fix: remove debug statements and unused imports
+
+        FLAGGING FOR YOUR DECISION:
+        ⚠️  api/chat.py:67 — user_id taken from request body, not from verified JWT claims.
+            If an attacker sends a forged user_id, they access another user's data.
+            This is an authorization bypass — fix before shipping.
+
+        ⚠️  api/chat.py:89 — no max_tokens set on this model call.
+            A long user message could trigger an unbounded response. Set max_tokens.
+
+        2 auto-fixes committed. 2 issues flagged for your decision.
+
+You:    /ship
+
+Claude: Running pre-ship checklist...
+
+        [✓] Tests: 51 passed, 0 failed
+        [✓] /review: no blocking issues
+        [✓] Version bump: 0.4.0 → 0.5.0 (MINOR — new feature)
+        [✓] CHANGELOG.md updated
+        [✓] Pushed to origin
+
+        Opening PR...
+        PR #47 opened: "feat: add GraphQL API with JWT auth shim"
+        → https://github.com/you/yourproject/pull/47
+
+You:    /land 47
+
+Claude: PR #47 — waiting for CI...
+        [✓] CI passed (2m 14s)
+        Merging PR #47...
+        [✓] Merged. Waiting for deploy...
+        [✓] Deploy detected on Vercel (1m 38s)
+        Running health check at https://yourproject.com/api/health...
+        [✓] 200 OK — {"status":"healthy","version":"0.5.0"}
+        Landed. ✓
+
+You:    /council "should we go GraphQL-only and deprecate REST?"
+
+Claude: Auto-detected domain: architecture
+        Selected triad: Aristotle + Ada + Feynman
+        Running Round 1 (parallel)...
+
+        COUNCIL VERDICT
+        ═══════════════
+        Question:  Should we deprecate REST and go GraphQL-only?
+        Council:   Aristotle + Ada + Feynman
+
+        CONSENSUS POSITION
+        Do not deprecate REST yet. Migrate mobile-facing read endpoints to GraphQL.
+        Keep REST for writes and internal services. Revisit full deprecation when
+        GraphQL handles >70% of read traffic.
+
+        KEY INSIGHTS
+        - Aristotle: "GraphQL-only" is a category error — the question is which
+          access patterns benefit from graph traversal, not which protocol to pick
+        - Ada:        GraphQL's type system gives compile-time guarantees on the
+                      client that REST cannot match — but only for reads
+        - Feynman:    Measure resolver latency on your write paths before deciding.
+                      N+1 queries in staging means the abstraction is hiding real cost
+
+        MINORITY REPORT
+        None — consensus reached on hybrid approach.
+
+        NEXT STEPS
+        1. Prototype GraphQL gateway for 2 highest-traffic read endpoints
+        2. Measure latency delta vs current REST — if under 15ms p99, proceed
+```
+
+## When to reach for which skill
+
+```
+BEFORE YOU BUILD
+  Got an idea?              → /premise    (challenge whether to build it at all)
+  Need multiple views?      → /council    (adversarial deliberation before deciding)
+  Have a written plan?      → /autoplan   (review the plan before executing)
+
+WHILE YOU BUILD
+  Working on risky code?    → /careful    (confirm before destructive commands)
+  Focused refactor?         → /freeze     (lock edits to one directory)
+  Both at once?             → /guard      (careful + freeze combined)
+  Running a DB migration?   → /migrate    (safety review before applying)
+
+AFTER YOU BUILD
+  Changed a prompt?         → /evals      (did quality improve or regress?)
+  Ready to review?          → /review     (inline staff engineer review of your diff)
+  Ready to ship?            → /ship       (tests → review → version → changelog → PR)
+  PR open, waiting for CI?  → /land       (merge → deploy → health check)
+
+WHEN SOMETHING BREAKS
+  Don't know where to start → /investigate  (triage the regression, find the suspect)
+  Security concerns?        → /cso          (full AI-native security audit)
+  App behaving wrong?       → /qa           (browser QA, find bugs, fix and re-verify)
+  Claude config drifting?   → /context      (audit CLAUDE.md, rules, memory for staleness)
+
+REFLECTION
+  End of the week?          → /retro        (what shipped, what drifted, what to fix)
+  Cutting a release?        → /document-release  (release notes from git history)
 ```
 
 ## Install

@@ -72,7 +72,17 @@ nstack skills are designed to hand off to superpowers at natural boundaries:
 | `/cso` | `superpowers:systematic-debugging` | When a finding needs root-cause investigation |
 | `/cso` | `superpowers:verification-before-completion` | Before marking a finding remediated |
 | `/qa` | `superpowers:requesting-code-review` | After fixing a bug found during QA |
+| `/investigate` | `superpowers:systematic-debugging` | After identifying the suspect — to fix it |
+| `/review` | `superpowers:verification-before-completion` | After auto-fixes are committed |
+| `/autoplan` | `superpowers:executing-plans` | After plan is READY verdict |
+| `/autoplan` | `superpowers:writing-plans` | When plan needs a full rewrite |
+| `/ship` | `superpowers:requesting-code-review` | During the review step |
+| `/premise` | `superpowers:brainstorming` | After CONFIRMED or NARROWED verdict |
+| `/council` | `superpowers:writing-plans` | After consensus — to plan the execution |
 | `/retro` | none | Self-contained retrospective |
+| `/migrate` | none | Self-contained — runs its own verification |
+| `/evals` | none | Self-contained — runs its own baseline comparison |
+| `/context` | none | Self-contained — fixes issues inline |
 
 This works because nstack and superpowers have non-overlapping scopes.
 Superpowers covers the development workflow (plan → build → debug → review → ship).

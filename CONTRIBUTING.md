@@ -76,6 +76,62 @@ nstack has no automated test suite (no build step, no test runner). Testing is m
 1. Run `/retro` on a project with at least 2 weeks of git history
 2. Verify stats are accurate against `git log` output
 
+**For `/premise` changes:**
+1. Run `/premise "add X"` on a feature that clearly shouldn't be built — verify CHALLENGED or DEFER verdict
+2. Run `/premise "add X"` on a feature that clearly should — verify CONFIRMED verdict
+3. Verify challenges run one at a time, not batched
+
+**For `/investigate` changes:**
+1. Run on a project with a known regression (introduce one if needed)
+2. Verify the hypothesis names a specific file and line with confidence rating
+3. Verify it hands off to superpowers:systematic-debugging
+
+**For `/review` changes:**
+1. Introduce obvious issues (debug statement, unused import) and verify auto-fix commits
+2. Introduce a security issue and verify it flags for decision, not auto-fixes
+3. Verify no changes are made to files outside the diff
+
+**For `/autoplan` changes:**
+1. Run on a plan with a known gap — verify BLOCKED verdict with specific gap named
+2. Run on a solid plan — verify READY verdict
+3. Verify AI-native checks fire on plans involving LLM calls
+
+**For `/evals` changes:**
+1. Run `--create` on a project with at least one LLM call site
+2. Verify eval cases cover happy path, adversarial, and edge cases
+3. Run `--compare` with two prompt variants and verify delta is correctly calculated
+
+**For `/migrate` changes:**
+1. Run on a migration with a DROP COLUMN — verify HIGH risk flagged
+2. Run on an additive migration (ADD COLUMN nullable) — verify LOW risk
+3. Verify dry-run runs before any apply step
+
+**For `/context` changes:**
+1. Introduce a stale file reference in CLAUDE.md — verify it's caught
+2. Introduce a contradiction between two rules files — verify it's caught
+3. Verify no memory files are modified without confirmation
+
+**For `/careful`, `/freeze`, `/guard`, `/unfreeze` changes:**
+1. Run `/careful` and attempt a destructive command — verify confirmation prompt
+2. Run `/freeze src/` and attempt an edit outside src/ — verify refusal
+3. Run `/guard` and verify both protections are active simultaneously
+4. Run `/unfreeze` and verify edits outside the locked directory are permitted again
+
+**For `/ship` and `/land` changes:**
+1. Run `/ship` with a failing test — verify it stops at the test step
+2. Run `/land` with a PR number and verify CI wait, merge, deploy detection, health check sequence
+3. Verify `/land` offers rollback if health check fails
+
+**For `/council` changes:**
+1. Run with a clear architecture question — verify triad auto-selection is correct
+2. Verify Round 1 runs in parallel, Round 2 sequential, Round 3 parallel-except-Socrates
+3. Introduce a deflecting response from a member — verify coordinator intervention fires
+
+**For `/document-release` changes:**
+1. Run on a project with at least one git tag — verify commits since that tag are grouped correctly
+2. Verify semver bump determination (feat → MINOR, fix → PATCH)
+3. Verify it never tags without explicit confirmation
+
 **The bar:** If you wouldn't trust the skill's output to make a real decision,
 it's not ready to ship.
 
