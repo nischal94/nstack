@@ -17,6 +17,8 @@ All notable changes to nstack are documented here.
 - `/freeze` — Directory edit lock. Restricts all writes and edits to a specified path for the session. Reads remain unrestricted. Blocks silently on violation.
 - `/guard` — Full safety mode: `/careful` + `/freeze` combined. For high-stakes sessions on production code or shared infrastructure.
 - `/unfreeze` — Remove the active directory lock from `/freeze` or `/guard`. Careful mode remains active until explicitly disabled.
+- `/premise` — Premise challenge before building. Five structured challenges (status quo, assumption killer, minimum wedge, existing leverage, regret test) with one question at a time. Outputs a CONFIRMED / NARROWED / CHALLENGED / DEFER verdict with a recommended next step.
+- `/land` — Merge, deploy, and verify in one command. CI gate → merge confirmation → squash merge → deploy detection and wait → production health check → rollback offer on failure. Supports Vercel, Fly.io, Railway, Render, Netlify, and generic GitHub Actions deploy workflows.
 - `ETHOS.md` — AI-native builder philosophy injected into every skill preamble.
 - `ARCHITECTURE.md` — Why zero dependencies, why Claude-in-Chrome, why superpowers-compatible.
 - `CONTRIBUTING.md` — Skill quality bar, testing guidance, PR process.

@@ -1,6 +1,6 @@
 # nstack
 
-> Security auditing, QA, bug triage, release notes, retrospectives, and safety guardrails for AI-native projects.
+> Security auditing, QA, bug triage, premise challenges, release notes, retrospectives, and safety guardrails for AI-native projects.
 > Zero dependencies. Superpowers-compatible.
 
 Most security tools were built before LLMs existed. They find SQL injection.
@@ -142,6 +142,8 @@ That's it. No build step. No package manager. No binaries. Works immediately.
 | `/freeze [path]` | Lock all edits to a specific directory for the session. Reads remain unrestricted. |
 | `/guard [path]` | Full safety mode: `/careful` + `/freeze` combined. For high-stakes sessions on production code. |
 | `/unfreeze` | Remove a `/freeze` or `/guard` directory lock. |
+| `/premise` | Premise challenge before building. Five structured challenges: status quo, assumption killer, minimum wedge, existing leverage, regret test. Outputs a CONFIRMED / NARROWED / CHALLENGED / DEFER verdict. |
+| `/land` | Merge, deploy, and verify in one command. Waits for CI → confirms → merges → waits for deploy → health checks production. Offers rollback on failure. |
 
 ## Usage
 
@@ -181,6 +183,16 @@ That's it. No build step. No package manager. No binaries. Works immediately.
 /freeze src/api/                     # Lock edits to one directory
 /guard src/api/                      # careful + freeze combined
 /unfreeze                            # Remove directory lock
+
+# Premise challenge
+/premise "add multi-tenant support"  # Challenge a specific idea
+/premise                             # Challenge whatever you just described
+/premise --quick                     # Run only the 3 highest-signal questions
+
+# Merge and deploy
+/land                                # Detect PR, wait for CI, merge, deploy, verify
+/land 123                            # Land a specific PR number
+/land --url https://myapp.com        # Health check against a specific URL
 ```
 
 ## Why not just use gstack?
@@ -198,7 +210,7 @@ nstack makes a different set of tradeoffs:
 | LLM security | First-class (built for AI-native) | Phase 7 of 14 |
 | superpowers | Designed to complement | Separate system |
 | Browser automation | Claude-in-Chrome (already installed) | Playwright daemon (faster, more capable) |
-| Scope | 10 focused skills | 28 skills, full sprint workflow |
+| Scope | 12 focused skills | 28 skills, full sprint workflow |
 
 **Use nstack if:** You want security + QA + retro with zero setup, and you're building AI-native projects.
 

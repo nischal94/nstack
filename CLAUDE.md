@@ -15,6 +15,8 @@ careful/SKILL.md           ← /careful destructive command guardrails
 freeze/SKILL.md            ← /freeze directory edit lock
 guard/SKILL.md             ← /guard careful + freeze combined
 unfreeze/SKILL.md          ← /unfreeze remove directory lock
+premise/SKILL.md           ← /premise challenge whether to build something
+land/SKILL.md              ← /land merge + deploy + health check
 ETHOS.md                   ← principles injected into skill preambles
 ARCHITECTURE.md            ← why nstack is built this way
 CONTRIBUTING.md            ← how to contribute
