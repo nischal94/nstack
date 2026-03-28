@@ -53,7 +53,7 @@ Do not use it for questions with clear correct answers.
 | Domain | Triad | Tension |
 |--------|-------|---------|
 | `architecture` | Aristotle + Ada + Feynman | classify → formalize → simplicity-test |
-| `strategy` | Sun Tzu + Chanakya + Aurelius | terrain → statecraft → moral grounding |
+| `strategy` | Sun Tzu + Chanakya + Aurelius | terrain → incentives + long-game → moral grounding |
 | `ethics` | Aurelius + Socrates + Lao Tzu | duty → questioning → natural order |
 | `debugging` | Feynman + Socrates + Ada | bottom-up → assumptions → formal verify |
 | `innovation` | Ada + Lao Tzu + Aristotle | abstraction → emergence → classification |
