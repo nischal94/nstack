@@ -200,7 +200,7 @@ Two additions to the existing `cso/SKILL.md`:
 
 ### Skill supply chain scanning
 
-New Phase 8a (inserted between dependency audit and CI/CD). Also accessible via `--skills` flag, and automatically included in `--comprehensive` mode.
+New phase inserted between the existing dependency audit phase and CI/CD phase in `cso/SKILL.md`. The implementer must read the current phase list to find the correct insertion point — the existing phases are numbered 0–13; insert after whichever phase covers dependency auditing. Also accessible via `--skills` flag, and automatically included in `--comprehensive` mode.
 
 Scans all SKILL.md files reachable from `.claude/skills/` for:
 - Prompt injection vectors in skill descriptions (instructions that override Claude's behavior)
