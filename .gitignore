@@ -2,3 +2,5 @@
 .nstack/
 *.local
 .nstack/
+browse/dist/
+browse/node_modules/
