@@ -8,6 +8,7 @@ allowed-tools:
   - Read
   - Write
   - Edit
+  - Glob
   - AskUserQuestion
 ---
 
@@ -85,9 +86,22 @@ $B goto <page-url>
 $B perf
 ```
 
-MCP mode equivalent:
-- Navigate: `mcp__claude-in-chrome__navigate` with the page URL
-- Eval: `mcp__claude-in-chrome__javascript_tool` for JS evaluation
+`$B perf` returns a JSON object with keys: `ttfb`, `fcp`, `lcp`, `domInteractive`, `domComplete`, `loadTime` (all in ms), plus `transferSize` (bytes). Use these fields directly for metric extraction.
+
+MCP mode: `$B perf` has no direct equivalent — use `mcp__claude-in-chrome__navigate` to load the page, then use `mcp__claude-in-chrome__javascript_tool` to evaluate the navigation timing API directly:
+```js
+JSON.stringify((() => {
+  const n = performance.getEntriesByType('navigation')[0];
+  return {
+    ttfb: Math.round(n.responseStart - n.requestStart),
+    domInteractive: Math.round(n.domInteractive - n.startTime),
+    domComplete: Math.round(n.domComplete - n.startTime),
+    loadTime: Math.round(n.loadEventEnd - n.startTime),
+    transferSize: n.transferSize
+  };
+})())
+```
+For FCP/LCP in MCP mode, also eval `JSON.stringify(performance.getEntriesByType('paint'))`.
 
 Then gather detailed metrics via JavaScript:
 
@@ -261,7 +275,11 @@ TREND: Performance degrading. LCP doubled in 8 days.
 
 ### Phase 9: Save Report
 
-Write to `.nstack/benchmarks/{date}-benchmark.md` and `.nstack/benchmarks/{date}-benchmark.json`.
+Use `date +%Y-%m-%d` for the filename date (e.g. `2026-03-31`). Write to:
+- `.nstack/benchmarks/$(date +%Y-%m-%d)-benchmark.md`
+- `.nstack/benchmarks/$(date +%Y-%m-%d)-benchmark.json`
+
+The `--trend` mode uses `Glob` to discover historical files: `*.json` in `.nstack/benchmarks/` sorted by filename (which sorts chronologically given `YYYY-MM-DD` prefix).
 
 ## Important Rules
 
