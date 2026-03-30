@@ -103,24 +103,7 @@ JSON.stringify((() => {
 ```
 For FCP/LCP in MCP mode, also eval `JSON.stringify(performance.getEntriesByType('paint'))`.
 
-Then gather detailed metrics via JavaScript:
-
-Binary mode:
-```bash
-$B eval "JSON.stringify(performance.getEntriesByType('navigation')[0])"
-```
-
-MCP mode: use `mcp__claude-in-chrome__javascript_tool` with the same JS expression.
-
-Extract key metrics:
-- **TTFB** (Time to First Byte): `responseStart - requestStart`
-- **FCP** (First Contentful Paint): from PerformanceObserver or `paint` entries
-- **LCP** (Largest Contentful Paint): from PerformanceObserver
-- **DOM Interactive**: `domInteractive - navigationStart`
-- **DOM Complete**: `domComplete - navigationStart`
-- **Full Load**: `loadEventEnd - navigationStart`
-
-Resource analysis:
+Resource analysis (both modes):
 
 Binary mode:
 ```bash
@@ -178,7 +161,9 @@ Save metrics to baseline file:
 }
 ```
 
-Write to `.nstack/benchmarks/baselines/baseline.json`.
+Write to `.nstack/benchmarks/$(date +%Y-%m-%d)-baseline.json`.
+
+This uses the same naming scheme as benchmark reports so `--trend` mode (which globs `.nstack/benchmarks/*.json`) discovers both baselines and full benchmark runs.
 
 ### Phase 5: Comparison
 
@@ -279,7 +264,7 @@ Use `date +%Y-%m-%d` for the filename date (e.g. `2026-03-31`). Write to:
 - `.nstack/benchmarks/$(date +%Y-%m-%d)-benchmark.md`
 - `.nstack/benchmarks/$(date +%Y-%m-%d)-benchmark.json`
 
-The `--trend` mode uses `Glob` to discover historical files: `*.json` in `.nstack/benchmarks/` sorted by filename (which sorts chronologically given `YYYY-MM-DD` prefix).
+The `--trend` mode uses `Glob` to discover historical files: pattern `.nstack/benchmarks/*.json` sorted by filename (which sorts chronologically given `YYYY-MM-DD` prefix).
 
 ## Important Rules
 
