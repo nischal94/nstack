@@ -10,7 +10,6 @@ allowed-tools:
   - Read
   - Write
   - AskUserQuestion
-  - WebSearch
 ---
 
 # /qa-only: Report-Only QA Testing
@@ -100,11 +99,16 @@ This is the **primary mode** for developers verifying their work. When the user 
    **If no obvious pages/routes are identified from the diff:** Do not skip browser testing. The user invoked /qa-only because they want browser-based verification. Fall back to Quick mode — navigate to the homepage, follow the top 5 navigation targets, check console for errors, and test any interactive elements found. Backend, config, and infrastructure changes affect app behavior — always verify the app still works.
 
 3. **Detect the running app** — check common local dev ports:
+
+   If `BROWSE_MODE="binary"`:
    ```bash
    $B goto http://localhost:3000 2>/dev/null && echo "Found app on :3000" || \
    $B goto http://localhost:4000 2>/dev/null && echo "Found app on :4000" || \
    $B goto http://localhost:8080 2>/dev/null && echo "Found app on :8080"
    ```
+
+   If `BROWSE_MODE="mcp"`: use `mcp__claude-in-chrome__navigate` to try each port in turn.
+
    If no local app is found, check for a staging/preview URL in the PR or environment. If nothing works, ask the user for the URL.
 
 4. **Test each affected page/route:**
