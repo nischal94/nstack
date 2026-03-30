@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -e
+
+NSTACK_DIR="$(cd "$(dirname "$0")" && pwd)"
+BROWSE_BIN="$NSTACK_DIR/browse/dist/browse"
+
+# 1. Check Bun
+if ! command -v bun >/dev/null 2>&1; then
+  echo "[nstack] Bun is required to build the browser binary."
+  echo "Install: curl -fsSL https://bun.sh/install | bash"
+  exit 1
+fi
+
+# 2. Build browse binary
+echo "[nstack] Building browser binary..."
+cd "$NSTACK_DIR/browse"
+bun install
+bun build --compile src/cli.ts --outfile dist/browse
+
+# 3. Install Playwright Chromium
+echo "[nstack] Installing Playwright Chromium..."
+bunx playwright install chromium
+
+echo "[nstack] Setup complete. Design skills are now available."
+echo "  binary: $BROWSE_BIN"
