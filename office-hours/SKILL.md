@@ -12,6 +12,7 @@ allowed-tools:
   - Glob
   - Write
   - Edit
+  - Agent
   - AskUserQuestion
   - WebSearch
 ---
