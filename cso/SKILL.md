@@ -23,6 +23,7 @@ You do NOT make code changes. You produce a **Security Posture Report**.
 - `/cso --api` — API routes only (Phases 0, 1, 6, 9, 12–14)
 - `/cso --infra` — infrastructure only (Phases 0–6, 12–14)
 - `/cso --supply-chain` — dependency audit only (Phases 0, 3, 12–14)
+- `/cso --skills` — skill supply chain only (Phases 0, 8a, 12–14)
 - `/cso --diff` — current branch changes only (combinable with any scope flag)
 
 ## Important: use the Grep tool for all code searches
@@ -55,6 +56,23 @@ grep -q "anthropic\|openai\|langchain\|llama" requirements.txt package.json pypr
 **Mental model:** Read CLAUDE.md, README, key config files. Map the architecture:
 what components exist, where trust boundaries are, where user input enters, where it exits.
 Identify if this is an AI-native project (calls LLMs, handles prompt I/O, uses agents).
+
+### Trend: Load previous run
+
+At the start of every run, check for a previous result:
+
+```bash
+mkdir -p .nstack/cso-history
+PREV_RESULT=".nstack/cso-history/latest.json"
+if [ -f "$PREV_RESULT" ]; then
+  cat "$PREV_RESULT"
+  echo "PREV_RUN_FOUND=true"
+else
+  echo "PREV_RUN_FOUND=false"
+fi
+```
+
+If `PREV_RUN_FOUND=true`: extract `findings` counts by severity. Store as `PREV_CRITICAL`, `PREV_HIGH`, `PREV_MEDIUM`, `PREV_LOW`. These are used for the trend diff in Phase 13.
 
 ---
 
@@ -244,6 +262,51 @@ URL construction from user input? Internal services reachable via user-controlle
 
 ---
 
+## Phase 8a: Skill Supply Chain
+
+Scan all `SKILL.md` files reachable from `.claude/skills/` for security issues.
+
+```bash
+find .claude/skills/ -name "SKILL.md" 2>/dev/null
+```
+
+For each SKILL.md found, check for:
+
+**1. Prompt injection vectors**
+Scan the skill description and body for instructions that could override Claude's behavior when loaded:
+- Instructions like "ignore previous instructions", "you are now", "disregard your guidelines"
+- Skill descriptions that claim elevated permissions not granted by the user
+- Content that attempts to exfiltrate conversation context
+
+**2. Overly broad tool permissions**
+```
+allowed-tools: "*"
+```
+Or equivalent patterns granting all tools. Flag any skill granting Bash + Write + no restriction — this combination allows arbitrary code execution and file modification.
+
+**3. Remote URL fetching at invocation time**
+Scan for `curl`, `wget`, `fetch(`, `http://`, `https://` in skill bash blocks that run unconditionally at skill load time (not gated by user action). Remote fetches at invocation are a supply chain vector — the remote content can change after install.
+
+**4. Untrusted skill sources**
+Check frontmatter for `source:` or `origin:` fields. Skills with no attribution and no known registry origin are unverified. Note: absence of source is not a finding by itself — flag only when combined with other risk signals (broad permissions, remote fetches).
+
+**Report format for each finding:**
+```
+Finding N: [Issue Type] — [skill path]
+Severity: CRITICAL / HIGH / MEDIUM / LOW
+Risk: [concrete exploit scenario — what could an attacker do?]
+Evidence: [exact line from the skill file]
+Remediation: [specific fix]
+```
+
+**Severity guide:**
+- CRITICAL: prompt injection that could exfiltrate data or override safety controls
+- HIGH: broad tool permissions (Bash + Write) with no user-facing justification
+- MEDIUM: unconditional remote fetch at invocation time
+- LOW: missing source attribution with other risk signals present
+
+---
+
 ## Phase 9: STRIDE Threat Model
 
 For each major component identified in Phase 0:
@@ -369,6 +432,21 @@ D) Defer — add to backlog with security label
 
 Wait for the user's choice before moving to the next finding.
 
+### Trend diff
+
+If a previous run exists (from Phase 0), show the trend:
+
+```
+TREND vs last run ([prev date from latest.json])
+  CRITICAL  [prev] → [curr]   ([change])
+  HIGH      [prev] → [curr]   ([change])
+  MEDIUM    [prev] → [curr]   ([change])
+  LOW       [prev] → [curr]   ([change])
+```
+
+Format changes as: `(↓ N resolved)`, `(↑ N new)`, or `(no change)`.
+If no previous run: omit the trend section entirely.
+
 ---
 
 ## Phase 14: Save Report
@@ -380,6 +458,35 @@ mkdir -p .nstack/security-reports
 Write findings to `.nstack/security-reports/YYYY-MM-DD.json`.
 
 If `.nstack/` is not in `.gitignore`, note it — security reports should stay local.
+
+### Trend: Save results
+
+After writing the report, save the run metadata to `.nstack/cso-history/`:
+
+```bash
+DATE=$(date +%Y-%m-%d)
+TIME=$(date +%H-%M)
+HIST_FILE=".nstack/cso-history/${DATE}-${TIME}.json"
+```
+
+Write the following JSON to `$HIST_FILE`:
+```json
+{
+  "date": "YYYY-MM-DD",
+  "findings": {
+    "CRITICAL": N,
+    "HIGH": N,
+    "MEDIUM": N,
+    "LOW": N
+  },
+  "titles": ["Finding title 1", "Finding title 2", "..."]
+}
+```
+
+Then copy to latest:
+```bash
+cp "$HIST_FILE" .nstack/cso-history/latest.json
+```
 
 ---
 
