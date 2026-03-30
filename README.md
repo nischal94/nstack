@@ -372,7 +372,17 @@ REFLECTION
 git clone https://github.com/nischal94/nstack.git ~/.claude/skills/nstack
 ```
 
-That's it. No build step. No package manager. No binaries. Works immediately.
+Core skills work immediately — no build step, no binaries.
+
+### Optional: design skills
+
+Design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`) use a compiled Playwright CLI for fast, token-free screenshot rendering. To enable:
+
+```bash
+cd ~/.claude/skills/nstack && ./setup
+```
+
+Requires Bun. Downloads Playwright Chromium (~150MB, one-time). Falls back to Claude-in-Chrome MCP if not installed.
 
 ## Skills
 
@@ -489,12 +499,12 @@ nstack makes a different set of tradeoffs:
 
 | | nstack | gstack |
 |---|---|---|
-| Install | `git clone` (3 sec) | `git clone + ./setup` (2 min, requires Bun) |
-| Dependencies | Zero | Bun + Playwright + compiled binaries |
+| Install | `git clone` (3 sec) + optional `./setup` for design | `git clone + ./setup` (2 min, requires Bun) |
+| Dependencies | Zero for core skills; Bun + Playwright for design | Bun + Playwright + compiled binaries |
 | LLM security | First-class (built for AI-native) | Phase 7 of 14 |
 | superpowers | Designed to complement | Separate system |
-| Browser automation | Claude-in-Chrome (already installed) | Playwright daemon (faster, more capable) |
-| Scope | 18 focused skills | 28 skills, full sprint workflow |
+| Browser automation | Claude-in-Chrome for QA; Playwright CLI for design | Playwright daemon (faster, more capable) |
+| Scope | 18 focused skills + 5 design skills (optional) | 28 skills, full sprint workflow |
 
 **Use nstack if:** You want security + QA + retro with zero setup, and you're building AI-native projects.
 
@@ -510,7 +520,7 @@ at natural boundaries — debugging a finding, verifying a fix, reviewing remedi
 
 ## Design principles
 
-- **Zero mandatory dependencies** — clone and it works
+- **Zero mandatory dependencies** — clone and core skills work; design skills opt in to Playwright
 - **AI-native first** — LLM security is not an afterthought
 - **Zero noise** — 8/10 confidence gate, concrete exploit paths only
 - **Superpowers-compatible** — complements, never conflicts
