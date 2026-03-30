@@ -5,47 +5,47 @@ For setup and usage, see README.md. For contributing, see CONTRIBUTING.md.
 
 ---
 
-## The core idea
+## Two tiers of capability
 
-nstack is pure markdown. No binaries, no build step, no runtime.
+nstack splits into two tiers based on what you need.
+
+**Tier 1 — Zero-dependency core skills** (security, QA, retro, investigate, etc.)
 
 Every skill is a SKILL.md file that Claude Code discovers from `~/.claude/skills/nstack/`.
 Claude reads the skill, follows the instructions, and uses its built-in tools
-(Grep, Read, Bash, Agent) to execute the workflow. There is no nstack binary.
-There is no server. There is nothing to compile.
+(Grep, Read, Bash, Agent) to execute the workflow.
 
-This is a deliberate constraint. See "Why zero dependencies" below.
+- `git clone` and done, ~3 seconds
+- No build step, no binaries, no Bun
+- Claude-in-Chrome MCP for `/qa` (authenticated pages, observable, already installed)
+- Nothing to fail
+
+**Tier 2 — Optional browser binary for design skills**
+
+Design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`) render HTML variants and take screenshots. For those, there is a compiled Playwright CLI at `browse/dist/browse`.
+
+- Run `./setup` once (~2 minutes on first install)
+- Requires Bun + Playwright Chromium (~150MB, one-time download)
+- Falls back to Claude-in-Chrome MCP if binary not present
+- Hard fails with clear instructions if neither is available
+
+This split preserves the zero-setup promise for core skills while unlocking full design capability for users who opt in.
 
 ---
 
-## Why zero dependencies
+## Why Playwright for design skills
 
-gstack requires Bun, a build step, compiled binaries, and Playwright.
-This unlocks real capabilities — a persistent browser daemon, sub-100ms
-command latency, native cookie decryption. Those are genuine advantages.
+Design skills generate 4–6 HTML variants per invocation and screenshot each. Claude-in-Chrome MCP works but costs tokens for every browser operation — batch rendering at that volume becomes expensive fast.
 
-nstack makes a different bet: the constraint of zero dependencies is more
-valuable than the capabilities those dependencies unlock.
+A compiled Playwright CLI renders screenshots at ~100ms each with no token cost after install. For design skills, speed and cost are what matter: no auth needed, headless is fine, and batch rendering is the whole job.
 
-**The install equation:**
-- gstack: `git clone + cd + ./setup` (installs Bun if missing, compiles binaries, ~2 min)
-- nstack: `git clone` (done, ~3 seconds)
-
-**The failure equation:**
-- gstack: Bun version mismatch, binary compilation failure, Playwright install, PATH issues
-- nstack: Nothing to fail
-
-For security tooling especially, a tool that silently fails to install is worse
-than a simpler tool that always works. `/cso` running at 80% of gstack's depth
-on every machine beats a theoretically deeper tool that half your machines
-can't run.
+The binary uses a persistent server daemon pattern — `browse/src/cli.ts` is a thin HTTP client that starts `browse/src/server.ts` as a background process on first use and communicates via HTTP POST. Subsequent commands reuse the running daemon, giving sub-100ms round-trips.
 
 ---
 
 ## Why Claude-in-Chrome MCP for `/qa`
 
-gstack's `/browse` uses a Playwright-based browser daemon. It's faster (~100ms/command)
-and more automatable. nstack uses Claude-in-Chrome MCP instead. Here's why:
+nstack's design skills use the Playwright binary for batch HTML rendering. `/qa` uses Claude-in-Chrome MCP instead. Here's why:
 
 **You already have it.** Claude-in-Chrome MCP is installed as part of the standard
 Claude Code setup. Zero additional install.
@@ -58,8 +58,7 @@ to reach authenticated pages. Claude-in-Chrome is already there.
 happen in your actual Chrome window. Playwright headless is invisible.
 
 **The tradeoff:** Claude-in-Chrome is slower and less suited for fully automated
-CI/CD test loops. If you need that, gstack's `/browse` is the better tool.
-nstack's `/qa` is designed for interactive debugging sessions, not unattended pipelines.
+CI/CD test loops. The Playwright binary (see "Why Playwright for design skills") is the better tool for unattended batch rendering. nstack's `/qa` is designed for interactive debugging sessions, not unattended pipelines.
 
 ---
 
@@ -94,9 +93,6 @@ When you type `/cso`, there is exactly one thing that can happen.
 ---
 
 ## Why `/cso` covers LLM security as a first-class concern
-
-gstack's security audit has a Phase 7 for LLM security. It covers the basics:
-prompt injection vectors, unsanitized output rendering, tool call validation.
 
 nstack makes LLM security the primary lens, not an afterthought. The attack
 surface for AI-native projects is fundamentally different:
@@ -139,7 +135,6 @@ See the [agentskills.io specification](https://agentskills.io/specification) for
 
 ## What nstack intentionally doesn't do
 
-- **No browser daemon.** That's gstack's territory and they do it well.
 - **No CI/CD integration.** Skills are for interactive sessions, not pipelines.
 - **No team workflow.** No PR approval chains, no multi-person retros.
 - **No generated skill files.** Every SKILL.md is human-written, human-readable.
