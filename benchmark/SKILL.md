@@ -7,6 +7,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
+  - Edit
   - AskUserQuestion
 ---
 
@@ -57,7 +58,17 @@ mkdir -p .nstack/benchmarks/baselines
 
 ### Phase 2: Page Discovery
 
-Same as /canary — auto-discover from navigation or use `--pages`.
+Auto-discover pages from navigation or use `--pages` to specify them explicitly.
+
+If no `--pages` provided:
+```bash
+# Binary mode
+$B goto <base-url>
+$B links
+# MCP mode: use mcp__claude-in-chrome__navigate then mcp__claude-in-chrome__get_page_text to extract links
+```
+
+Extract all navigation links and unique page paths. Deduplicate and normalize to absolute URLs. Limit to the top 10 most important pages (homepage, key user flows) unless `--pages` specifies more.
 
 If `--diff` mode:
 ```bash
