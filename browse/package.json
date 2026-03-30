@@ -1,0 +1,11 @@
+{
+  "name": "nstack-browse",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "bun build --compile src/cli.ts --outfile dist/browse"
+  },
+  "dependencies": {
+    "playwright": "^1.58.2",
+    "diff": "^7.0.0"
+  }
+}
