@@ -1,6 +1,5 @@
 .DS_Store
 .nstack/
 *.local
-.nstack/
 browse/dist/
 browse/node_modules/

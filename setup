@@ -15,7 +15,7 @@ fi
 echo "[nstack] Building browser binary..."
 cd "$NSTACK_DIR/browse"
 bun install
-bun build --compile src/cli.ts --outfile dist/browse
+bun run build
 
 # 3. Install Playwright Chromium
 echo "[nstack] Installing Playwright Chromium..."
