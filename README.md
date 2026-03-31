@@ -1,6 +1,6 @@
 # nstack
 
-> Security auditing, QA, bug triage, premise challenges, release notes, retrospectives, and safety guardrails for AI-native projects.
+> 27 skills for security auditing, QA, bug triage, design, premise challenges, release notes, retrospectives, and safety guardrails for AI-native projects.
 > Zero dependencies. Superpowers-compatible.
 
 Most security tools were built before LLMs existed. They find SQL injection.
@@ -513,7 +513,7 @@ nstack makes a different set of tradeoffs:
 | LLM security | First-class (built for AI-native) | Phase 7 of 14 |
 | superpowers | Designed to complement | Separate system |
 | Browser automation | Claude-in-Chrome for `/qa`; Playwright CLI for design (binary-only, no MCP fallback) | Playwright daemon (faster, more capable) |
-| Scope | 26 skills (17 core + 9 new: monitoring, QA, design) | 28 skills, full sprint workflow |
+| Scope | 27 skills (18 core + 9 design/monitoring) | 28 skills, full sprint workflow |
 
 **Use nstack if:** You want security + QA + retro with zero setup, and you're building AI-native projects.
 
