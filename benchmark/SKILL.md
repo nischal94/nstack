@@ -138,8 +138,9 @@ Save metrics to baseline file:
 ```json
 {
   "url": "<url>",
+  "date": "$(date +%Y-%m-%d)",
   "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-  "branch": "<branch>",
+  "branch": "$(git branch --show-current)",
   "pages": {
     "/": {
       "ttfb_ms": 120,
@@ -155,7 +156,8 @@ Save metrics to baseline file:
       "largest_resources": [
         {"name": "main.js", "size": 320000, "duration": 180},
         {"name": "vendor.js", "size": 130000, "duration": 90}
-      ]
+      ],
+      "grade": "—"
     }
   }
 }
@@ -250,7 +252,11 @@ Sort results by filename (YYYY-MM-DD prefix → chronological order)
 Use Read on each file to load metrics
 ```
 
-Extract `date`, `fcp_ms`, `lcp_ms`, `js_bundle_bytes`, `total_requests` from each file's per-page data. Then show trends:
+For each file, extract:
+- `date` — from top-level `date` field (or parse from filename prefix `YYYY-MM-DD` as fallback)
+- Per-page metrics from `pages["/"]` (or the first key in `pages` if `/` isn't present): `fcp_ms`, `lcp_ms`, `js_bundle_bytes`, `total_requests`, `grade`
+
+Then show trends:
 
 ```
 PERFORMANCE TRENDS (last 5 benchmarks)
