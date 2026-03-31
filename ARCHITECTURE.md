@@ -26,8 +26,9 @@ Design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consulta
 
 - Run `./setup` once (~2 minutes on first install)
 - Requires Bun + Playwright Chromium (~150MB, one-time download)
-- Falls back to Claude-in-Chrome MCP if binary not present
-- Hard fails with clear instructions if neither is available
+- `/design` and `/design-review` hard-stop with an install prompt if the binary is missing
+- `/design-consultation`, `/design-shotgun`, `/plan-design-review` soft-skip screenshots and proceed without them
+- No MCP fallback — MCP screenshot costs (base64 image data per call) make it unsuitable for design workflows that take 4–20 screenshots per run
 
 This split preserves the zero-setup promise for core skills while unlocking full design capability for users who opt in.
 
@@ -43,22 +44,21 @@ The binary uses a persistent server daemon pattern — `browse/src/cli.ts` is a 
 
 ---
 
-## Why Claude-in-Chrome MCP for `/qa`
+## Why Claude-in-Chrome MCP for `/qa` (and not design skills)
 
-nstack's design skills use the Playwright binary for batch HTML rendering. `/qa` uses Claude-in-Chrome MCP instead. Here's why:
+nstack uses two different browser strategies for two different problems.
 
-**You already have it.** Claude-in-Chrome MCP is installed as part of the standard
-Claude Code setup. Zero additional install.
+**`/qa` uses Claude-in-Chrome MCP** because:
+- You're already logged into staging, your admin panel, your authenticated test pages — Claude-in-Chrome is already there
+- It's observable — you can watch Claude navigate your real Chrome window
+- `/qa` is an interactive debugging session, not a batch rendering job
 
-**It uses your real browser.** You're already logged into your staging environment,
-your admin panel, your authenticated test pages. Playwright needs cookie import setup
-to reach authenticated pages. Claude-in-Chrome is already there.
+**Design skills use the Playwright binary exclusively** because:
+- Design workflows take 4–20 screenshots per run; MCP returns base64 image data inline — that's hundreds of KB of tokens per screenshot
+- Headless is fine for rendering static HTML variants — no auth, no real-browser state needed
+- The binary renders at ~100ms per screenshot with zero token cost after install
 
-**It's observable.** When Claude-in-Chrome navigates and clicks, you can watch it
-happen in your actual Chrome window. Playwright headless is invisible.
-
-**The tradeoff:** Claude-in-Chrome is slower and less suited for fully automated
-CI/CD test loops. The Playwright binary (see "Why Playwright for design skills") is the better tool for unattended batch rendering. nstack's `/qa` is designed for interactive debugging sessions, not unattended pipelines.
+MCP was removed from all design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`) for this reason. The token cost was too high to justify as a fallback path.
 
 ---
 

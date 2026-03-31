@@ -382,7 +382,7 @@ Design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consulta
 cd ~/.claude/skills/nstack && ./setup
 ```
 
-Requires Bun. Downloads Playwright Chromium (~150MB, one-time). Falls back to Claude-in-Chrome MCP if not installed.
+Requires Bun. Downloads Playwright Chromium (~150MB, one-time). Design skills hard-stop with an install prompt if the binary is missing — `/design-consultation`, `/design-shotgun`, and `/plan-design-review` soft-skip screenshots instead.
 
 ## Skills
 
@@ -512,7 +512,7 @@ nstack makes a different set of tradeoffs:
 | Dependencies | Zero for core skills; Bun + Playwright for design | Bun + Playwright + compiled binaries |
 | LLM security | First-class (built for AI-native) | Phase 7 of 14 |
 | superpowers | Designed to complement | Separate system |
-| Browser automation | Claude-in-Chrome for QA; Playwright CLI for design | Playwright daemon (faster, more capable) |
+| Browser automation | Claude-in-Chrome for `/qa`; Playwright CLI for design (binary-only, no MCP fallback) | Playwright daemon (faster, more capable) |
 | Scope | 26 skills (17 core + 9 new: monitoring, QA, design) | 28 skills, full sprint workflow |
 
 **Use nstack if:** You want security + QA + retro with zero setup, and you're building AI-native projects.
