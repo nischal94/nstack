@@ -539,26 +539,26 @@ Requires Bun. Downloads Playwright Chromium (~150MB, one-time). Design skills ha
 
 ## Why not just use gstack?
 
-[gstack](https://github.com/garrytan/gstack) is excellent. 28 skills, a full sprint workflow,
-a real browser daemon with Playwright. If you want a complete AI engineering team simulator,
-use gstack.
+[gstack](https://github.com/garrytan/gstack) is excellent. 31 skills, a compiled browser daemon, team-oriented workflow, multi-agent support (Codex, Gemini CLI, Factory Droid). If you want the full AI engineering team simulator, use gstack.
 
 nstack makes a different set of tradeoffs:
 
 | | nstack | gstack |
 |---|---|---|
-| Install | `git clone` (3 sec) + optional `./setup` for design | `git clone + ./setup` (2 min, requires Bun) |
-| Dependencies | Zero for core skills; Bun + Playwright for design | Bun + Playwright + compiled binaries |
-| LLM security | First-class (built for AI-native) | Phase 7 of 14 |
+| Install | `git clone` (core works instantly) | `git clone + ./setup` (requires Bun, ~2 min) |
+| Core skills | Zero dependencies | Bun + Playwright required |
+| Design skills | Optional `./setup` (same Bun + Playwright) | Required for all skills |
+| LLM/AI security | First-class — prompt injection, cost attacks, RAG poisoning, tool call validation | Covered but not the primary lens |
+| Skill count | 27 | 31 |
 | superpowers | Designed to complement | Separate system |
-| Browser automation | Claude-in-Chrome for `/qa`; Playwright CLI for design (binary-only, no MCP fallback) | Playwright daemon (faster, more capable) |
-| Scope | 27 skills (18 core + 9 design/monitoring) | 28 skills, full sprint workflow |
+| Multi-agent | Claude Code only | Claude Code, Codex, Gemini CLI, Factory Droid |
+| Team features | Solo-builder defaults | Team-aware (teammate install, shared skills) |
 
-**Use nstack if:** You want security + QA + retro with zero setup, and you're building AI-native projects.
+**Use nstack if:** You're building AI-native projects and want LLM security as a first-class concern. Or you want zero-setup core skills that work the moment you clone.
 
-**Use gstack if:** You want the full sprint workflow and don't mind the install.
+**Use gstack if:** You want the full sprint workflow, multi-agent support, or team-oriented features.
 
-**Use both if:** You want gstack's browser automation and nstack's AI-native security coverage. They don't conflict.
+**Use both if:** They don't conflict — no overlapping skill names. nstack's AI-native security coverage complements gstack's broader workflow tooling.
 
 ## Compatibility
 
