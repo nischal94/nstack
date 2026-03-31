@@ -406,6 +406,15 @@ Requires Bun. Downloads Playwright Chromium (~150MB, one-time). Falls back to Cl
 | `/context` | Claude Code configuration audit. Finds stale file references, contradictory rules, missing commands, and bloated instructions across CLAUDE.md, rules files, and memory. |
 | `/migrate` | Database migration safety. Reviews migrations for data loss risk, missing rollback, and lock contention on large tables. Runs with dry-run, backup check, and post-migration verification. |
 | `/council` | Multi-agent adversarial deliberation for complex decisions. 11 personas (Socrates, Feynman, Torvalds, etc.) run a 3-round protocol: independent analysis → cross-examination → synthesis. Triads by default. Use for architecture choices, strategic pivots, build-vs-buy — decisions where a single perspective isn't enough. |
+| `/office-hours` | YC-style product validation. Challenges your assumptions with 5 structured lenses: status quo, assumption killer, minimum wedge, existing leverage, regret test. Outputs CONFIRMED / NARROWED / CHALLENGED / DEFER verdict. |
+| `/qa-only` | Report-only browser QA. Tests web apps like a real user, documents issues with screenshots and repro steps, produces a health score. Never fixes anything — use `/qa` for the fix loop. |
+| `/benchmark` | Performance regression detection. Establishes baselines, compares before/after metrics (TTFB, FCP, LCP, bundle size), flags regressions with WARN/REGRESSION thresholds. Supports `--trend` for historical drift. |
+| `/canary` | Post-deploy canary monitoring. Watches the live app after a deploy: console errors, performance regressions, page failures. Takes periodic screenshots and compares against pre-deploy baselines. |
+| `/design` | Generate UI from scratch. Reads the codebase, generates 3 HTML design variants in parallel (minimal/bold/data-dense), screenshots each, picks the best with user input, applies to the actual tech stack. |
+| `/design-consultation` | Interactive design system creation. Researches the competitive space, proposes aesthetic/typography/color/layout/spacing/motion, generates visual previews, writes `DESIGN.md` as the project's design source of truth. |
+| `/design-review` | Visual design audit. Screenshots running pages, analyzes typography, color, spacing, accessibility contrast, and UX patterns. Produces a structured critique with severity ratings and evidence. |
+| `/design-shotgun` | Design variant exploration. Generates 4+ design variants in parallel using Agent dispatch, screenshots each, presents a comparison board for selection. Use when you need options fast. |
+| `/plan-design-review` | Pre-implementation design planning. Reviews planned components, generates HTML mockups, screenshots them, and produces an opinionated design plan before a line of code is written. |
 
 ## Usage
 
@@ -504,7 +513,7 @@ nstack makes a different set of tradeoffs:
 | LLM security | First-class (built for AI-native) | Phase 7 of 14 |
 | superpowers | Designed to complement | Separate system |
 | Browser automation | Claude-in-Chrome for QA; Playwright CLI for design | Playwright daemon (faster, more capable) |
-| Scope | 18 focused skills + 5 design skills (optional) | 28 skills, full sprint workflow |
+| Scope | 26 skills (17 core + 9 new: monitoring, QA, design) | 28 skills, full sprint workflow |
 
 **Use nstack if:** You want security + QA + retro with zero setup, and you're building AI-native projects.
 

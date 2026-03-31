@@ -22,6 +22,15 @@ autoplan/SKILL.md          ← /autoplan plan review before execution
 evals/SKILL.md             ← /evals LLM output quality testing
 context/SKILL.md           ← /context Claude Code configuration audit
 migrate/SKILL.md           ← /migrate database migration safety
+office-hours/SKILL.md      ← /office-hours YC-style product validation
+qa-only/SKILL.md           ← /qa-only report-only browser QA
+benchmark/SKILL.md         ← /benchmark performance regression detection
+canary/SKILL.md            ← /canary post-deploy canary monitoring
+design/SKILL.md            ← /design generate UI from scratch
+design-consultation/SKILL.md ← /design-consultation interactive design system creation
+design-review/SKILL.md     ← /design-review designer's eye visual QA
+design-shotgun/SKILL.md    ← /design-shotgun design variant exploration
+plan-design-review/SKILL.md ← /plan-design-review designer's eye plan review
 ETHOS.md                   ← principles injected into skill preambles
 ARCHITECTURE.md            ← why nstack is built this way
 CONTRIBUTING.md            ← how to contribute
