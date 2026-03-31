@@ -3,7 +3,9 @@ name: design-review
 description: Use when asked to "review the design", "design critique", "UX audit",
   or "does this look right". Screenshots running pages, analyzes visual design
   quality, typography, color, spacing, accessibility contrast, and UX patterns.
-  Produces a structured design critique with severity ratings. (nstack)
+  Produces a structured design critique with severity ratings, then applies fixes
+  with atomic commits. Requires a clean working tree — will prompt to commit or
+  stash before starting. Use /qa-only if you want a report without repo changes. (nstack)
 allowed-tools:
   - Bash
   - Read

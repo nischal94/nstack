@@ -9,7 +9,7 @@ For setup and usage, see README.md. For contributing, see CONTRIBUTING.md.
 
 nstack splits into two tiers based on what you need.
 
-**Tier 1 — Zero-dependency core skills** (security, QA, retro, investigate, etc.)
+**Tier 1 — Zero-setup core skills** (security, QA, retro, investigate, etc.)
 
 Every skill is a SKILL.md file that Claude Code discovers from `~/.claude/skills/nstack/`.
 Claude reads the skill, follows the instructions, and uses its built-in tools
@@ -20,12 +20,13 @@ Claude reads the skill, follows the instructions, and uses its built-in tools
 - Claude-in-Chrome MCP for `/qa` (authenticated pages, observable, already installed)
 - Nothing to fail
 
-**Tier 2 — Optional browser binary for design skills**
+**Tier 2 — Bun-powered browser CLI for design skills**
 
-Design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`) render HTML variants and take screenshots. For those, there is a compiled Playwright CLI at `browse/dist/browse`.
+Design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`) render HTML variants and take screenshots. For those, there is a Bun-compiled CLI entry point at `browse/dist/browse` backed by `browse/src/server.ts`.
 
 - Run `./setup` once (~2 minutes on first install)
-- Requires Bun + Playwright Chromium (~150MB, one-time download)
+- Requires Bun at both install time and runtime (the CLI spawns a Bun server process on first use)
+- Requires Playwright Chromium (~150MB, one-time download)
 - `/design` and `/design-review` hard-stop with an install prompt if the binary is missing
 - `/design-consultation`, `/design-shotgun`, `/plan-design-review` soft-skip screenshots and proceed without them
 - No MCP fallback — MCP screenshot costs (base64 image data per call) make it unsuitable for design workflows that take 4–20 screenshots per run
@@ -38,9 +39,9 @@ This split preserves the zero-setup promise for core skills while unlocking full
 
 Design skills generate 4–6 HTML variants per invocation and screenshot each. Claude-in-Chrome MCP works but costs tokens for every browser operation — batch rendering at that volume becomes expensive fast.
 
-A compiled Playwright CLI renders screenshots at ~100ms each with no token cost after install. For design skills, speed and cost are what matter: no auth needed, headless is fine, and batch rendering is the whole job.
+The Bun-compiled CLI renders screenshots at ~100ms each with no token cost after install. For design skills, speed and cost are what matter: no auth needed, headless is fine, and batch rendering is the whole job.
 
-The binary uses a persistent server daemon pattern — `browse/src/cli.ts` is a thin HTTP client that starts `browse/src/server.ts` as a background process on first use and communicates via HTTP POST. Subsequent commands reuse the running daemon, giving sub-100ms round-trips.
+The CLI uses a persistent server daemon pattern — `browse/src/cli.ts` is a thin HTTP client that starts `browse/src/server.ts` as a background Bun process on first use and communicates via HTTP POST. Subsequent commands reuse the running daemon, giving sub-100ms round-trips. Because the server is a separate Bun process, Bun must remain on PATH after install — it is a runtime dependency, not just a build tool.
 
 ---
 

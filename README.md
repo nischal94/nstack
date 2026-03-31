@@ -1,7 +1,7 @@
 # nstack
 
 > 27 skills for security auditing, QA, bug triage, design, premise challenges, release notes, retrospectives, and safety guardrails for AI-native projects.
-> Zero dependencies. Superpowers-compatible.
+> Zero mandatory setup for core skills. Superpowers-compatible.
 
 Most security tools were built before LLMs existed. They find SQL injection.
 They don't find prompt injection. They find hardcoded secrets. They don't find
@@ -32,7 +32,7 @@ WHILE YOU BUILD
 
 AFTER YOU BUILD
   No UI yet?                → /design              (generate UI from scratch)
-  UI exists, needs review?  → /design-review       (visual audit with severity ratings)
+  UI exists, needs review?  → /design-review       (visual audit + fix loop; mutates repo)
   Changed a prompt?         → /evals               (did quality improve or regress?)
   Ready to review?          → /review              (inline staff engineer review of your diff)
   Ready to ship?            → /ship                (tests → review → version → changelog → PR)
@@ -62,13 +62,13 @@ Core skills work immediately — no build step, no binaries.
 
 ### Optional: design skills
 
-Design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`) use a compiled Playwright CLI for fast, token-free screenshot rendering. To enable:
+Design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`) use a Bun-powered Playwright CLI for fast, token-free screenshot rendering. To enable:
 
 ```bash
 cd ~/.claude/skills/nstack && ./setup
 ```
 
-Requires Bun. Downloads Playwright Chromium (~150MB, one-time). Design skills hard-stop with an install prompt if the binary is missing — `/design-consultation`, `/design-shotgun`, and `/plan-design-review` soft-skip screenshots instead.
+Requires Bun at both install time and runtime (the CLI spawns a Bun server process). Downloads Playwright Chromium (~150MB, one-time). Design skills hard-stop with an install prompt if the binary is missing — `/design-consultation`, `/design-shotgun`, and `/plan-design-review` soft-skip screenshots instead.
 
 ## Skills
 

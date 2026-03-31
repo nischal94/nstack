@@ -52,9 +52,9 @@ Show the attack. Step by step. Then show the fix.
 
 ---
 
-## 3. Zero Dependencies by Design
+## 3. Zero Mandatory Setup for Core Skills
 
-Every nstack skill works with just Claude Code installed. No Bun, no build
+Every core nstack skill works with just Claude Code installed. No Bun, no build
 step, no compiled binaries, no package managers. This is not a limitation —
 it is a design decision.
 
@@ -63,8 +63,13 @@ a runtime is a skill pack people stop using when the runtime drifts out of
 sync. Markdown skills that work forever beat sophisticated tools that work
 until they don't.
 
+Design skills are the explicit exception: they require Bun and Playwright for
+fast, token-free screenshot rendering. This is an opt-in capability — one
+`./setup` call, clearly documented, never silently assumed. The principle is
+not "zero dependencies everywhere" but "no mandatory setup for the core workflow."
+
 If a feature cannot be built without a dependency, we document the tradeoff
-explicitly and make the dependency optional — never mandatory.
+explicitly and make the dependency optional — never mandatory for core skills.
 
 ---
 

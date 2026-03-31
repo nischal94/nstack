@@ -71,7 +71,7 @@ Before falling back to git diff heuristics, check for richer test plan sources:
    ```bash
    ls -t docs/*-test-plan-*.md 2>/dev/null | head -1
    ```
-2. **Conversation context:** Check if a prior `/plan-eng-review` or `/plan-ceo-review` produced test plan output in this conversation
+2. **Conversation context:** Check if a prior `/autoplan` or `/plan-design-review` produced test plan output in this conversation
 3. **Use whichever source is richer.** Fall back to git diff analysis only if neither is available.
 
 ---

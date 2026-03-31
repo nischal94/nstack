@@ -1,7 +1,8 @@
 # Contributing to nstack
 
 nstack skills are Markdown files. Contributing means editing Markdown.
-No build step, no compiler, no runtime to configure.
+No build step, no compiler, no runtime to configure — for core skills.
+Design skills use a Bun-powered browser CLI (`browse/`), but you don't need to touch it unless you're working on design skill internals.
 
 ---
 
@@ -28,7 +29,7 @@ No restart, no rebuild, no deploy.
 **Low value:**
 - Adding generic security advice already covered by gstack
 - Adding team-oriented workflow features (nstack is solo-builder-first)
-- Adding dependencies (nstack is zero-dependency by design)
+- Adding dependencies to core skills (core skills have zero mandatory setup)
 - Translating skills to other languages (one excellent example beats many mediocre ones)
 
 ---
@@ -226,8 +227,7 @@ The most important ones for contributors:
 an 8/10 confidence gate. A check that fires on every codebase teaches engineers
 to ignore the output.
 
-**Zero dependencies.** If your contribution requires installing something, it's
-out of scope for nstack. Document the tradeoff and make it optional at most.
+**Zero mandatory setup for core skills.** If your contribution requires installing something for a core skill, it's out of scope. Design skills are the explicit exception — they require Bun and Playwright, opt-in via `./setup`. Don't expand that exception without a strong reason.
 
 **AI-native first.** If the finding doesn't apply specifically to AI-native
 projects, check if gstack already covers it. nstack's value is in the coverage
