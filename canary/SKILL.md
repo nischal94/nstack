@@ -114,8 +114,8 @@ $B snapshot -i
 
 If `BROWSE_MODE="mcp"`:
 - Navigate: `mcp__claude-in-chrome__navigate` to `<url>`
-- Extract links: `mcp__claude-in-chrome__read_page`
-- Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot)
+- Extract links: use `mcp__claude-in-chrome__javascript_tool` with `JSON.stringify(Array.from(document.querySelectorAll('a[href]')).map(a => a.href).filter(h => h.startsWith(location.origin)).slice(0, 20))` to get internal links
+- Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot) → write image data to `.nstack/canary/discovery.png` using the `Write` tool
 
 Extract the top 5 internal navigation links from the output. Always include the homepage. Present the page list via AskUserQuestion:
 
@@ -138,15 +138,17 @@ $B goto <page-url>
 $B snapshot -i -a -o ".nstack/canary/screenshots/pre-<page-name>.png"
 $B console --errors
 $B perf
+$B text
 ```
 
 If `BROWSE_MODE="mcp"`:
 - Navigate: `mcp__claude-in-chrome__navigate` to `<page-url>`
-- Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot) → save to `.nstack/canary/screenshots/pre-<page-name>.png`
+- Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot) → write image data to `.nstack/canary/screenshots/pre-<page-name>.png` using the `Write` tool
 - Console errors: `mcp__claude-in-chrome__read_console_messages`
 - Performance: `mcp__claude-in-chrome__javascript_tool` to measure load time
+- Text: `mcp__claude-in-chrome__get_page_text`
 
-Record the console error count and load time for each page. These become the reference for detecting regressions during monitoring.
+Record the console error count, load time, and text snapshot for each page. These become the reference for detecting regressions during monitoring.
 
 ### Phase 5: Continuous Monitoring Loop
 

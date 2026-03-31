@@ -138,7 +138,7 @@ Save metrics to baseline file:
 ```json
 {
   "url": "<url>",
-  "timestamp": "<ISO>",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "branch": "<branch>",
   "pages": {
     "/": {
@@ -242,7 +242,15 @@ Grade: B (4/6 passing)
 
 ### Phase 8: Trend Analysis (--trend mode)
 
-Load historical baseline files and show trends:
+First, discover and load all historical files:
+
+```
+Use Glob with pattern: .nstack/benchmarks/*.json
+Sort results by filename (YYYY-MM-DD prefix → chronological order)
+Use Read on each file to load metrics
+```
+
+Extract `date`, `fcp_ms`, `lcp_ms`, `js_bundle_bytes`, `total_requests` from each file's per-page data. Then show trends:
 
 ```
 PERFORMANCE TRENDS (last 5 benchmarks)
@@ -264,7 +272,25 @@ Use `date +%Y-%m-%d` for the filename date (e.g. `2026-03-31`). Write to:
 - `.nstack/benchmarks/$(date +%Y-%m-%d)-benchmark.md`
 - `.nstack/benchmarks/$(date +%Y-%m-%d)-benchmark.json`
 
-The `--trend` mode uses `Glob` to discover historical files: pattern `.nstack/benchmarks/*.json` sorted by filename (which sorts chronologically given `YYYY-MM-DD` prefix).
+The JSON report schema (used by `--trend` mode for parsing):
+```json
+{
+  "date": "YYYY-MM-DD",
+  "url": "<url>",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "pages": {
+    "/": {
+      "fcp_ms": 450,
+      "lcp_ms": 800,
+      "js_bundle_bytes": 450000,
+      "total_requests": 42,
+      "grade": "A"
+    }
+  }
+}
+```
+
+The `--trend` mode uses `Glob` with pattern `.nstack/benchmarks/*.json` to discover both benchmark and baseline files (all share the `YYYY-MM-DD` prefix).
 
 ## Important Rules
 
