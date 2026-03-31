@@ -339,9 +339,10 @@ Claude: Auto-detected domain: architecture
 
 ```
 BEFORE YOU BUILD
-  Got an idea?              → /premise         (challenge whether to build it at all)
-  Need multiple views?      → /council         (adversarial deliberation before deciding)
-  Have a written plan?      → /autoplan        (review the plan before executing)
+  Got an idea?              → /premise              (challenge whether to build it at all)
+  Need multiple views?      → /council              (adversarial deliberation before deciding)
+  Big product decision?     → /office-hours         (YC-style validation)
+  Have a written plan?      → /autoplan             (review the plan before executing)
   No design system yet?     → /design-consultation  (create DESIGN.md before touching UI)
   Plan involves UI?         → /plan-design-review   (design review before a line of code)
 
@@ -354,12 +355,15 @@ WHILE YOU BUILD
   Need UI options fast?     → /design-shotgun  (parallel variants, pick the best)
 
 AFTER YOU BUILD
-  No UI yet?                → /design          (generate UI from scratch)
-  UI exists, needs review?  → /design-review   (visual audit with severity ratings)
-  Changed a prompt?         → /evals           (did quality improve or regress?)
-  Ready to review?          → /review          (inline staff engineer review of your diff)
-  Ready to ship?            → /ship            (tests → review → version → changelog → PR)
-  PR open, waiting for CI?  → /land            (merge → deploy → health check)
+  No UI yet?                → /design              (generate UI from scratch)
+  UI exists, needs review?  → /design-review       (visual audit with severity ratings)
+  Changed a prompt?         → /evals               (did quality improve or regress?)
+  Ready to review?          → /review              (inline staff engineer review of your diff)
+  Ready to ship?            → /ship                (tests → review → version → changelog → PR)
+  Cutting a release?        → /document-release    (release notes from git history)
+  PR open, waiting for CI?  → /land                (merge → deploy → health check)
+  Just deployed?            → /canary              (watch the live app after a deploy)
+  Performance change?       → /benchmark           (before/after metrics, flag regressions)
 
 WHEN SOMETHING BREAKS
   Don't know where to start → /investigate     (triage the regression, find the suspect)
@@ -367,13 +371,9 @@ WHEN SOMETHING BREAKS
   App behaving wrong?       → /qa              (browser QA, find bugs, fix and re-verify)
   Just want a QA report?    → /qa-only         (report-only, no fixes)
   Claude config drifting?   → /context         (audit CLAUDE.md, rules, memory for staleness)
-  Performance regressed?    → /benchmark       (before/after metrics, flag regressions)
-  Post-deploy monitoring?   → /canary          (watch the live app after a deploy)
 
 REFLECTION
   End of the week?          → /retro           (what shipped, what drifted, what to fix)
-  Cutting a release?        → /document-release  (release notes from git history)
-  Big decision to make?     → /office-hours    (YC-style product validation)
 ```
 
 ## Install
