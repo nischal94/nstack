@@ -164,7 +164,7 @@ $B perf
 
 If `BROWSE_MODE="mcp"`:
 - Navigate: `mcp__claude-in-chrome__navigate` to `<page-url>`
-- Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot) → save to `.nstack/canary/screenshots/<page-name>-<check-number>.png`
+- Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot) — write image data to `.nstack/canary/screenshots/<page-name>-<check-number>.png` using the `Write` tool
 - Console errors: `mcp__claude-in-chrome__read_console_messages`
 - Performance: `mcp__claude-in-chrome__javascript_tool` to measure load time
 
