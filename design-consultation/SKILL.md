@@ -15,9 +15,6 @@ allowed-tools:
   - Agent
   - AskUserQuestion
   - WebSearch
-  - mcp__claude-in-chrome__navigate
-  - mcp__claude-in-chrome__computer
-  - mcp__claude-in-chrome__read_console_messages
 ---
 
 ## Binary detection — nstack browse CLI
@@ -26,25 +23,14 @@ allowed-tools:
 NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
 if [ -x "$NSTACK_BROWSE" ]; then
   B="$NSTACK_BROWSE"
-  BROWSE_MODE="binary"
 else
+  echo "[nstack] Browser binary not installed. Visual previews will be skipped."
+  echo "  To enable: cd ~/.claude/skills/nstack && ./setup"
   B=""
-  BROWSE_MODE="mcp"
-  echo "[nstack] Browser binary not installed. Using Claude-in-Chrome MCP (slower, more token-intensive)."
-  echo "  For faster rendering: cd ~/.claude/skills/nstack && ./setup"
 fi
 ```
 
-When `BROWSE_MODE="binary"`: use `$B <command>`.
-When `BROWSE_MODE="mcp"`: use `mcp__claude-in-chrome__*` MCP tools.
-
-If binary absent AND MCP unavailable:
-```
-[nstack] No browser available. /design-consultation requires either:
-  1. nstack browser binary: cd ~/.claude/skills/nstack && ./setup
-  2. Claude-in-Chrome MCP running in this session
-The consultation can proceed without screenshots, but visual previews will be skipped.
-```
+If the binary is not installed, the consultation proceeds without screenshots — visual preview steps are skipped.
 
 ---
 
@@ -117,31 +103,21 @@ Use WebSearch to find 5-10 products in their space. Search for:
 
 Re-detect browse mode, then visit the top 3-5 sites in the space and capture visual evidence:
 
-```bash
-NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
-if [ -x "$NSTACK_BROWSE" ]; then
-  BROWSE_MODE="binary"
-else
-  BROWSE_MODE="mcp"
-fi
-```
+If the binary is installed (`$B` is set), visit the top 3-5 sites:
 
-If `BROWSE_MODE="binary"`:
-
-**Before running:** substitute `<actual-site-url>` with the real URL and `<actual-site-name>` with a short slug. Do not run the block with angle-bracket placeholders — they must be replaced first.
+**Before running:** substitute `<actual-site-url>` with the real URL and `<actual-site-name>` with a short slug. Do not run the block with angle-bracket placeholders.
 ```bash
 "$NSTACK_BROWSE" goto "<actual-site-url>"
-"$NSTACK_BROWSE" screenshot "/tmp/design-research-<actual-site-name>.png"
+"$NSTACK_BROWSE" screenshot "$TMPDIR/design-research-<actual-site-name>.png"
 "$NSTACK_BROWSE" snapshot
 ```
-
-If `BROWSE_MODE="mcp"`, use `mcp__claude-in-chrome__navigate` and screenshot tools to visit the top 3-5 sites.
+Show each screenshot with Read immediately after capture.
 
 For each site, analyze: fonts actually used, color palette, layout approach, spacing density, aesthetic direction. The screenshot gives you the feel; the snapshot gives you structural data.
 
 If a site blocks the headless browser or requires login, skip it and note why.
 
-If no browser is available, rely on WebSearch results and your built-in design knowledge — this is fine.
+If the browser binary is not installed, rely on WebSearch results and your built-in design knowledge — this is fine.
 
 **Step 3: Synthesize findings**
 
@@ -310,32 +286,18 @@ Write the preview HTML to `/tmp/design-consultation-preview.html` using the `Wri
 
 **Opening the preview:**
 
-Re-detect browse mode before opening:
-
 ```bash
 NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
 if [ -x "$NSTACK_BROWSE" ]; then
-  BROWSE_MODE="binary"
+  "$NSTACK_BROWSE" goto "file:///tmp/design-consultation-preview.html"
+  "$NSTACK_BROWSE" screenshot "/tmp/design-consultation-preview-screenshot.png"
 else
-  BROWSE_MODE="mcp"
+  open "/tmp/design-consultation-preview.html" 2>/dev/null || \
+    echo "[nstack] Preview written to /tmp/design-consultation-preview.html — open it in your browser."
 fi
 ```
 
-If `BROWSE_MODE="binary"`:
-```bash
-"$NSTACK_BROWSE" goto "file:///tmp/design-consultation-preview.html"
-"$NSTACK_BROWSE" screenshot "/tmp/design-consultation-preview-screenshot.png"
-```
-Read the screenshot file to display it inline.
-
-If `BROWSE_MODE="mcp"`:
-Use `mcp__claude-in-chrome__navigate` with the file URL, then screenshot.
-
-If no browser is available:
-```bash
-open "/tmp/design-consultation-preview.html"
-```
-If `open` fails (headless environment), tell the user: *"I wrote the preview to [path] — open it in your browser to see the fonts and colors rendered."*
+If the binary is installed, show the screenshot with Read immediately after capture.
 
 ### Preview Page Requirements
 

@@ -26,27 +26,16 @@ Generate multiple design variants, screenshot each, let the user pick, then appl
 NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
 if [ -x "$NSTACK_BROWSE" ]; then
   B="$NSTACK_BROWSE"
-  BROWSE_MODE="binary"
 else
-  B=""
-  BROWSE_MODE="mcp"
-  echo "[nstack] Browser binary not installed. Using Claude-in-Chrome MCP (slower, more token-intensive)."
-  echo "  For faster rendering: cd ~/.claude/skills/nstack && ./setup"
+  echo "[nstack] Browser binary not installed. /design requires the nstack browser binary."
+  echo "  Install it: cd ~/.claude/skills/nstack && ./setup"
+  exit 1
 fi
 ```
 
-When `BROWSE_MODE="binary"`: use `$B <command>` for all browser operations.
-When `BROWSE_MODE="mcp"`: use `mcp__claude-in-chrome__navigate` and `mcp__claude-in-chrome__computer` for navigation and screenshots.
+Hard gate: if the binary is not installed, stop here. Show the install command and exit.
 
-If binary absent AND MCP unavailable:
-
-```
-[nstack] No browser available. /design requires either:
-  1. nstack browser binary: cd ~/.claude/skills/nstack && ./setup
-  2. Claude-in-Chrome MCP running in this session
-```
-
-Hard gate: if no browser is available, stop here. Show the HTML file paths and ask the user to open them manually for review.
+If the user says "no browser": skip Phases 4 and 5. Show the HTML file paths and ask the user to open them manually. Ask which variant they prefer, then proceed to Phase 6.
 
 ## Phase 1: Codebase Read
 
@@ -130,19 +119,11 @@ Each agent must confirm the file was written before returning. If a file write f
 
 ## Phase 4: Screenshot Each Variant
 
-Create the output directory first:
-
-```bash
-mkdir -p .nstack/design
-```
-
-Then screenshot each variant.
-
-Binary mode — re-resolve paths in the same Bash block:
 ```bash
 NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
 _TMPDIR="$TMPDIR"
 _PWD="$(pwd)"
+mkdir -p "${_PWD}/.nstack/design"
 "$NSTACK_BROWSE" goto "file://${_TMPDIR}/design-variant-1.html"
 "$NSTACK_BROWSE" screenshot "${_PWD}/.nstack/design/variant-1.png"
 
@@ -153,17 +134,7 @@ _PWD="$(pwd)"
 "$NSTACK_BROWSE" screenshot "${_PWD}/.nstack/design/variant-3.png"
 ```
 
-MCP mode — re-resolve TMPDIR first (the Phase 3 value was inside agent prompts, not surfaced to this session):
-```bash
-echo "$TMPDIR"
-```
-Use the output of that command for all variant paths below.
-- Navigate: `mcp__claude-in-chrome__navigate` to `file://<resolved-TMPDIR>/design-variant-{N}.html`
-- Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot) — the screenshot is shown to Claude in-context. Note: the Write tool cannot persist binary PNG data, so MCP-mode screenshots are in-context only (not saved to disk). The visual analysis proceeds from the in-context image.
-
-After capturing each screenshot, the image is already in-context from the `mcp__claude-in-chrome__computer` action above — do NOT call Read (no PNG was written to disk).
-
-Do this for each variant before asking the user to choose. They need to see all three.
+After each screenshot, show it immediately with the Read tool so the user sees all three before choosing.
 
 ## Phase 5: Selection
 
@@ -186,13 +157,13 @@ Use AskUserQuestion:
 
 If the user picks a single variant, proceed to Phase 6.
 
-If the user requests a blend (D): first re-resolve TMPDIR (do not rely on the Phase 4 value across the AskUserQuestion boundary):
+If the user requests a blend (D): re-resolve TMPDIR (do not rely on the Phase 4 value across the AskUserQuestion boundary):
 ```bash
-echo "$TMPDIR"
+NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
+_TMPDIR="$TMPDIR"
+_PWD="$(pwd)"
 ```
-Produce a 4th HTML file at `<resolved-TMPDIR>/design-variant-4.html` that combines the requested elements. Screenshot it to `.nstack/design/variant-4.png`. Show it. Confirm before proceeding.
-
-Binary mode:
+Produce a 4th HTML file at `<resolved-TMPDIR>/design-variant-4.html` that combines the requested elements. Then:
 ```bash
 NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
 _TMPDIR="$TMPDIR"
@@ -200,10 +171,9 @@ _PWD="$(pwd)"
 "$NSTACK_BROWSE" goto "file://${_TMPDIR}/design-variant-4.html"
 "$NSTACK_BROWSE" screenshot "${_PWD}/.nstack/design/variant-4.png"
 ```
+Show it with Read. Confirm before proceeding.
 
-MCP mode: `mcp__claude-in-chrome__navigate` to `file://<resolved-TMPDIR>/design-variant-4.html`, then `mcp__claude-in-chrome__computer` (action: screenshot) — write the image data to `.nstack/design/variant-4.png` using the `Write` tool.
-
-If the user wants to inspect a variant more closely (binary mode):
+If the user wants to inspect a variant more closely:
 ```bash
 NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
 _TMPDIR="$TMPDIR"
@@ -236,36 +206,27 @@ Show a summary of what changed:
 
 Open the live result in the browser.
 
-If a dev server is running:
 ```bash
 curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 2>/dev/null || \
 curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 2>/dev/null || \
 echo "NO_DEV_SERVER"
 ```
 
-Binary mode — if dev server running:
+If dev server running:
 ```bash
 NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
 "$NSTACK_BROWSE" goto "http://localhost:3000"
 "$NSTACK_BROWSE" screenshot .nstack/design/result.png
 ```
 
-Binary mode — if no dev server, open the file written in Phase 6 (use the actual path, not `index.html` — the entry point depends on the stack):
+If no dev server, open the file written in Phase 6:
 ```bash
 NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
 _PWD="$(pwd)"
 "$NSTACK_BROWSE" goto "file://${_PWD}/<phase-6-output-file>"
 "$NSTACK_BROWSE" screenshot "${_PWD}/.nstack/design/result.png"
 ```
-Replace `<phase-6-output-file>` with the actual file written in Phase 6 (e.g. `index.html`, `app/page.tsx` served path, etc.). If no dev server and the stack isn't plain HTML, AskUserQuestion for the correct URL or file path.
-
-MCP mode — if dev server running: `mcp__claude-in-chrome__navigate` to `http://localhost:3000` (or 8000), then `mcp__claude-in-chrome__computer` (action: screenshot) — write the image data to `.nstack/design/result.png` using the `Write` tool.
-
-MCP mode — if no dev server:
-```bash
-echo "$(pwd)"
-```
-Use the Phase 6 output file path (not `index.html` unless that was actually written) with the resolved pwd to construct the file URL. Navigate with `mcp__claude-in-chrome__navigate`, then `mcp__claude-in-chrome__computer` (action: screenshot) — write the image data to `.nstack/design/result.png` using the `Write` tool.
+Replace `<phase-6-output-file>` with the actual file written in Phase 6. If no dev server and the stack isn't plain HTML, AskUserQuestion for the correct URL or file path.
 
 Show the screenshot to the user with the Read tool.
 

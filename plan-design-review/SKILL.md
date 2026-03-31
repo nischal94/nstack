@@ -22,25 +22,14 @@ allowed-tools:
 NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
 if [ -x "$NSTACK_BROWSE" ]; then
   B="$NSTACK_BROWSE"
-  BROWSE_MODE="binary"
 else
   B=""
-  BROWSE_MODE="mcp"
-  echo "[nstack] Browser binary not installed. Using Claude-in-Chrome MCP (slower, more token-intensive)."
-  echo "  For faster rendering: cd ~/.claude/skills/nstack && ./setup"
+  echo "[nstack] Browser binary not installed. HTML mockups will be generated but not screenshotted."
+  echo "  To enable screenshots: cd ~/.claude/skills/nstack && ./setup"
 fi
 ```
 
-When `BROWSE_MODE="binary"`: use `$B <command>`.
-When `BROWSE_MODE="mcp"`: use `mcp__claude-in-chrome__*` MCP tools.
-
-If binary absent AND MCP unavailable:
-```
-[nstack] No browser available. /plan-design-review requires either:
-  1. nstack browser binary: cd ~/.claude/skills/nstack && ./setup
-  2. Claude-in-Chrome MCP running in this session
-HTML mockups will be generated but not screenshotted.
-```
+If the binary is not installed, the skill proceeds — mockups are written as HTML files. Screenshot steps are skipped.
 
 # /plan-design-review: Designer's Eye Plan Review
 
@@ -178,13 +167,16 @@ Use the resolved path (e.g. `/var/folders/xx/.../T/`) in all file paths below. D
 
 1. Write a self-contained HTML file capturing the design. Use inline CSS and no external dependencies. File name: `<resolved-TMPDIR>/plan-design-review-<screen-name>-<variant>.html` — use the Write tool.
 
-2. Screenshot it:
-   - **Binary mode:** Use the resolved `$NSTACK_BROWSE` binary: `"$NSTACK_BROWSE" goto "file://<resolved-TMPDIR>/plan-design-review-<screen-name>-<variant>.html"` then `"$NSTACK_BROWSE" screenshot <resolved-TMPDIR>/plan-design-review-<screen-name>-<variant>.png`
-   - **MCP mode:** `mcp__claude-in-chrome__navigate` to `file://<resolved-TMPDIR>/plan-design-review-<screen-name>-<variant>.html`, then `mcp__claude-in-chrome__computer` (action: screenshot) — the screenshot is shown to Claude in-context. Note: the Write tool cannot persist binary PNG data, so MCP-mode screenshots are in-context only (not saved to disk). The visual analysis proceeds from the in-context image.
+2. Screenshot it (if binary is installed):
+   ```bash
+   NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
+   _TMPDIR="$(echo "$TMPDIR")"
+   "$NSTACK_BROWSE" goto "file://${_TMPDIR}/plan-design-review-<screen-name>-<variant>.html"
+   "$NSTACK_BROWSE" screenshot "${_TMPDIR}/plan-design-review-<screen-name>-<variant>.png"
+   ```
+   Substitute actual screen-name and variant before running.
 
-3. Show the screenshot inline:
-   - **Binary mode:** Read tool on each PNG file written to disk.
-   - **MCP mode:** the screenshot is already in-context from the `mcp__claude-in-chrome__computer` action above — do NOT call Read (no PNG was written to disk).
+3. Show the screenshot with the Read tool. If the binary is not installed, skip this step.
 
 Generate 3 variants per screen (A, B, C) with meaningfully different directions — different layout, hierarchy, or visual language. Not three shades of the same layout.
 
@@ -356,9 +348,7 @@ FIX TO 10: Rewrite vague UI descriptions with specific alternatives.
 - "Hero section" → what makes this hero feel like THIS product?
 - "Clean, modern UI" → meaningless. Replace with actual design decisions.
 - "Dashboard with widgets" → what makes this NOT every other dashboard?
-If visual mockups were generated in Step 0.5, evaluate them against the AI slop blacklist above:
-- **Binary mode:** Read each mockup PNG using the Read tool (files are on disk).
-- **MCP mode:** The mockup screenshots are already in-context from the `mcp__claude-in-chrome__computer` action in Step 0.5 — do NOT call Read (no PNG was written to disk). Reference the in-context images directly.
+If visual mockups were generated in Step 0.5, evaluate them against the AI slop blacklist above. Read each mockup PNG using the Read tool (files are on disk at the path from Step 0.5).
 Does the mockup fall into generic patterns (3-column grid, centered hero, stock-photo feel)? If so, flag it and offer to regenerate with more specific direction.
 **STOP.** AskUserQuestion once per issue. Do NOT batch. Recommend + WHY.
 

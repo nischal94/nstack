@@ -19,25 +19,14 @@ allowed-tools:
 NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
 if [ -x "$NSTACK_BROWSE" ]; then
   B="$NSTACK_BROWSE"
-  BROWSE_MODE="binary"
 else
   B=""
-  BROWSE_MODE="mcp"
-  echo "[nstack] Browser binary not installed. Using Claude-in-Chrome MCP (slower, more token-intensive)."
-  echo "  For faster rendering: cd ~/.claude/skills/nstack && ./setup"
+  echo "[nstack] Browser binary not installed. HTML variants will be generated but not screenshotted."
+  echo "  To enable screenshots: cd ~/.claude/skills/nstack && ./setup"
 fi
 ```
 
-When `BROWSE_MODE="binary"`: use `$B <command>`.
-When `BROWSE_MODE="mcp"`: use `mcp__claude-in-chrome__*` MCP tools.
-
-If binary absent AND MCP unavailable:
-```
-[nstack] No browser available. /design-shotgun requires either:
-  1. nstack browser binary: cd ~/.claude/skills/nstack && ./setup
-  2. Claude-in-Chrome MCP running in this session
-Without a browser, HTML variants will be generated but not screenshotted.
-```
+If the binary is not installed, the skill proceeds without screenshots — variants are generated as HTML files only.
 
 ## Completion Status Protocol
 
