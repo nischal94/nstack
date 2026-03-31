@@ -457,84 +457,42 @@ Requires Bun. Downloads Playwright Chromium (~150MB, one-time). Design skills ha
 
 ## Usage
 
-```bash
-# Security audit
-/cso                    # Full audit, 8/10 confidence gate
-/cso --llm              # LLM/AI security only
-/cso --api              # API routes only
-/cso --comprehensive    # Lower confidence gate, surfaces more
+Just type the skill. No arguments needed to get started.
 
-# Browser QA
-/qa https://localhost:3000
-/qa                     # Uses current project's dev server
+```
+/cso                                   audit for security vulnerabilities
+/qa https://localhost:3000             browser QA — find bugs, fix, re-verify
+/qa-only https://localhost:3000        QA report only, no fixes
+/benchmark                             performance regression check
+/canary                                monitor the live app after a deploy
 
-# Retrospective
-/retro                  # This week
-/retro --month          # This month
+/premise "add multi-tenant support"    challenge whether to build it
+/office-hours                          YC-style product validation
+/council "should we go GraphQL-only?"  multi-perspective deliberation
+/autoplan                              review the plan before executing
 
-# Bug triage
-/investigate                         # Triage most recent breakage
-/investigate "costs spiked"          # Investigate a specific symptom
-/investigate --since 2026-03-20      # Scope to changes after a date
+/careful                               confirm before destructive commands
+/freeze src/payments/                  lock edits to one directory
+/guard src/payments/                   careful + freeze combined
+/unfreeze                              remove the lock
 
-# Release notes
-/document-release                    # Since last git tag
-/document-release --since v0.3.0     # Since a specific tag
-/document-release --draft            # Write notes, don't tag
+/review                                staff engineer review of your diff
+/migrate                               safety review before applying a migration
+/evals                                 run LLM output quality tests
+/context                               audit your Claude Code config
 
-# Ship
-/ship                                # Full release checklist
-/ship --draft                        # Open draft PR
-/ship --skip-review                  # Skip code review step
-/ship --no-bump                      # Don't bump version
+/ship                                  tests → review → version → changelog → PR
+/land                                  merge → deploy → health check
+/document-release                      release notes from git history
 
-# Safety guardrails
-/careful                             # Warn before destructive commands
-/freeze src/api/                     # Lock edits to one directory
-/guard src/api/                      # careful + freeze combined
-/unfreeze                            # Remove directory lock
+/retro                                 weekly retrospective from git history
+/investigate "costs spiked"            triage a regression
 
-# Plan review
-/autoplan                            # Review plan.md before executing
-/autoplan path/to/plan.md            # Review a specific plan file
-/autoplan --quick                    # Architecture and scope only
-
-# Code review (inline)
-/review                              # Review all changes since main
-/review --staged                     # Review only staged changes
-/review --report-only                # Report findings, no auto-fixes
-
-# Premise challenge
-/premise "add multi-tenant support"  # Challenge a specific idea
-/premise                             # Challenge whatever you just described
-/premise --quick                     # Run only the 3 highest-signal questions
-
-# Merge and deploy
-/land                                # Detect PR, wait for CI, merge, deploy, verify
-/land 123                            # Land a specific PR number
-/land --url https://myapp.com        # Health check against a specific URL
-
-# LLM output quality
-/evals                               # Run existing eval suite
-/evals --create                      # Create eval suite from scratch
-/evals --compare                     # Compare two prompt/model configurations
-
-# Claude Code configuration
-/context                             # Full config audit
-/context --memory                    # Memory files only
-/context --fix                       # Apply safe fixes automatically
-
-# Multi-agent deliberation
-/council "should we migrate to GraphQL?"          # Auto-detect domain, pick triad
-/council --triad architecture "monorepo or poly?" # Use specific triad
-/council --members socrates,feynman,ada "why does our cache keep failing?"
-/council --full "is this acquisition worth pursuing?"  # All 11 members (expensive)
-
-# Database migrations
-/migrate                             # Review and run next pending migration
-/migrate --review                    # Review only, don't run
-/migrate --dry-run                   # Show what would happen without applying
-/migrate --verify                    # Post-migration checks only
+/design-consultation                   create your design system (start here)
+/plan-design-review                    design review before writing UI code
+/design                                generate UI from scratch
+/design-shotgun                        explore multiple design directions fast
+/design-review https://localhost:3000  visual audit of the running app
 ```
 
 ## Why not just use gstack?
