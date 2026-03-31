@@ -7,31 +7,40 @@ For setup and usage, see README.md. For contributing, see CONTRIBUTING.md.
 
 ## Two tiers of capability
 
-nstack splits into two tiers based on what you need.
+nstack has two tiers with different runtime contracts. Understanding the split matters before installing.
 
-**Tier 1 — Zero-setup core skills** (security, QA, retro, investigate, etc.)
+---
 
-Every skill is a SKILL.md file that Claude Code discovers from `~/.claude/skills/nstack/`.
-Claude reads the skill, follows the instructions, and uses its built-in tools
-(Grep, Read, Bash, Agent) to execute the workflow.
+**Tier 1 — Core skills (zero setup)**
 
-- `git clone` and done, ~3 seconds
-- No build step, no binaries, no Bun
-- Claude-in-Chrome MCP for `/qa` (authenticated pages, observable, already installed)
-- Nothing to fail
+22 skills: security, QA, bug triage, retrospectives, release, workflow guardrails, and more.
 
-**Tier 2 — Bun-powered browser CLI for design skills**
+Every core skill is a single `SKILL.md` file. Claude Code discovers it from `~/.claude/skills/nstack/`, reads it, and executes the workflow using its built-in tools (Grep, Read, Bash, Agent).
 
-Design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`) render HTML variants and take screenshots. For those, there is a Bun-compiled CLI entry point at `browse/dist/browse` backed by `browse/src/server.ts`.
+- `git clone` and done — no build step, no binaries, no package manager
+- `/qa` uses Claude-in-Chrome MCP, which is already installed if you use Claude Code
+- Nothing to install, nothing to fail
 
-- Run `./setup` once (~2 minutes on first install)
-- Requires Bun at both install time and runtime (the CLI spawns a Bun server process on first use)
-- Requires Playwright Chromium (~150MB, one-time download)
-- `/design` and `/design-review` hard-stop with an install prompt if the binary is missing
-- `/design-consultation`, `/design-shotgun`, `/plan-design-review` soft-skip screenshots and proceed without them
-- No MCP fallback — MCP screenshot costs (base64 image data per call) make it unsuitable for design workflows that take 4–20 screenshots per run
+This is the "zero mandatory setup" claim. It applies to Tier 1 only.
 
-This split preserves the zero-setup promise for core skills while unlocking full design capability for users who opt in.
+---
+
+**Tier 2 — Design skills (requires Bun + Playwright)**
+
+5 skills: `/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`.
+
+These skills render HTML variants and take screenshots. They use a Bun-powered CLI (`browse/`) — a compiled entry point (`browse/dist/browse`) that spawns `browse/src/server.ts` as a background Bun process on first use.
+
+**Runtime contract:**
+- Bun must be installed and on PATH — it is required at runtime, not just build time
+- Playwright Chromium must be downloaded (~150MB, one-time)
+- Run `./setup` once to satisfy both requirements (~2 minutes)
+
+**Behavior when setup is missing:**
+- `/design` and `/design-review` hard-stop with an install prompt
+- `/design-consultation`, `/design-shotgun`, `/plan-design-review` soft-skip screenshots and proceed
+
+This is an intentional opt-in tier. The runtime requirement is real and documented — not a footnote.
 
 ---
 
