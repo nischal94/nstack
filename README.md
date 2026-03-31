@@ -460,34 +460,39 @@ Requires Bun. Downloads Playwright Chromium (~150MB, one-time). Design skills ha
 Just type the skill. No arguments needed to get started.
 
 ```
-/cso                                   audit for security vulnerabilities
-/qa https://localhost:3000             browser QA — find bugs, fix, re-verify
-/qa-only https://localhost:3000        QA report only, no fixes
-/benchmark                             performance regression check
-/canary                                monitor the live app after a deploy
-
+# Thinking & deciding
 /premise "add multi-tenant support"    challenge whether to build it
 /office-hours                          YC-style product validation
 /council "should we go GraphQL-only?"  multi-perspective deliberation
 /autoplan                              review the plan before executing
 
+# Safety guardrails
 /careful                               confirm before destructive commands
 /freeze src/payments/                  lock edits to one directory
 /guard src/payments/                   careful + freeze combined
 /unfreeze                              remove the lock
 
+# Building
 /review                                staff engineer review of your diff
 /migrate                               safety review before applying a migration
 /evals                                 run LLM output quality tests
 /context                               audit your Claude Code config
 
+# Shipping
 /ship                                  tests → review → version → changelog → PR
 /land                                  merge → deploy → health check
 /document-release                      release notes from git history
 
-/retro                                 weekly retrospective from git history
+# Quality & monitoring
+/cso                                   audit for security vulnerabilities
+/qa https://localhost:3000             browser QA — find bugs, fix, re-verify
+/qa-only https://localhost:3000        QA report only, no fixes
+/benchmark                             performance regression check
+/canary                                monitor the live app after a deploy
 /investigate "costs spiked"            triage a regression
+/retro                                 weekly retrospective from git history
 
+# Design  ★ requires ./setup
 /design-consultation                   create your design system (start here)
 /plan-design-review                    design review before writing UI code
 /design                                generate UI from scratch
