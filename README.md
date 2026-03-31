@@ -39,13 +39,13 @@ AFTER YOU BUILD
   Cutting a release?        → /document-release    (release notes from git history)
   PR open, waiting for CI?  → /land                (merge → deploy → health check)
   Just deployed?            → /canary              (watch the live app after a deploy)
-  Performance change?       → /benchmark           (before/after metrics, flag regressions)
 
-WHEN SOMETHING BREAKS
+WHEN SOMETHING FEELS OFF
   Don't know where to start → /investigate     (triage the regression, find the suspect)
   Security concerns?        → /cso             (full AI-native security audit)
   App behaving wrong?       → /qa              (browser QA, find bugs, fix and re-verify)
   Just want a QA report?    → /qa-only         (report-only, no fixes)
+  Something seems slower?   → /benchmark       (before/after metrics, flag regressions)
   Claude config drifting?   → /context         (audit CLAUDE.md, rules, memory for staleness)
 
 REFLECTION
