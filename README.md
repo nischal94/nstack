@@ -178,7 +178,7 @@ Just type the skill. No arguments needed to get started.
 
 ## Why not just use gstack?
 
-[gstack](https://github.com/garrytan/gstack) is excellent. 31 skills, a compiled browser daemon, team-oriented workflow, multi-agent support (Codex, Gemini CLI, Factory Droid). If you want the full AI engineering team simulator, use gstack.
+[gstack](https://github.com/garrytan/gstack) is excellent. 31 skills, a Bun-powered browser daemon, team-oriented workflow, multi-agent support (Codex, Gemini CLI, Factory Droid). If you want a broad AI engineering workflow covering the full team, use gstack.
 
 nstack makes a different set of tradeoffs:
 
@@ -189,11 +189,11 @@ nstack makes a different set of tradeoffs:
 | Design skills | Optional `./setup` (same Bun + Playwright) | Required for all skills |
 | LLM/AI security | First-class — prompt injection, cost attacks, RAG poisoning, tool call validation | Covered but not the primary lens |
 | Skill count | 27 | 31 |
-| superpowers | Designed to complement | Separate system |
-| Multi-agent | Claude Code only | Claude Code, Codex, Gemini CLI, Factory Droid |
+| superpowers | Designed to complement | Independent workflow system |
+| Multi-agent | Designed for Claude Code workflows | Claude Code, Codex, Gemini CLI, Factory Droid |
 | Team features | Solo-builder defaults | Team-aware (teammate install, shared skills) |
 
-**Use nstack if:** You're building AI-native projects and want LLM security as a first-class concern. Or you want zero-setup core skills that work the moment you clone.
+**Use nstack if:** You're building AI-native projects and want LLM security as a first-class concern. Or you want core Markdown skills with zero mandatory setup.
 
 **Use gstack if:** You want the full sprint workflow, multi-agent support, or team-oriented features.
 
@@ -207,7 +207,7 @@ at natural boundaries — debugging a finding, verifying a fix, reviewing remedi
 
 ## Design principles
 
-- **Zero mandatory dependencies** — clone and core skills work; design skills opt in to Playwright
+- **Zero mandatory setup** — clone and core Markdown skills work immediately; design skills opt in to Bun + Playwright via `./setup`
 - **AI-native first** — LLM security is not an afterthought
 - **Zero noise** — concrete findings only: exploit paths in security, severity ratings in design, confidence scores in triage. No vague observations.
 - **Superpowers-compatible** — complements, never conflicts
