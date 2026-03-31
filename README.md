@@ -348,6 +348,7 @@ BEFORE YOU BUILD
 WHILE YOU BUILD
   Working on risky code?    → /careful         (confirm before destructive commands)
   Focused refactor?         → /freeze          (lock edits to one directory)
+  Done with the lock?       → /unfreeze        (remove the directory lock)
   Both at once?             → /guard           (careful + freeze combined)
   Running a DB migration?   → /migrate         (safety review before applying)
   Need UI options fast?     → /design-shotgun  (parallel variants, pick the best)
