@@ -94,7 +94,8 @@ Save the baseline manifest to `.nstack/canary/baseline.json`:
     "/": {
       "screenshot": "baselines/home.png",
       "console_errors": 0,
-      "load_time_ms": 450
+      "load_time_ms": 450,
+      "text_snapshot": "<first 500 chars of page text>"
     }
   }
 }
@@ -170,6 +171,7 @@ If `BROWSE_MODE="mcp"`:
 - Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot) — write image data to `.nstack/canary/screenshots/<page-name>-<check-number>.png` using the `Write` tool
 - Console errors: `mcp__claude-in-chrome__read_console_messages`
 - Performance: `mcp__claude-in-chrome__javascript_tool` to measure load time
+- Text: `mcp__claude-in-chrome__get_page_text`
 
 After each check, compare results against the baseline (or pre-deploy snapshot):
 

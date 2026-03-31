@@ -82,8 +82,9 @@ if [ -x "$D" ]; then
 else
   echo "DESIGN_NOT_AVAILABLE"
 fi
-if [ -x "$B" ]; then
-  echo "BROWSE_READY: $B"
+NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
+if [ -x "$NSTACK_BROWSE" ]; then
+  echo "BROWSE_READY: $NSTACK_BROWSE"
 else
   echo "BROWSE_NOT_AVAILABLE (will use 'open' to view comparison boards)"
 fi
@@ -106,18 +107,16 @@ Commands:
 - `$D iterate --session /path/session.json --feedback "..." --output /path.png` — iterate
 
 **CRITICAL PATH RULE:** All design artifacts (mockups, comparison boards, approved.json)
-MUST be saved to `~/.nstack/projects/$SLUG/designs/`, NEVER to `.context/`,
-`docs/designs/`, `/tmp/`, or any project-local directory. Design artifacts are USER
-data, not project files. They persist across branches, conversations, and workspaces.
+MUST be saved to `.nstack/design-shotgun/`. Use `$TMPDIR` only as a staging area before
+copying to the final location.
 
 ## Step 0: Session Detection
 
 Check for prior design exploration sessions for this project:
 
 ```bash
-_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 setopt +o nomatch 2>/dev/null || true
-_PREV=$(find ~/.nstack/projects/$_SLUG/designs/ -name "approved.json" -maxdepth 2 2>/dev/null | sort -r | head -5)
+_PREV=$(find .nstack/design-shotgun/ -name "approved.json" -maxdepth 3 2>/dev/null | sort -r | head -5)
 [ -n "$_PREV" ] && echo "PREVIOUS_SESSIONS_FOUND" || echo "NO_PREVIOUS_SESSIONS"
 echo "$_PREV"
 ```
@@ -194,9 +193,8 @@ Two rounds max of context gathering, then proceed with what you have and note as
 Read prior approved designs to bias generation toward the user's demonstrated taste:
 
 ```bash
-_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 setopt +o nomatch 2>/dev/null || true
-_TASTE=$(find ~/.nstack/projects/$_SLUG/designs/ -name "approved.json" -maxdepth 2 2>/dev/null | sort -r | head -10)
+_TASTE=$(find .nstack/design-shotgun/ -name "approved.json" -maxdepth 3 2>/dev/null | sort -r | head -10)
 ```
 
 If prior sessions exist, read each `approved.json` and extract patterns from the
@@ -212,14 +210,15 @@ Limit to last 10 sessions. Try/catch JSON parse on each (skip corrupted files).
 
 Set up the output directory:
 
+**Before running the command below:** replace `<screen-name>` with the actual descriptive kebab-case name from your context gathering (e.g. `onboarding`, `dashboard`, `pricing`). Do not run this block with the angle-bracket placeholder intact.
+
 ```bash
-_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
-_DESIGN_DIR=~/.nstack/projects/$_SLUG/designs/<screen-name>-$(date +%Y%m%d)
+_DESIGN_DIR=$(pwd)/.nstack/design-shotgun/<screen-name>-$(date +%Y%m%d)
 mkdir -p "$_DESIGN_DIR"
+echo "$_DESIGN_DIR" > "$TMPDIR/design-shotgun-dir"
 echo "DESIGN_DIR: $_DESIGN_DIR"
 ```
-
-Replace `<screen-name>` with a descriptive kebab-case name from the context gathering.
+`_DESIGN_DIR` is persisted to `$TMPDIR/design-shotgun-dir`. Each subsequent Bash block that needs it must re-read: `_DESIGN_DIR="$(cat "$TMPDIR/design-shotgun-dir")"` — shell variables do not persist across Bash calls.
 
 ### Step 3a: Concept Generation
 
@@ -272,6 +271,13 @@ independent and handles its own generation, quality check, verification, and ret
 do NOT inherit. Substitute the resolved absolute path (from the `DESIGN_READY: /path/to/design`
 output in DESIGN SETUP) into each agent prompt.
 
+**Before dispatching agents:** Resolve shell variables to literal values — agents don't inherit the parent shell's environment:
+```bash
+echo "$TMPDIR"
+echo "$_DESIGN_DIR"
+```
+Substitute both results into each agent prompt. Do NOT pass `$TMPDIR` or `$_DESIGN_DIR` as shell variables.
+
 **Agent prompt template** (one per variant, substitute all `{...}` values):
 
 ```
@@ -279,15 +285,15 @@ Generate a design variant and save it.
 
 Design binary: {absolute path to $D binary}
 Brief: {the full variant-specific brief for this direction}
-Output: $TMPDIR/variant-{letter}.png
+Output: <resolved-TMPDIR>/variant-{letter}.png
 Final location: {_DESIGN_DIR absolute path}/variant-{letter}.png
 
 Steps:
-1. Run: {$D path} generate --brief "{brief}" --output $TMPDIR/variant-{letter}.png
+1. Run: {$D path} generate --brief "{brief}" --output <resolved-TMPDIR>/variant-{letter}.png
 2. If the command fails with a rate limit error (429 or "rate limit"), wait 5 seconds
    and retry. Up to 3 retries.
 3. If the output file is missing or empty after the command succeeds, retry once.
-4. Copy: cp $TMPDIR/variant-{letter}.png {_DESIGN_DIR}/variant-{letter}.png
+4. Copy: cp <resolved-TMPDIR>/variant-{letter}.png {_DESIGN_DIR}/variant-{letter}.png
 5. Quality check: {$D path} check --image {_DESIGN_DIR}/variant-{letter}.png --brief "{brief}"
    If quality check fails, retry generation once.
 6. Verify: ls -lh {_DESIGN_DIR}/variant-{letter}.png
@@ -299,11 +305,11 @@ Steps:
 
 For the evolve path, replace step 1 with:
 ```
-{$D path} evolve --screenshot {_DESIGN_DIR}/current.png --brief "{brief}" --output $TMPDIR/variant-{letter}.png
+{$D path} evolve --screenshot {_DESIGN_DIR}/current.png --brief "{brief}" --output <resolved-TMPDIR>/variant-{letter}.png
 ```
 
 **If DESIGN_NOT_AVAILABLE**, each agent instead writes a self-contained HTML file:
-- Output path: `$TMPDIR/design-shotgun-variant-{N}.html`
+- Output path: `<resolved-TMPDIR>/design-shotgun-variant-{N}.html` (use the resolved TMPDIR from the dispatch step above)
 - Final location: `{_DESIGN_DIR}/variant-{letter}.html`
 - The HTML should be fully self-contained (inline CSS, no external dependencies)
 - Include a screenshot step using the browse binary or MCP if available
@@ -326,33 +332,41 @@ After all agents complete:
 **Dynamic image list for comparison board:** When proceeding to Step 4, construct the
 image list from whatever variant files actually exist:
 
+**All of the following (image list, guard, compare, and port capture) must run in a single Bash block** — shell variables die between Bash calls.
+
 ```bash
+# Re-read persisted _DESIGN_DIR (shell vars don't survive across Bash calls)
+_DESIGN_DIR="$(cat "$TMPDIR/design-shotgun-dir")"
+
 setopt +o nomatch 2>/dev/null || true  # zsh compat
 _IMAGES=$(ls "$_DESIGN_DIR"/variant-*.png 2>/dev/null | tr '\n' ',' | sed 's/,$//')
 # Fall back to HTML variants if no PNGs
 [ -z "$_IMAGES" ] && _IMAGES=$(ls "$_DESIGN_DIR"/variant-*.html 2>/dev/null | tr '\n' ',' | sed 's/,$//')
+
+if [ -z "$_IMAGES" ]; then
+  echo "NO_VARIANT_FILES_FOUND: $_DESIGN_DIR"
+  exit 1
+fi
+
+$D compare --images "$_IMAGES" --output "$_DESIGN_DIR/design-board.html" --serve 2>"$_DESIGN_DIR/serve.log" &
+# Wait up to 10 seconds for the port to appear in the log
+for _i in 1 2 3 4 5 6 7 8 9 10; do
+  _PORT=$(grep -oE 'port=[0-9]+' "$_DESIGN_DIR/serve.log" 2>/dev/null | tail -1 | cut -d= -f2)
+  [ -z "$_PORT" ] && _PORT=$(grep -oE 'localhost:[0-9]+' "$_DESIGN_DIR/serve.log" 2>/dev/null | tail -1 | cut -d: -f2)
+  [ -z "$_PORT" ] && _PORT=$(grep -oE ':[0-9]{4,5}' "$_DESIGN_DIR/serve.log" 2>/dev/null | tail -1 | tr -d ':')
+  [ -n "$_PORT" ] && break
+  sleep 1
+done
+[ -n "$_PORT" ] && echo "$_PORT" > "$TMPDIR/design-shotgun-port"
+[ -z "$_PORT" ] && echo "SERVE_PORT_UNKNOWN (reload will use AskUserQuestion fallback)" || echo "SERVE_PORT: $_PORT"
 ```
-
-Use `$_IMAGES` in the `$D compare --images` command.
-
-## Step 4: Comparison Board + Feedback Loop
-
-### Comparison Board
-
-Create the comparison board and serve it over HTTP:
-
-```bash
-$D compare --images "$_IMAGES" --output "$_DESIGN_DIR/design-board.html" --serve
-```
-
-This command generates the board HTML, starts an HTTP server on a random port,
-and opens it in the user's default browser. **Run it in the background** with `&`
-because the agent needs to keep running while the user interacts with the board.
+`_PORT` is persisted to `$TMPDIR/design-shotgun-port`. Re-read it in subsequent blocks with: `_PORT="$(cat "$TMPDIR/design-shotgun-port" 2>/dev/null)"`
 
 If `DESIGN_NOT_AVAILABLE` or `$D compare` fails: write a minimal HTML comparison board
 that iframes or embeds all variant HTML files side-by-side, then open it:
 
 ```bash
+_DESIGN_DIR="$(cat "$TMPDIR/design-shotgun-dir")"
 open file://"$_DESIGN_DIR/design-board.html"
 ```
 
@@ -364,22 +378,27 @@ The server writes feedback to files next to the board HTML. Poll for these:
 
 **Polling loop** (run after launching serve in background):
 
+Poll for feedback files using multiple short Bash calls (30 seconds each, up to 20 rounds = 10 minutes max). Between each poll call, return control and re-invoke:
+
 ```bash
-# Poll for feedback files every 5 seconds (up to 10 minutes)
-for i in $(seq 1 120); do
+# Run this check repeatedly until feedback arrives (30s per call, up to 20 rounds)
+for i in $(seq 1 6); do
   if [ -f "$_DESIGN_DIR/feedback.json" ]; then
     echo "SUBMIT_RECEIVED"
     cat "$_DESIGN_DIR/feedback.json"
-    break
+    exit 0
   elif [ -f "$_DESIGN_DIR/feedback-pending.json" ]; then
     echo "REGENERATE_RECEIVED"
     cat "$_DESIGN_DIR/feedback-pending.json"
     rm "$_DESIGN_DIR/feedback-pending.json"
-    break
+    exit 0
   fi
   sleep 5
 done
+echo "POLL_TIMEOUT_RETRY"
 ```
+
+If this returns `POLL_TIMEOUT_RETRY`, re-run the same Bash block. After 20 retries with no feedback, fall back to AskUserQuestion.
 
 The feedback JSON has this shape:
 ```json
@@ -398,9 +417,20 @@ The feedback JSON has this shape:
 2. If `regenerateAction` is `"remix"`, read `remixSpec` (e.g. `{"layout":"A","colors":"B"}`)
 3. Generate new variants with `$D iterate` or `$D variants` using updated brief
 4. Create new board: `$D compare --images "..." --output "$_DESIGN_DIR/design-board.html"`
-5. Parse the port from the `$D serve` stderr output (`SERVE_STARTED: port=XXXXX`),
-   then reload the board in the user's browser (same tab):
-   `curl -s -X POST http://127.0.0.1:PORT/api/reload -H 'Content-Type: application/json' -d '{"html":"$_DESIGN_DIR/design-board.html"}'`
+5. Reload the board in the user's browser (same tab) using the port captured at launch:
+   First, resolve TMPDIR to its literal value:
+   ```bash
+   echo "$TMPDIR"
+   ```
+   Write the following JSON to `<resolved-TMPDIR>/design-shotgun-reload.json` using the **Write tool** with the literal resolved path (not the `$TMPDIR` variable — the Write tool won't expand it):
+   ```json
+   {"html": "<_DESIGN_DIR absolute path>/design-board.html"}
+   ```
+   Then run:
+   ```bash
+   _TMPDIR="$TMPDIR"
+   curl -s -X POST "http://127.0.0.1:$_PORT/api/reload" -H 'Content-Type: application/json' --data @"${_TMPDIR}/design-shotgun-reload.json"
+   ```
 6. The board auto-refreshes. **Poll again** for the next feedback file.
 7. Repeat until `feedback.json` appears (user clicked Submit).
 
@@ -429,9 +459,17 @@ Use AskUserQuestion to confirm before saving.
 
 ## Step 6: Save & Next Steps
 
-**Save the approved choice:**
-```bash
-echo '{"approved_variant":"<V>","feedback":"<FB>","date":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","screen":"<SCREEN>","branch":"'$(git branch --show-current 2>/dev/null)'"}' > "$_DESIGN_DIR/approved.json"
+**Save the approved choice** using the Write tool to ensure proper JSON encoding:
+
+Write the following JSON to `$_DESIGN_DIR/approved.json` using the `Write` tool (not shell echo — feedback text may contain quotes that would corrupt shell-interpolated JSON):
+```json
+{
+  "approved_variant": "<V>",
+  "feedback": "<FB — escape any quotes>",
+  "date": "<ISO timestamp>",
+  "screen": "<SCREEN>",
+  "branch": "<current branch>"
+}
 ```
 
 If invoked from another skill: return the structured feedback for that skill to consume.
@@ -442,14 +480,14 @@ If standalone, offer next steps via AskUserQuestion:
 > "Design direction locked in. What's next?
 > A) Iterate more — refine the approved variant with specific feedback
 > B) Finalize — generate production HTML/CSS from the approved design
-> C) Save to plan — add this as an approved mockup reference in the current plan (use superpowers:writing-plans)
+> C) Save to plan — add this as an approved mockup reference in the current plan
 > D) Done — I'll use this later"
 
 ## Important Rules
 
 1. **Never save to `.context/`, `docs/designs/`, or `/tmp/`.** All design artifacts go
-   to `~/.nstack/projects/$SLUG/designs/`. Use `$TMPDIR` only as a staging area before
-   copying to the final location.
+   to `.nstack/design-shotgun/`. Use `$TMPDIR` only as a staging area before copying
+   to the final location.
 2. **Show variants inline before opening the board.** The user should see designs
    immediately in their terminal. The browser board is for detailed feedback.
 3. **Confirm feedback before saving.** Always summarize what you understood and verify.

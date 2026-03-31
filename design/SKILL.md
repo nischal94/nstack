@@ -90,10 +90,16 @@ Keep the question short. The user doesn't need to write an essay to get a good d
 
 Use the Agent tool to dispatch 3 subagents in parallel. Each agent writes one complete self-contained HTML file.
 
+**Before dispatching:** Resolve `$TMPDIR` to its literal value with a Bash call:
+```bash
+echo "$TMPDIR"
+```
+Substitute the resolved path (e.g. `/var/folders/xx/.../T/`) into each agent prompt below. Do NOT pass `$TMPDIR` as a shell variable — agents don't inherit shell state.
+
 Dispatch all three at once:
 
 **Agent 1 — minimal/clean:**
-Write a complete HTML file to `$TMPDIR/design-variant-1.html`.
+Write a complete HTML file to `<resolved-TMPDIR>/design-variant-1.html`.
 
 Design direction: white space, single accent color, clean typography, subtle borders. The kind of interface that feels calm and confident. Think Linear, Stripe, or Vercel.
 
@@ -105,14 +111,14 @@ Requirements:
 - Assume 1200px wide viewport.
 
 **Agent 2 — bold/expressive:**
-Write a complete HTML file to `$TMPDIR/design-variant-2.html`.
+Write a complete HTML file to `<resolved-TMPDIR>/design-variant-2.html`.
 
 Design direction: strong colors, large type, high contrast, personality. The kind of interface that makes an impression. Think Superhuman, Loom, or early Stripe's landing pages.
 
 Same requirements as Agent 1.
 
 **Agent 3 — data-dense/utility:**
-Write a complete HTML file to `$TMPDIR/design-variant-3.html`.
+Write a complete HTML file to `<resolved-TMPDIR>/design-variant-3.html`.
 
 Design direction: information-rich layout, compact spacing, utility-first. The kind of interface that respects the user's time and puts everything they need in view. Think GitHub, Linear's issue list, or a Bloomberg terminal that doesn't make your eyes bleed.
 
@@ -132,25 +138,30 @@ mkdir -p .nstack/design
 
 Then screenshot each variant.
 
-Binary mode:
+Binary mode — re-resolve paths in the same Bash block:
 ```bash
-$B goto "file://$TMPDIR/design-variant-1.html"
-$B screenshot .nstack/design/variant-1.png
+NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
+_TMPDIR="$TMPDIR"
+_PWD="$(pwd)"
+"$NSTACK_BROWSE" goto "file://${_TMPDIR}/design-variant-1.html"
+"$NSTACK_BROWSE" screenshot "${_PWD}/.nstack/design/variant-1.png"
 
-$B goto "file://$TMPDIR/design-variant-2.html"
-$B screenshot .nstack/design/variant-2.png
+"$NSTACK_BROWSE" goto "file://${_TMPDIR}/design-variant-2.html"
+"$NSTACK_BROWSE" screenshot "${_PWD}/.nstack/design/variant-2.png"
 
-$B goto "file://$TMPDIR/design-variant-3.html"
-$B screenshot .nstack/design/variant-3.png
+"$NSTACK_BROWSE" goto "file://${_TMPDIR}/design-variant-3.html"
+"$NSTACK_BROWSE" screenshot "${_PWD}/.nstack/design/variant-3.png"
 ```
 
-MCP mode: use `mcp__claude-in-chrome__navigate` to load each file URL, then `mcp__claude-in-chrome__computer` to take a screenshot, then save each screenshot to `.nstack/design/variant-{N}.png`.
-
-After capturing each screenshot, immediately show it to the user with the Read tool:
-
+MCP mode — re-resolve TMPDIR first (the Phase 3 value was inside agent prompts, not surfaced to this session):
+```bash
+echo "$TMPDIR"
 ```
-Read .nstack/design/variant-1.png
-```
+Use the output of that command for all variant paths below.
+- Navigate: `mcp__claude-in-chrome__navigate` to `file://<resolved-TMPDIR>/design-variant-{N}.html`
+- Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot) — the screenshot is shown to Claude in-context. Note: the Write tool cannot persist binary PNG data, so MCP-mode screenshots are in-context only (not saved to disk). The visual analysis proceeds from the in-context image.
+
+After capturing each screenshot, the image is already in-context from the `mcp__claude-in-chrome__computer` action above — do NOT call Read (no PNG was written to disk).
 
 Do this for each variant before asking the user to choose. They need to see all three.
 
@@ -175,11 +186,28 @@ Use AskUserQuestion:
 
 If the user picks a single variant, proceed to Phase 6.
 
-If the user requests a blend (D): produce a 4th HTML file at `$TMPDIR/design-variant-4.html` that combines the requested elements. Screenshot it to `.nstack/design/variant-4.png`. Show it. Confirm before proceeding.
+If the user requests a blend (D): first re-resolve TMPDIR (do not rely on the Phase 4 value across the AskUserQuestion boundary):
+```bash
+echo "$TMPDIR"
+```
+Produce a 4th HTML file at `<resolved-TMPDIR>/design-variant-4.html` that combines the requested elements. Screenshot it to `.nstack/design/variant-4.png`. Show it. Confirm before proceeding.
+
+Binary mode:
+```bash
+NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
+_TMPDIR="$TMPDIR"
+_PWD="$(pwd)"
+"$NSTACK_BROWSE" goto "file://${_TMPDIR}/design-variant-4.html"
+"$NSTACK_BROWSE" screenshot "${_PWD}/.nstack/design/variant-4.png"
+```
+
+MCP mode: `mcp__claude-in-chrome__navigate` to `file://<resolved-TMPDIR>/design-variant-4.html`, then `mcp__claude-in-chrome__computer` (action: screenshot) — write the image data to `.nstack/design/variant-4.png` using the `Write` tool.
 
 If the user wants to inspect a variant more closely (binary mode):
 ```bash
-$B goto "file://$TMPDIR/design-variant-{N}.html"
+NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
+_TMPDIR="$TMPDIR"
+"$NSTACK_BROWSE" goto "file://${_TMPDIR}/design-variant-{N}.html"
 ```
 
 If no option satisfies: go back to Phase 2 with new direction from the user.
@@ -195,6 +223,7 @@ Identify the UI layer from Phase 1:
 - **Plain HTML:** Write directly to `index.html` or the relevant template file.
 - **Django / Jinja:** Adapt to `base.html` + `{% block %}` partials. Extract CSS to a static file.
 - **Rails / ERB:** Adapt to `application.html.erb` + partials. Extract CSS to `application.css`.
+- **Unknown / ambiguous stack:** AskUserQuestion — "Which file should I write the UI to? (e.g. `src/index.html`, `templates/base.html`)" before writing anything.
 
 Do not dump the entire HTML variant as one blob. Break it into the structure the project expects.
 
@@ -216,17 +245,27 @@ echo "NO_DEV_SERVER"
 
 Binary mode — if dev server running:
 ```bash
-$B goto "http://localhost:3000"
-$B screenshot .nstack/design/result.png
+NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
+"$NSTACK_BROWSE" goto "http://localhost:3000"
+"$NSTACK_BROWSE" screenshot .nstack/design/result.png
 ```
 
-Binary mode — if no dev server, open the written file:
+Binary mode — if no dev server, open the file written in Phase 6 (use the actual path, not `index.html` — the entry point depends on the stack):
 ```bash
-$B goto "file://$(pwd)/index.html"
-$B screenshot .nstack/design/result.png
+NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
+_PWD="$(pwd)"
+"$NSTACK_BROWSE" goto "file://${_PWD}/<phase-6-output-file>"
+"$NSTACK_BROWSE" screenshot "${_PWD}/.nstack/design/result.png"
 ```
+Replace `<phase-6-output-file>` with the actual file written in Phase 6 (e.g. `index.html`, `app/page.tsx` served path, etc.). If no dev server and the stack isn't plain HTML, AskUserQuestion for the correct URL or file path.
 
-MCP mode: navigate to the URL or file path, take a screenshot, save to `.nstack/design/result.png`.
+MCP mode — if dev server running: `mcp__claude-in-chrome__navigate` to `http://localhost:3000` (or 8000), then `mcp__claude-in-chrome__computer` (action: screenshot) — write the image data to `.nstack/design/result.png` using the `Write` tool.
+
+MCP mode — if no dev server:
+```bash
+echo "$(pwd)"
+```
+Use the Phase 6 output file path (not `index.html` unless that was actually written) with the resolved pwd to construct the file URL. Navigate with `mcp__claude-in-chrome__navigate`, then `mcp__claude-in-chrome__computer` (action: screenshot) — write the image data to `.nstack/design/result.png` using the `Write` tool.
 
 Show the screenshot to the user with the Read tool.
 

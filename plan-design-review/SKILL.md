@@ -117,8 +117,10 @@ git log --oneline -15
 git diff <base> --stat
 ```
 
+**Identify the plan file path** — look for the most recently modified `.md` file in `docs/superpowers/plans/` or ask the user if ambiguous. Store this as `PLAN_FILE_PATH` (absolute path). You will need it to dispatch the outside design voice subagent.
+
 Then read:
-- The plan file (current plan or branch diff)
+- The plan file at `PLAN_FILE_PATH`
 - CLAUDE.md — project conventions
 - DESIGN.md — if it exists, ALL design decisions calibrate against it
 - TODOS.md — any design-related TODOs this plan touches
@@ -165,25 +167,42 @@ The ONLY time you skip mockups is when:
 - The plan has zero UI scope (pure backend/API/infrastructure)
 - The user explicitly says "skip mockups" or "text only"
 
+**Before writing mockups:** Resolve `$TMPDIR` to its literal value:
+```bash
+echo "$TMPDIR"
+NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
+```
+Use the resolved path (e.g. `/var/folders/xx/.../T/`) in all file paths below. Do NOT use `$TMPDIR` as a shell variable in Write tool paths — it won't expand.
+
 **For each UI screen/section in scope:**
 
-1. Write a self-contained HTML file capturing the design. Use inline CSS and no external dependencies. File name: `$TMPDIR/nstack-design-<screen-name>-<variant>.html`
+1. Write a self-contained HTML file capturing the design. Use inline CSS and no external dependencies. File name: `<resolved-TMPDIR>/plan-design-review-<screen-name>-<variant>.html` — use the Write tool.
 
 2. Screenshot it:
-   - **Binary mode:** `$B screenshot $TMPDIR/nstack-design-<screen-name>-<variant>.html --output $TMPDIR/nstack-design-<screen-name>-<variant>.png`
-   - **MCP mode:** Use `mcp__claude-in-chrome__navigate` to open `file://$TMPDIR/nstack-design-<screen-name>-<variant>.html`, then `mcp__claude-in-chrome__computer` to screenshot
+   - **Binary mode:** Use the resolved `$NSTACK_BROWSE` binary: `"$NSTACK_BROWSE" goto "file://<resolved-TMPDIR>/plan-design-review-<screen-name>-<variant>.html"` then `"$NSTACK_BROWSE" screenshot <resolved-TMPDIR>/plan-design-review-<screen-name>-<variant>.png`
+   - **MCP mode:** `mcp__claude-in-chrome__navigate` to `file://<resolved-TMPDIR>/plan-design-review-<screen-name>-<variant>.html`, then `mcp__claude-in-chrome__computer` (action: screenshot) — the screenshot is shown to Claude in-context. Note: the Write tool cannot persist binary PNG data, so MCP-mode screenshots are in-context only (not saved to disk). The visual analysis proceeds from the in-context image.
 
-3. Show the screenshot inline (Read tool on each PNG) so the user sees immediately.
+3. Show the screenshot inline:
+   - **Binary mode:** Read tool on each PNG file written to disk.
+   - **MCP mode:** the screenshot is already in-context from the `mcp__claude-in-chrome__computer` action above — do NOT call Read (no PNG was written to disk).
 
 Generate 3 variants per screen (A, B, C) with meaningfully different directions — different layout, hierarchy, or visual language. Not three shades of the same layout.
 
 **After generation, AskUserQuestion:**
 "Here are 3 design directions for [screen]. Which direction do you prefer? Any elements you want to carry forward or discard?"
 
-**Save the approved direction:**
+**Save the approved direction** by appending a JSON line to `~/.nstack/plan-design-reviews/approved.jsonl`. Use the Write tool to build the JSON (user feedback may contain quotes or special chars that break shell echo), then append with Bash:
+
+Write the following JSON to a temp file at `<resolved-TMPDIR>/plan-design-review-approval.json` using the Write tool (use the literal path from the `echo "$TMPDIR"` step above — the Write tool does not expand shell variables):
+```json
+{"approved_variant":"A","feedback":"user feedback here","date":"2026-01-01T00:00:00Z","screen":"screen-name","branch":"main"}
+```
+Then append (resolve TMPDIR first so the Bash path matches the Write tool path):
 ```bash
+_TMPDIR="$(echo "$TMPDIR")"
 mkdir -p ~/.nstack/plan-design-reviews
-echo '{"approved_variant":"<V>","feedback":"<FB>","date":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","screen":"<SCREEN>","branch":"'$(git branch --show-current 2>/dev/null)'"}' >> ~/.nstack/plan-design-reviews/approved.jsonl
+cat "${_TMPDIR}/plan-design-review-approval.json" >> ~/.nstack/plan-design-reviews/approved.jsonl
+echo "" >> ~/.nstack/plan-design-reviews/approved.jsonl
 ```
 
 Note which direction was approved. This becomes the visual reference for all subsequent review passes.
@@ -201,8 +220,11 @@ Use AskUserQuestion:
 If user chooses B, skip this step and continue.
 
 **Claude design subagent** (via Agent tool):
-Dispatch a subagent with this prompt:
-"Read the plan file at [plan-file-path]. You are an independent senior product designer reviewing this plan. You have NOT seen any prior review. Evaluate:
+
+Before dispatching: verify `PLAN_FILE_PATH` was successfully resolved in the Pre-Review Audit. If it was not found, use AskUserQuestion to ask the user for the plan file path before continuing — do not dispatch a subagent with an unresolved `<PLAN_FILE_PATH>` placeholder.
+
+Dispatch a subagent with this prompt (substitute the actual `PLAN_FILE_PATH` value — do not pass the variable name):
+"Read the plan file at <PLAN_FILE_PATH>. You are an independent senior product designer reviewing this plan. You have NOT seen any prior review. Evaluate:
 
 1. Information hierarchy: what does the user see first, second, third? Is it right?
 2. Missing states: loading, empty, error, success, partial — which are unspecified?
@@ -334,7 +356,10 @@ FIX TO 10: Rewrite vague UI descriptions with specific alternatives.
 - "Hero section" → what makes this hero feel like THIS product?
 - "Clean, modern UI" → meaningless. Replace with actual design decisions.
 - "Dashboard with widgets" → what makes this NOT every other dashboard?
-If visual mockups were generated in Step 0.5, evaluate them against the AI slop blacklist above. Read each mockup image using the Read tool. Does the mockup fall into generic patterns (3-column grid, centered hero, stock-photo feel)? If so, flag it and offer to regenerate with more specific direction.
+If visual mockups were generated in Step 0.5, evaluate them against the AI slop blacklist above:
+- **Binary mode:** Read each mockup PNG using the Read tool (files are on disk).
+- **MCP mode:** The mockup screenshots are already in-context from the `mcp__claude-in-chrome__computer` action in Step 0.5 — do NOT call Read (no PNG was written to disk). Reference the in-context images directly.
+Does the mockup fall into generic patterns (3-column grid, centered hero, stock-photo feel)? If so, flag it and offer to regenerate with more specific direction.
 **STOP.** AskUserQuestion once per issue. Do NOT batch. Recommend + WHY.
 
 ### Pass 5: Design System Alignment
@@ -366,7 +391,7 @@ If mockups were generated in Step 0.5 and review passes changed significant desi
 
 AskUserQuestion: "The review passes changed [list major design changes]. Want me to regenerate mockups to reflect the updated plan? This ensures the visual reference matches what we're actually building."
 
-If yes, write updated HTML files and screenshot them. Save to `$TMPDIR/nstack-design-<screen>-updated-<variant>.html`.
+If yes, write updated HTML files and screenshot them. Save to `<resolved-TMPDIR>/plan-design-review-<screen>-updated-<variant>.html` (use the resolved TMPDIR from Step 0.5).
 
 ## CRITICAL RULE — How to ask questions
 
@@ -437,8 +462,10 @@ If visual mockups were generated during this review, add to the plan file:
 
 | Screen/Section | Mockup Path | Direction | Notes |
 |----------------|-------------|-----------|-------|
-| [screen name]  | $TMPDIR/nstack-design-[screen]-[variant].html | [brief description] | [constraints from review] |
+| [screen name]  | <resolved-TMPDIR>/plan-design-review-[screen]-[variant].html | [brief description] | [constraints from review] |
 ```
+
+Substitute the resolved TMPDIR value (from Step 0.5) when filling in the mockup path column — use the actual directory path, not the variable `$TMPDIR`.
 
 Include the full path to each approved mockup, a one-line description of the direction, and any constraints. The implementer reads this to know exactly which visual to build from. If no mockups were generated, omit this section.
 

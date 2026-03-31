@@ -12,8 +12,12 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+  - Agent
   - AskUserQuestion
   - WebSearch
+  - mcp__claude-in-chrome__navigate
+  - mcp__claude-in-chrome__computer
+  - mcp__claude-in-chrome__read_console_messages
 ---
 
 ## Binary detection — nstack browse CLI
@@ -111,12 +115,24 @@ Use WebSearch to find 5-10 products in their space. Search for:
 
 **Step 2: Visual research via browse (if available)**
 
-If `BROWSE_MODE="binary"` (`$B` is set), visit the top 3-5 sites in the space and capture visual evidence:
+Re-detect browse mode, then visit the top 3-5 sites in the space and capture visual evidence:
 
 ```bash
-$B goto "https://example-site.com"
-$B screenshot "/tmp/design-research-site-name.png"
-$B snapshot
+NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
+if [ -x "$NSTACK_BROWSE" ]; then
+  BROWSE_MODE="binary"
+else
+  BROWSE_MODE="mcp"
+fi
+```
+
+If `BROWSE_MODE="binary"`:
+
+**Before running:** substitute `<actual-site-url>` with the real URL and `<actual-site-name>` with a short slug. Do not run the block with angle-bracket placeholders — they must be replaced first.
+```bash
+"$NSTACK_BROWSE" goto "<actual-site-url>"
+"$NSTACK_BROWSE" screenshot "/tmp/design-research-<actual-site-name>.png"
+"$NSTACK_BROWSE" snapshot
 ```
 
 If `BROWSE_MODE="mcp"`, use `mcp__claude-in-chrome__navigate` and screenshot tools to visit the top 3-5 sites.
@@ -148,7 +164,9 @@ If the user said no research, skip entirely and proceed to Phase 3 using your bu
 
 ---
 
-## Design Outside Voices (parallel)
+## Phase 2.5: Design Outside Voices
+
+Run this phase BEFORE Phase 3. **Do not start Phase 3 until this step is complete** (or skipped).
 
 Use AskUserQuestion:
 > "Want outside design voices? I can dispatch a Claude subagent to do an independent design direction proposal — a second opinion from a different angle."
@@ -156,17 +174,23 @@ Use AskUserQuestion:
 > A) Yes — run outside design voice
 > B) No — proceed without
 
-If user chooses B, skip this step and continue.
+If user chooses B, skip this step and continue to Phase 3.
 
-**If A: Claude design subagent** (via Agent tool with parallel dispatch):
+**If A: Claude design subagent** (via Agent tool):
 
-Dispatch a subagent with this prompt:
-"Given this product context, propose a design direction that would SURPRISE. What would the cool indie studio do that the enterprise UI team wouldn't?
+**Before dispatching:** construct the subagent prompt by substituting the actual product context gathered in Phases 1–2 — product name, type (B2B SaaS / consumer / internal tool / etc.), target users, industry, and any key research findings. Do not dispatch with the placeholders intact.
+
+Dispatch a subagent with this prompt (substitute `{...}` values from your gathered context):
+"Product: {product name}. Type: {product type}. Users: {target users}. Industry: {industry}. Research findings: {key competitive observations from Phase 2, or 'none' if research was skipped}.
+
+Given this product context, propose a design direction that would SURPRISE. What would the cool indie studio do that the enterprise UI team wouldn't?
 - Propose an aesthetic direction, typography stack (specific font names), color palette (hex values)
 - 2 deliberate departures from category norms
 - What emotional reaction should the user have in the first 3 seconds?
 
 Be bold. Be specific. No hedging."
+
+**Wait for the subagent to complete before proceeding to Phase 3.**
 
 Present subagent output under a `SUBAGENT (design direction):` header.
 
@@ -282,18 +306,25 @@ Each drill-down is one focused AskUserQuestion. After the user decides, re-check
 
 Generate a polished HTML preview page and open or screenshot it.
 
-```bash
-PREVIEW_FILE="/tmp/design-consultation-preview-$(date +%s).html"
-```
-
-Write the preview HTML to `$PREVIEW_FILE`.
+Write the preview HTML to `/tmp/design-consultation-preview.html` using the `Write` tool.
 
 **Opening the preview:**
 
+Re-detect browse mode before opening:
+
+```bash
+NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
+if [ -x "$NSTACK_BROWSE" ]; then
+  BROWSE_MODE="binary"
+else
+  BROWSE_MODE="mcp"
+fi
+```
+
 If `BROWSE_MODE="binary"`:
 ```bash
-$B goto "file://$PREVIEW_FILE"
-$B screenshot "/tmp/design-consultation-preview-screenshot.png"
+"$NSTACK_BROWSE" goto "file:///tmp/design-consultation-preview.html"
+"$NSTACK_BROWSE" screenshot "/tmp/design-consultation-preview-screenshot.png"
 ```
 Read the screenshot file to display it inline.
 
@@ -302,7 +333,7 @@ Use `mcp__claude-in-chrome__navigate` with the file URL, then screenshot.
 
 If no browser is available:
 ```bash
-open "$PREVIEW_FILE"
+open "/tmp/design-consultation-preview.html"
 ```
 If `open` fails (headless environment), tell the user: *"I wrote the preview to [path] — open it in your browser to see the fonts and colors rendered."*
 
@@ -338,6 +369,15 @@ If the user says skip the preview, go directly to Phase 6.
 ---
 
 ## Phase 6: Write DESIGN.md & Confirm
+
+**AskUserQuestion Q-final — show summary and confirm BEFORE writing any files:**
+
+List all decisions made in this session. Flag any that used agent defaults without explicit user confirmation. Options:
+- A) Ship it — write DESIGN.md and CLAUDE.md now
+- B) I want to change something (specify what)
+- C) Start over
+
+Only proceed to write files if the user chooses A.
 
 **Write `DESIGN.md`** to the repo root with this structure:
 
@@ -395,7 +435,9 @@ If the user says skip the preview, go directly to Phase 6.
 | [today] | Initial design system created | Created by /design-consultation based on [product context / research] |
 ```
 
-**Update CLAUDE.md** (or create it if it doesn't exist) — append this section:
+**Update `CLAUDE.md`** in the repo root (same directory as DESIGN.md — not a subdirectory CLAUDE.md):
+
+First, Read `CLAUDE.md` from the repo root. If a `## Design System` section already exists, update it in place using Edit. If it does not exist, append this section:
 
 ```markdown
 ## Design System
@@ -404,13 +446,6 @@ All font choices, colors, spacing, and aesthetic direction are defined there.
 Do not deviate without explicit user approval.
 In QA mode, flag any code that doesn't match DESIGN.md.
 ```
-
-**AskUserQuestion Q-final — show summary and confirm:**
-
-List all decisions. Flag any that used agent defaults without explicit user confirmation (the user should know what they're shipping). Options:
-- A) Ship it — write DESIGN.md and CLAUDE.md
-- B) I want to change something (specify what)
-- C) Start over
 
 After shipping DESIGN.md, if the session produced screen-level mockups or page layouts (not just system-level tokens), suggest:
 "Want a full plan for implementing this design system? Run `superpowers:writing-plans`."

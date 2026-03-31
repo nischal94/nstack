@@ -8,7 +8,16 @@ allowed-tools:
   - Bash
   - Read
   - Write
+  - Edit
+  - Glob
+  - Grep
+  - Agent
   - AskUserQuestion
+  - mcp__claude-in-chrome__navigate
+  - mcp__claude-in-chrome__computer
+  - mcp__claude-in-chrome__javascript_tool
+  - mcp__claude-in-chrome__read_console_messages
+  - mcp__claude-in-chrome__find
 ---
 
 ## Setup
@@ -86,6 +95,8 @@ mkdir -p "$REPORT_DIR/screenshots"
 echo "REPORT_DIR: $REPORT_DIR"
 ```
 
+**Important:** Shell state does not persist between Bash tool calls. Each Bash block that uses `$REPORT_DIR` must re-assign it at the top: `REPORT_DIR="$HOME/.nstack/design-reviews/design-audit-$(date +%Y%m%d)"` — use the same date to match the directory created at setup.
+
 ---
 
 ## Modes
@@ -107,7 +118,7 @@ When on a feature branch, scope to pages affected by the branch changes:
 4. Audit only affected pages, compare design quality before/after
 
 ### Regression (`--regression` or previous `design-baseline.json` found)
-Run full audit, then load previous `design-baseline.json`. Compare: per-category grade deltas, new findings, resolved findings. Output regression table in report.
+Run full audit, then load previous `design-baseline.json` from `~/.nstack/design-reviews/` (find the most recent dated directory for the same domain). Compare: per-category grade deltas, new findings, resolved findings. Output regression table in report.
 
 ---
 
@@ -115,8 +126,12 @@ Run full audit, then load previous `design-baseline.json`. Compare: per-category
 
 The most uniquely designer-like output. Form a gut reaction before analyzing anything.
 
-1. Navigate to the target URL
-2. Take a full-page desktop screenshot: `$B screenshot "$REPORT_DIR/screenshots/first-impression.png"`
+1. Navigate to the target URL:
+   - **Binary mode:** `REPORT_DIR="$HOME/.nstack/design-reviews/design-audit-$(date +%Y%m%d)"` then `$B goto <target-url>`
+   - **MCP mode:** `mcp__claude-in-chrome__navigate` to `<target-url>`
+2. Take a full-page desktop screenshot:
+   - **Binary mode:** `$B screenshot "$REPORT_DIR/screenshots/first-impression.png"`
+   - **MCP mode:** `mcp__claude-in-chrome__computer` (action: screenshot) — the screenshot is shown to Claude in-context. Note: the Write tool cannot persist binary PNG data, so MCP-mode screenshots are in-context only (not saved to disk). The visual analysis proceeds from the in-context image.
 3. Write the **First Impression** using this structured critique format:
    - "The site communicates **[what]**." (what it says at a glance — competence? playfulness? confusion?)
    - "I notice **[observation]**." (what stands out, positive or negative — be specific)
@@ -131,6 +146,7 @@ This is the section users read first. Be opinionated. A designer doesn't hedge �
 
 Extract the actual design system the site uses (not what a DESIGN.md says, but what's rendered):
 
+Binary mode:
 ```bash
 # Fonts in use (capped at 500 elements to avoid timeout)
 $B js "JSON.stringify([...new Set([...document.querySelectorAll('*')].slice(0,500).map(e => getComputedStyle(e).fontFamily))])"
@@ -148,6 +164,13 @@ $B js "JSON.stringify([...document.querySelectorAll('a,button,input,[role=button
 $B perf
 ```
 
+MCP mode — use `mcp__claude-in-chrome__javascript_tool` with the same JS expressions for each:
+- Fonts: `JSON.stringify([...new Set([...document.querySelectorAll('*')].slice(0,500).map(e => getComputedStyle(e).fontFamily))])`
+- Colors: `JSON.stringify([...new Set([...document.querySelectorAll('*')].slice(0,500).flatMap(e => [getComputedStyle(e).color, getComputedStyle(e).backgroundColor]).filter(c => c !== 'rgba(0, 0, 0, 0)'))])`
+- Headings: `JSON.stringify([...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(h => ({tag:h.tagName, text:h.textContent.trim().slice(0,50), size:getComputedStyle(h).fontSize, weight:getComputedStyle(h).fontWeight})))`
+- Touch targets: `JSON.stringify([...document.querySelectorAll('a,button,input,[role=button]')].filter(e => {const r=e.getBoundingClientRect(); return r.width>0 && (r.width<44||r.height<44)}).map(e => ({tag:e.tagName, text:(e.textContent||'').trim().slice(0,30), w:Math.round(e.getBoundingClientRect().width), h:Math.round(e.getBoundingClientRect().height)})).slice(0,20))`
+- Performance: `JSON.stringify((() => { const n = performance.getEntriesByType('navigation')[0]; if (!n || n.responseStart === 0) return {ttfb: null, domInteractive: null, loadTime: null}; return {ttfb: Math.round(n.responseStart - n.requestStart), domInteractive: Math.round(n.domInteractive), loadTime: Math.round(n.loadEventEnd)}; })())`
+
 Structure findings as an **Inferred Design System**:
 - **Fonts:** list with usage counts. Flag if >3 distinct font families.
 - **Colors:** palette extracted. Flag if >12 unique non-gray colors. Note warm/cool/mixed.
@@ -162,20 +185,34 @@ After extraction, offer: *"Want me to save this as your DESIGN.md? I can lock in
 
 For each page in scope:
 
+Binary mode:
 ```bash
+REPORT_DIR="$HOME/.nstack/design-reviews/design-audit-$(date +%Y%m%d)"
 $B goto <url>
-$B snapshot -i -a -o "$REPORT_DIR/screenshots/{page}-annotated.png"
-$B responsive "$REPORT_DIR/screenshots/{page}"
+$B snapshot -a -o "$REPORT_DIR/screenshots/{page}-annotated.png"
+$B snapshot -i
+$B responsive "$REPORT_DIR/screenshots/{page}"  # replace {page} with the actual page slug (e.g. "home", "dashboard")
 $B console --errors
 $B perf
 ```
 
+MCP mode:
+- Navigate: `mcp__claude-in-chrome__navigate` to `<url>`
+- Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot) — the screenshot is shown to Claude in-context. Note: the Write tool cannot persist binary PNG data, so MCP-mode screenshots are in-context only (not saved to disk). The visual analysis proceeds from the in-context image.
+- Console errors: `mcp__claude-in-chrome__read_console_messages`
+- Performance: `mcp__claude-in-chrome__javascript_tool` to measure load time
+
 ### Auth Detection
 
 After the first navigation, check if the URL changed to a login-like path:
+
+Binary mode:
 ```bash
 $B url
 ```
+
+MCP mode: use `mcp__claude-in-chrome__javascript_tool` with `window.location.href` to get the current URL.
+
 If URL contains `/login`, `/signin`, `/auth`, or `/sso`: the site requires authentication. AskUserQuestion: "This site requires authentication. Want to import cookies from your browser? Run `/setup-browser-cookies` first if needed."
 
 ### Design Audit Checklist (10 categories, ~80 items)
@@ -261,7 +298,7 @@ Apply these at each page. Each finding gets an impact rating (high/medium/polish
 - Easing: ease-out for entering, ease-in for exiting, ease-in-out for moving
 - Duration: 50-700ms range (nothing slower unless page transition)
 - Purpose: every animation communicates something (state change, attention, spatial relationship)
-- `prefers-reduced-motion` respected (check: `$B js "matchMedia('(prefers-reduced-motion: reduce)').matches"`)
+- `prefers-reduced-motion` respected (binary: `$B js "matchMedia('(prefers-reduced-motion: reduce)').matches"` / MCP: `mcp__claude-in-chrome__javascript_tool` with `"matchMedia('(prefers-reduced-motion: reduce)').matches"`)
 - No `transition: all` — properties listed explicitly
 - Only `transform` and `opacity` animated (not layout properties like width, height, top, left)
 
@@ -304,11 +341,18 @@ The test: would a human designer at a respected studio ever ship this?
 
 Walk 2-3 key user flows and evaluate the *feel*, not just the function:
 
+Binary mode:
 ```bash
 $B snapshot -i
 $B click @e3           # perform action
 $B snapshot -D          # diff to see what changed
 ```
+
+MCP mode:
+- Screenshot before: `mcp__claude-in-chrome__computer` (action: screenshot) — the screenshot is shown to Claude in-context. Note: the Write tool cannot persist binary PNG data, so MCP-mode screenshots are in-context only (not saved to disk). The visual analysis proceeds from the in-context image.
+- Click: `mcp__claude-in-chrome__find` to locate the element, then interact
+- Screenshot after: `mcp__claude-in-chrome__computer` (action: screenshot) — the screenshot is shown to Claude in-context. Note: the Write tool cannot persist binary PNG data, so MCP-mode screenshots are in-context only (not saved to disk). The visual analysis proceeds from the in-context image.
+- Visually compare the before/after screenshots to assess what changed
 
 Evaluate:
 - **Response feel:** Does clicking feel responsive? Any delays or missing loading states?
@@ -333,9 +377,13 @@ Compare screenshots and observations across pages for:
 
 ### Output Locations
 
-**Primary:** `$REPORT_DIR/design-audit-{domain}.md`
+**Primary:** `$REPORT_DIR/design-audit-{domain}.md` — derive `{domain}` from the target URL: strip scheme and path, replace dots with dashes (e.g. `https://app.example.com` → `app-example-com`; `http://localhost:3000` → `localhost`). Use this consistently across runs so regression baseline matching works.
 
-**Baseline:** Write `design-baseline.json` for regression mode:
+**Baseline:** Write `$REPORT_DIR/design-baseline.json` for regression mode:
+```bash
+REPORT_DIR="$HOME/.nstack/design-reviews/design-audit-$(date +%Y%m%d)"
+```
+Write the following JSON to `$REPORT_DIR/design-baseline.json` using the Write tool (substitute actual values):
 ```json
 {
   "date": "YYYY-MM-DD",
@@ -381,6 +429,7 @@ AI Slop is 5% of Design Score but also graded independently as a headline metric
 ### Regression Output
 
 When previous `design-baseline.json` exists or `--regression` flag is used:
+- Locate baseline: `ls -t ~/.nstack/design-reviews/ | head -5` to find prior dated directories, then load `<dir>/design-baseline.json`
 - Load baseline grades
 - Compare: per-category deltas, new findings, resolved findings
 - Append regression table to report
@@ -407,9 +456,9 @@ Tie everything to user goals and product objectives. Always suggest specific imp
 4. **Never read source code.** Evaluate the rendered site, not the implementation. (Exception: offer to write DESIGN.md from extracted observations.)
 5. **AI Slop detection is your superpower.** Most developers can't evaluate whether their site looks AI-generated. You can. Be direct about it.
 6. **Quick wins matter.** Always include a "Quick Wins" section — the 3-5 highest-impact fixes that take <30 minutes each.
-7. **Use `snapshot -C` for tricky UIs.** Finds clickable divs that the accessibility tree misses.
+7. **Use `snapshot -C` for tricky UIs.** Finds clickable divs that the accessibility tree misses. (Binary mode only. MCP fallback: `mcp__claude-in-chrome__javascript_tool` with `JSON.stringify([...document.querySelectorAll('[onclick], [role], [tabindex], button, a')].map(el => ({tag: el.tagName, role: el.getAttribute('role'), text: el.textContent.trim().slice(0,50)})))` to enumerate interactive elements.)
 8. **Responsive is design, not just "not broken."** A stacked desktop layout on mobile is not responsive design — it's lazy. Evaluate whether the mobile layout makes *design* sense.
-9. **Document incrementally.** Write each finding to the report as you find it. Don't batch.
+9. **Document incrementally.** Write each finding to the report as you find it. Don't batch. Each Bash block that appends to the report must re-assign `REPORT_DIR` first: `REPORT_DIR="$HOME/.nstack/design-reviews/design-audit-$(date +%Y%m%d)"`.
 10. **Depth over breadth.** 5-10 well-documented findings with screenshots and specific suggestions > 20 vague observations.
 11. **Show screenshots to the user.** After every `$B screenshot`, `$B snapshot -a -o`, or `$B responsive` command, use the Read tool on the output file(s) so the user can see them inline. For `responsive` (3 files), Read all three. This is critical — without it, screenshots are invisible to the user.
 
@@ -492,9 +541,9 @@ Record baseline design score and AI slop score at end of Phase 6.
 ├── screenshots/
 │   ├── first-impression.png                  # Phase 1
 │   ├── {page}-annotated.png                  # Per-page annotated
-│   ├── {page}-mobile.png                     # Responsive
-│   ├── {page}-tablet.png
-│   ├── {page}-desktop.png
+│   ├── {page}-mobile.png                     # Responsive (binary mode only — MCP mode does not capture responsive screenshots)
+│   ├── {page}-tablet.png                    # (binary mode only — MCP mode does not capture responsive screenshots)
+│   ├── {page}-desktop.png                   # (binary mode only — MCP mode does not capture responsive screenshots)
 │   ├── finding-001-before.png                # Before fix
 │   ├── finding-001-after.png                 # After fix
 │   └── ...
@@ -626,12 +675,21 @@ git commit -m "style(design): FINDING-NNN — short description"
 
 Navigate back to the affected page and verify the fix:
 
+Binary mode:
 ```bash
+REPORT_DIR="$HOME/.nstack/design-reviews/design-audit-$(date +%Y%m%d)"
 $B goto <affected-url>
+$B snapshot -i
 $B screenshot "$REPORT_DIR/screenshots/finding-NNN-after.png"
 $B console --errors
 $B snapshot -D
 ```
+Note: `$B snapshot -i` indexes the fixed page before `$B snapshot -D` diffs against it. Without this, the diff compares against stale pre-fix state from Phase 3.
+
+MCP mode:
+- Navigate: `mcp__claude-in-chrome__navigate` to `<affected-url>`
+- Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot) — the screenshot is shown to Claude in-context. Note: the Write tool cannot persist binary PNG data, so MCP-mode screenshots are in-context only (not saved to disk). The visual analysis proceeds from the in-context image.
+- Console errors: `mcp__claude-in-chrome__read_console_messages`
 
 Take **before/after screenshot pair** for every fix.
 
@@ -682,6 +740,10 @@ After all fixes are applied:
 ---
 
 ## Phase 10: Report
+
+```bash
+REPORT_DIR="$HOME/.nstack/design-reviews/design-audit-$(date +%Y%m%d)"
+```
 
 Write the final report to `$REPORT_DIR/design-audit-{domain}.md`.
 
