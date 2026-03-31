@@ -8,6 +8,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
+  - Edit
   - AskUserQuestion
 ---
 
@@ -151,6 +152,8 @@ If `BROWSE_MODE="mcp"`:
 Record the console error count, load time, and text snapshot for each page. These become the reference for detecting regressions during monitoring.
 
 ### Phase 5: Continuous Monitoring Loop
+
+**`--quick` mode:** Run a single check pass (one iteration only), then skip to Phase 6. Use this for a fast post-deploy smoke check without continuous monitoring.
 
 Monitor for the specified duration. Every 60 seconds, check each page:
 
