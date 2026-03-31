@@ -570,10 +570,9 @@ at natural boundaries — debugging a finding, verifying a fix, reviewing remedi
 
 - **Zero mandatory dependencies** — clone and core skills work; design skills opt in to Playwright
 - **AI-native first** — LLM security is not an afterthought
-- **Zero noise** — 8/10 confidence gate, concrete exploit paths only
+- **Zero noise** — concrete findings only: exploit paths in security, severity ratings in design, confidence scores in triage. No vague observations.
 - **Superpowers-compatible** — complements, never conflicts
 - **Solo-builder defaults** — no team assumptions baked in
-- **MIT licensed** — fork it, make it yours
 
 ## Contributing
 
