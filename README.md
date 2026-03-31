@@ -129,7 +129,7 @@ Requires Bun at both install time and runtime (the CLI spawns a Bun server proce
 | 24 | `/plan-design-review` | Design review before implementation. Generates HTML mockups of planned components, screenshots them, produces an opinionated design plan. Run before writing UI code. |
 | 25 | `/design` | Generate UI from scratch. 3 HTML variants in parallel (minimal/bold/data-dense), screenshots each, applies the chosen design to the actual tech stack. |
 | 26 | `/design-shotgun` | Explore directions fast. Generates 4+ variants in parallel, presents a comparison board for selection. |
-| 27 | `/design-review` | Visual design audit. Screenshots running pages, analyzes 10 categories (~80 items): typography, color, spacing, accessibility, AI slop detection. Letter grades with evidence. |
+| 27 | `/design-review` | Visual design audit + fix loop. Screenshots running pages, analyzes 10 categories (~80 items): typography, color, spacing, accessibility, AI slop detection. Letter grades with evidence. Applies fixes with atomic commits — requires a clean working tree. |
 
 ## Usage
 
@@ -173,7 +173,7 @@ Just type the skill. No arguments needed to get started.
 /plan-design-review                    design review before writing UI code
 /design                                generate UI from scratch
 /design-shotgun                        explore multiple design directions fast
-/design-review https://localhost:3000  visual audit of the running app
+/design-review https://localhost:3000  visual audit + fix loop (commits changes)
 ```
 
 ## Why not just use gstack?
@@ -185,7 +185,7 @@ nstack makes a different set of tradeoffs:
 | | nstack | gstack |
 |---|---|---|
 | Install | `git clone` (core works instantly) | `git clone + ./setup` (requires Bun, ~2 min) |
-| Core skills | Zero dependencies | Bun + Playwright required |
+| Core skills | Zero mandatory setup | Bun + Playwright required |
 | Design skills | Optional `./setup` (same Bun + Playwright) | Required for all skills |
 | LLM/AI security | First-class — prompt injection, cost attacks, RAG poisoning, tool call validation | Covered but not the primary lens |
 | Skill count | 27 | 31 |
