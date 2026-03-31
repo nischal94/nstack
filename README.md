@@ -396,35 +396,64 @@ Requires Bun. Downloads Playwright Chromium (~150MB, one-time). Design skills ha
 
 ## Skills
 
-| Skill | What it does |
-|-------|-------------|
-| `/cso` | 14-phase security audit. OWASP Top 10, STRIDE, secrets archaeology, CI/CD pipeline security, LLM/AI security. 8/10 confidence gate — zero noise by default. |
-| `/qa` | Browser QA via Claude-in-Chrome. Find bugs, fix with atomic commits, generate regression tests, re-verify. |
-| `/retro` | Weekly retrospective from git history. What shipped, lines added, test health, files touched most, open findings. |
-| `/investigate` | Bug triage when you don't know where to start. Reconstructs the timeline, diffs the suspect range, builds a hypothesis with confidence rating. Hands off to superpowers:systematic-debugging. |
-| `/document-release` | Release notes from git history. Groups and consolidates commits, determines semver bump, updates CHANGELOG.md. Never tags without confirmation. |
-| `/ship` | Full release checklist in one command: tests → self-review → code review → version bump → CHANGELOG → push → PR. Stops on any failure. |
-| `/careful` | Destructive command guardrails. Warns before `rm -rf`, `DROP TABLE`, force-push, `kubectl delete`, and other hard-to-reverse operations. |
-| `/freeze [path]` | Lock all edits to a specific directory for the session. Reads remain unrestricted. |
-| `/guard [path]` | Full safety mode: `/careful` + `/freeze` combined. For high-stakes sessions on production code. |
-| `/unfreeze` | Remove a `/freeze` or `/guard` directory lock. |
-| `/premise` | Premise challenge before building. Five structured challenges: status quo, assumption killer, minimum wedge, existing leverage, regret test. Outputs a CONFIRMED / NARROWED / CHALLENGED / DEFER verdict. |
-| `/land` | Merge, deploy, and verify in one command. Waits for CI → confirms → merges → waits for deploy → health checks production. Offers rollback on failure. |
-| `/review` | Inline staff engineer code review of the current diff. AUTO-FIX commits for obvious issues (debug statements, unused imports, clear null dereferences). FLAGS security issues and logic questions for user decision. |
-| `/autoplan` | Plan review pipeline before execution. Scope challenge, architecture review, AI-native checks, and test matrix. Outputs a BLOCKED / READY verdict with specific gaps to resolve. |
-| `/evals` | LLM output quality testing. Create and run structured eval suites with string checks and LLM-as-judge scoring. Baseline comparison across prompt or model changes. Essential for AI-native projects. |
-| `/context` | Claude Code configuration audit. Finds stale file references, contradictory rules, missing commands, and bloated instructions across CLAUDE.md, rules files, and memory. |
-| `/migrate` | Database migration safety. Reviews migrations for data loss risk, missing rollback, and lock contention on large tables. Runs with dry-run, backup check, and post-migration verification. |
-| `/council` | Multi-agent adversarial deliberation for complex decisions. 11 personas (Socrates, Feynman, Torvalds, etc.) run a 3-round protocol: independent analysis → cross-examination → synthesis. Triads by default. Use for architecture choices, strategic pivots, build-vs-buy — decisions where a single perspective isn't enough. |
-| `/office-hours` | YC-style product validation. Challenges your assumptions with 5 structured lenses: status quo, assumption killer, minimum wedge, existing leverage, regret test. Outputs CONFIRMED / NARROWED / CHALLENGED / DEFER verdict. |
-| `/qa-only` | Report-only browser QA. Tests web apps like a real user, documents issues with screenshots and repro steps, produces a health score. Never fixes anything — use `/qa` for the fix loop. |
-| `/benchmark` | Performance regression detection. Establishes baselines, compares before/after metrics (TTFB, FCP, LCP, bundle size), flags regressions with WARN/REGRESSION thresholds. Supports `--trend` for historical drift. |
-| `/canary` | Post-deploy canary monitoring. Watches the live app after a deploy: console errors, performance regressions, page failures. Takes periodic screenshots and compares against pre-deploy baselines. |
-| `/design` | Generate UI from scratch. Reads the codebase, generates 3 HTML design variants in parallel (minimal/bold/data-dense), screenshots each, picks the best with user input, applies to the actual tech stack. |
-| `/design-consultation` | Interactive design system creation. Researches the competitive space, proposes aesthetic/typography/color/layout/spacing/motion, generates visual previews, writes `DESIGN.md` as the project's design source of truth. |
-| `/design-review` | Visual design audit. Screenshots running pages, analyzes typography, color, spacing, accessibility contrast, and UX patterns. Produces a structured critique with severity ratings and evidence. |
-| `/design-shotgun` | Design variant exploration. Generates 4+ design variants in parallel using Agent dispatch, screenshots each, presents a comparison board for selection. Use when you need options fast. |
-| `/plan-design-review` | Pre-implementation design planning. Reviews planned components, generates HTML mockups, screenshots them, and produces an opinionated design plan before a line of code is written. |
+27 skills across 6 categories.
+
+### Thinking & deciding (4)
+
+| # | Skill | What it does |
+|---|-------|-------------|
+| 1 | `/premise` | Premise challenge before building. Five structured challenges: status quo, assumption killer, minimum wedge, existing leverage, regret test. Outputs CONFIRMED / NARROWED / CHALLENGED / DEFER. |
+| 2 | `/office-hours` | YC-style product validation. Same 5 lenses as `/premise` but conversational — for ideas still being shaped. |
+| 3 | `/council` | Multi-agent adversarial deliberation. 11 personas (Socrates, Feynman, Torvalds, etc.), 3-round protocol: independent analysis → cross-examination → synthesis. For architecture choices, strategic pivots, build-vs-buy. |
+| 4 | `/autoplan` | Plan review before execution. Scope challenge, architecture review, AI-native checks, test matrix. Outputs BLOCKED / READY with specific gaps. |
+
+### Safety guardrails (4)
+
+| # | Skill | What it does |
+|---|-------|-------------|
+| 5 | `/careful` | Warns before `rm -rf`, `DROP TABLE`, force-push, `kubectl delete`, and other hard-to-reverse operations. |
+| 6 | `/freeze [path]` | Lock all edits to a specific directory for the session. Reads remain unrestricted. |
+| 7 | `/guard [path]` | Full safety mode: `/careful` + `/freeze` combined. For high-stakes sessions on production code. |
+| 8 | `/unfreeze` | Remove a `/freeze` or `/guard` directory lock. |
+
+### Building (4)
+
+| # | Skill | What it does |
+|---|-------|-------------|
+| 9 | `/review` | Inline staff engineer code review of the current diff. AUTO-FIX commits for obvious issues. FLAGS security issues and logic questions for your decision. |
+| 10 | `/migrate` | Database migration safety. Classifies risk, checks for missing rollback, warns on lock contention, runs dry-run + backup check + post-migration verification. |
+| 11 | `/evals` | LLM output quality testing. Create and run eval suites with string checks and LLM-as-judge scoring. Baseline comparison across prompt or model changes. |
+| 12 | `/context` | Claude Code config audit. Finds stale file references, contradictory rules, and bloat across CLAUDE.md, rules files, and memory. |
+
+### Shipping (3)
+
+| # | Skill | What it does |
+|---|-------|-------------|
+| 13 | `/ship` | Full release checklist: tests → self-review → code review → version bump → CHANGELOG → push → PR. Stops on any failure. |
+| 14 | `/land` | Merge, deploy, and verify. Waits for CI → merges → waits for deploy → health checks production. Offers rollback on failure. |
+| 15 | `/document-release` | Release notes from git history. Groups commits, determines semver bump, updates CHANGELOG.md. Never tags without confirmation. |
+
+### Quality & monitoring (7)
+
+| # | Skill | What it does |
+|---|-------|-------------|
+| 16 | `/cso` | 14-phase security audit. OWASP Top 10, STRIDE, secrets archaeology, CI/CD pipeline security, LLM/AI security. 8/10 confidence gate — zero noise by default. |
+| 17 | `/qa` | Browser QA via Claude-in-Chrome. Find bugs, fix with atomic commits, generate regression tests, re-verify. |
+| 18 | `/qa-only` | Report-only browser QA. Same as `/qa` but never fixes — produces a health score and repro steps only. |
+| 19 | `/benchmark` | Performance regression detection. Baselines TTFB, FCP, LCP, bundle size. Flags regressions with WARN/REGRESSION thresholds. Supports `--trend` for historical drift. |
+| 20 | `/canary` | Post-deploy canary monitoring. Watches the live app after a deploy: console errors, performance regressions, page failures, screenshot comparisons. |
+| 21 | `/investigate` | Bug triage when you don't know where to start. Reconstructs the timeline, diffs the suspect range, builds a hypothesis with confidence rating. |
+| 22 | `/retro` | Weekly retrospective from git history. What shipped, lines added, test health, files touched most, open findings. |
+
+### Design (5) ★ requires `./setup`
+
+| # | Skill | What it does |
+|---|-------|-------------|
+| 23 | `/design-consultation` | Create your design system. Researches the competitive space, proposes aesthetic/typography/color/layout/spacing/motion, writes `DESIGN.md` as the project's design source of truth. Run this first. |
+| 24 | `/plan-design-review` | Design review before implementation. Generates HTML mockups of planned components, screenshots them, produces an opinionated design plan. Run before writing UI code. |
+| 25 | `/design` | Generate UI from scratch. 3 HTML variants in parallel (minimal/bold/data-dense), screenshots each, applies the chosen design to the actual tech stack. |
+| 26 | `/design-shotgun` | Explore directions fast. Generates 4+ variants in parallel, presents a comparison board for selection. |
+| 27 | `/design-review` | Visual design audit. Screenshots running pages, analyzes 10 categories (~80 items): typography, color, spacing, accessibility, AI slop detection. Letter grades with evidence. |
 
 ## Usage
 
