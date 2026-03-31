@@ -70,7 +70,7 @@ explicitly and make the dependency optional — never mandatory.
 
 ## 4. Complement, Don't Compete
 
-nstack is designed to work alongside [superpowers](https://github.com/anthropics/claude-code),
+nstack is designed to work alongside [superpowers](https://github.com/obra/superpowers),
 not replace it. Superpowers handles planning, debugging, TDD, and code review.
 nstack handles security auditing, QA, and retrospectives.
 

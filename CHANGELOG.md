@@ -4,6 +4,33 @@ All notable changes to nstack are documented here.
 
 ---
 
+## [0.2.0] — 2026-04-01
+
+### Added
+- `/office-hours` — YC-style product validation. Five structured lenses (status quo, assumption killer, minimum wedge, existing leverage, regret test). Outputs CONFIRMED / NARROWED / CHALLENGED / DEFER verdict.
+- `/qa-only` — Report-only browser QA. Tests web apps like a real user, documents issues with screenshots and repro steps, produces a health score. Never fixes anything — use `/qa` for the fix loop.
+- `/benchmark` — Performance regression detection. Establishes baselines, compares before/after metrics (TTFB, FCP, LCP, bundle size), flags regressions with WARN/REGRESSION thresholds. Supports `--trend` for historical drift.
+- `/canary` — Post-deploy canary monitoring. Watches the live app after a deploy: console errors, performance regressions, page failures. Takes periodic screenshots and compares against pre-deploy baselines.
+- `/design` — Generate UI from scratch. Reads the codebase, generates 3 HTML design variants in parallel (minimal/bold/data-dense), screenshots each, picks the best with user input, applies to the actual tech stack.
+- `/design-consultation` — Interactive design system creation. Researches the competitive space, proposes aesthetic/typography/color/layout/spacing/motion, generates visual previews, writes `DESIGN.md` as the project's design source of truth.
+- `/design-review` — Visual design audit. Screenshots running pages, analyzes typography, color, spacing, accessibility contrast, and UX patterns across 10 categories (~80 items). Produces a structured critique with letter grades and evidence.
+- `/design-shotgun` — Design variant exploration. Generates 4+ design variants in parallel using Agent dispatch, screenshots each, presents a comparison board for selection.
+- `/plan-design-review` — Pre-implementation design planning. Reviews planned components, generates HTML mockups, screenshots them, and produces an opinionated design plan before a line of code is written.
+
+### Changed
+- **Removed MCP browser fallback from all 5 design skills.** MCP screenshots return base64 image data inline — hundreds of KB of tokens per screenshot, prohibitive at design-workflow volumes (4–20 screenshots per run). Design skills now use the Playwright binary exclusively. `/design` and `/design-review` hard-stop with an install prompt if the binary is missing; `/design-consultation`, `/design-shotgun`, and `/plan-design-review` soft-skip screenshots and proceed.
+- **Invariant cleanup pass across all 5 design skills.** Fixed shell-state loss across Bash calls (variables now persisted to file where needed), unresolved placeholders, binary/MCP path mismatches, and impossible tool instructions. See commit history for per-skill details.
+- **`/cso`** — Added Phase 8a supply chain analysis and trend tracking for emerging threat categories.
+- **`/canary`** — Added `text_snapshot` field to baseline schema for content regression detection.
+
+### Fixed
+- `design-review` Phase 8d: added `$B snapshot -i` before `$B snapshot -D` so diffs baseline the fixed page, not stale pre-fix state
+- `design-shotgun`: `_DESIGN_DIR` and `_PORT` now persisted to file; `_IMAGES` construction and `$D compare` merged into a single Bash block
+- `design-consultation` Phase 2.5: subagent prompt now requires explicit product context substitution before dispatch
+- `plan-design-review`: approval JSON Write path changed from unexpanded `$TMPDIR` to `<resolved-TMPDIR>`
+
+---
+
 ## [0.1.0] — 2026-03-27
 
 ### Added

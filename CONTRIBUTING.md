@@ -132,6 +132,51 @@ nstack has no automated test suite (no build step, no test runner). Testing is m
 2. Verify semver bump determination (feat → MINOR, fix → PATCH)
 3. Verify it never tags without explicit confirmation
 
+**For `/office-hours` changes:**
+1. Run on a product idea with a clear assumption to challenge — verify it fires the right lens
+2. Verify the output produces a CONFIRMED / NARROWED / CHALLENGED / DEFER verdict
+3. Verify it asks one question at a time, not a batched interview
+
+**For `/qa-only` changes:**
+1. Run on a running local app — verify it produces a health report with screenshots
+2. Verify it never writes code or commits anything
+3. Verify the health score reflects the actual findings
+
+**For `/benchmark` changes:**
+1. Run `--baseline` on a project, then make a performance change and run again
+2. Verify WARN and REGRESSION thresholds fire correctly
+3. Run `--trend` and verify it reads historical baselines correctly
+
+**For `/canary` changes:**
+1. Run after a deploy and verify it captures console errors, performance, and screenshot comparisons
+2. Introduce a deliberate regression and verify it's caught
+3. Verify periodic polling doesn't block the session
+
+**For `/design` changes:**
+1. Run on a project with no UI — verify 3 HTML variants are generated and screenshotted
+2. Verify the blend (option D) path produces a 4th variant
+3. Verify Phase 6 applies the design to the actual tech stack, not as a blob
+
+**For `/design-consultation` changes:**
+1. Run on a project with no DESIGN.md — verify it produces one
+2. Verify the proposal includes palette, typography, spacing, and motion
+3. Verify DESIGN.md constraints are never overridden by subsequent suggestions
+
+**For `/design-review` changes:**
+1. Run on a live app — verify findings are categorised with impact ratings
+2. Verify the AI Slop detection section fires on generic layouts
+3. Verify each finding has a screenshot as evidence
+
+**For `/design-shotgun` changes:**
+1. Run and verify N variants are generated in parallel
+2. Verify the comparison board is produced and served
+3. Verify BLOCKED is reported if all variants fail, not silent skip
+
+**For `/plan-design-review` changes:**
+1. Run on a plan with UI scope — verify mockups are generated before review passes
+2. Verify it exits early and explains why when the plan has no UI scope
+3. Verify each review pass rates 0-10 and offers to fix gaps
+
 **The bar:** If you wouldn't trust the skill's output to make a real decision,
 it's not ready to ship.
 
