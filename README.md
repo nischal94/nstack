@@ -69,13 +69,21 @@ By use case:
 
 ## Install
 
+Requirements:
+- Claude Code
+- Git
+- Bun v1.0+ only if you want the design skills
+
+### Step 1: Install nstack
+
 ```bash
 git clone https://github.com/nischal94/nstack.git ~/.claude/skills/nstack
 ```
 
-Core skills work immediately — no build step, no binaries.
+Core skills work immediately after clone. No build step. No binaries. No package
+manager required for the core Markdown skills.
 
-### Optional: design skills
+### Step 2: Optional — enable design skills
 
 Design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`) use a Bun-powered Playwright CLI for fast, token-free screenshot rendering. To enable:
 
@@ -83,7 +91,20 @@ Design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consulta
 cd ~/.claude/skills/nstack && ./setup
 ```
 
-Requires Bun at both install time and runtime (the CLI spawns a Bun server process). Downloads Playwright Chromium (~150MB, one-time). Design skills hard-stop with an install prompt if the binary is missing — `/design-consultation`, `/design-shotgun`, and `/plan-design-review` soft-skip screenshots instead.
+This downloads Playwright Chromium (~150MB, one-time) and builds the local
+browser binary used by the design cluster.
+
+Design runtime notes:
+- Bun is required at both install time and runtime
+- core skills still work without Bun
+- `/design` and `/design-review` hard-stop if the browser binary is missing
+- `/design-consultation`, `/design-shotgun`, and `/plan-design-review` can proceed without screenshots
+
+### Contributing or want full history?
+
+The install above is the simplest path. If you plan to contribute or want full
+git history locally, clone the repo wherever you normally keep source checkouts
+instead of treating `~/.claude/skills/nstack` as the only copy.
 
 ## When to reach for which skill
 
