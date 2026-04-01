@@ -1,6 +1,6 @@
 # nstack
 
-> "The profession is being dramatically refactored." — Andrej Karpathy
+> "Clearly some powerful alien tool was handed around." — Andrej Karpathy
 >
 > nstack is the quality layer for AI-native projects.
 
