@@ -4,8 +4,9 @@
 >
 > nstack is the quality layer for AI-native projects.
 
-> 27 skills for security auditing, QA, bug triage, design, premise challenges, release notes, retrospectives, and safety guardrails for AI-native projects.
-> Zero mandatory setup for core skills. Superpowers-compatible.
+27 skills for security auditing, QA, bug triage, design, premise challenges,
+release notes, retrospectives, and safety guardrails for AI-native projects.
+Zero mandatory setup for core skills. Superpowers-compatible.
 
 AI lets a small team move at absurd speed. It also lets a small team ship
 hallucinated UX, prompt injection holes, invisible regressions, and vague plans
@@ -60,31 +61,29 @@ That sequence shows the core shape of nstack quickly:
 - QA before “works on my machine” becomes a belief
 - design direction before UI drift starts
 
-## What to try first
+By use case:
+- Starting a new AI product: `/premise`, `/office-hours`, `/design-consultation`, `/autoplan`
+- Building a UI-heavy feature: `/plan-design-review`, `/design-shotgun`, `/design`, `/design-review`
+- Doing a security and quality pass: `/cso`, `/review`, `/qa`, `/evals`
+- Getting ready to ship: `/review`, `/qa` or `/qa-only`, `/ship`, `/canary`
 
-**Starting a new AI product**
-- `/premise`
-- `/office-hours`
-- `/design-consultation`
-- `/autoplan`
+## Install
 
-**Building a UI-heavy feature**
-- `/plan-design-review`
-- `/design-shotgun` if the direction is still unclear
-- `/design`
-- `/design-review` after implementation exists
+```bash
+git clone https://github.com/nischal94/nstack.git ~/.claude/skills/nstack
+```
 
-**Doing a security and quality pass**
-- `/cso`
-- `/review`
-- `/qa`
-- `/evals`
+Core skills work immediately — no build step, no binaries.
 
-**Getting ready to ship**
-- `/review`
-- `/qa` or `/qa-only`
-- `/ship`
-- `/canary`
+### Optional: design skills
+
+Design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`) use a Bun-powered Playwright CLI for fast, token-free screenshot rendering. To enable:
+
+```bash
+cd ~/.claude/skills/nstack && ./setup
+```
+
+Requires Bun at both install time and runtime (the CLI spawns a Bun server process). Downloads Playwright Chromium (~150MB, one-time). Design skills hard-stop with an install prompt if the binary is missing — `/design-consultation`, `/design-shotgun`, and `/plan-design-review` soft-skip screenshots instead.
 
 ## When to reach for which skill
 
@@ -127,37 +126,11 @@ REFLECTION
   End of the week?          → /retro           (what shipped, what drifted, what to fix)
 ```
 
-## Install
-
-```bash
-git clone https://github.com/nischal94/nstack.git ~/.claude/skills/nstack
-```
-
-Core skills work immediately — no build step, no binaries.
-
-### Optional: design skills
-
-Design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`) use a Bun-powered Playwright CLI for fast, token-free screenshot rendering. To enable:
-
-```bash
-cd ~/.claude/skills/nstack && ./setup
-```
-
-Requires Bun at both install time and runtime (the CLI spawns a Bun server process). Downloads Playwright Chromium (~150MB, one-time). Design skills hard-stop with an install prompt if the binary is missing — `/design-consultation`, `/design-shotgun`, and `/plan-design-review` soft-skip screenshots instead.
-
-### Design cluster roles
-
-- `/design-consultation` defines the visual system and writes `DESIGN.md`
-- `/plan-design-review` critiques planned UI before implementation
-- `/design` generates a first coherent direction when no UI exists yet
-- `/design-shotgun` explores multiple directions when the visual path is unclear
-- `/design-review` audits and polishes the live result
-
-This cluster is intentionally lighter than gstack's design subsystem. It focuses
-on judgment, direction-setting, and critique. It does not try to be a full
-design platform.
-
 ### Design cluster chain
+
+The design cluster is intentionally lighter than gstack's design subsystem. It
+focuses on judgment, direction-setting, and critique. It does not try to be a
+full design platform.
 
 Think of the design skills as a sequence, not a menu of unrelated commands.
 
