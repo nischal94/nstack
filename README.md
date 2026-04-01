@@ -1,15 +1,30 @@
 # nstack
 
+> "The profession is being dramatically refactored." — Andrej Karpathy
+>
+> nstack is the quality layer for AI-native projects.
+
 > 27 skills for security auditing, QA, bug triage, design, premise challenges, release notes, retrospectives, and safety guardrails for AI-native projects.
 > Zero mandatory setup for core skills. Superpowers-compatible.
 
-Most security tools were built before LLMs existed. They find SQL injection.
-They don't find prompt injection. They find hardcoded secrets. They don't find
-LLM output rendered as raw HTML. They find CVEs. They don't find unbounded API
-calls draining your budget in minutes.
+AI lets a small team move at absurd speed. It also lets a small team ship
+hallucinated UX, prompt injection holes, invisible regressions, and vague plans
+faster than ever.
 
-nstack is the quality layer for projects that call models, orchestrate agents,
-and handle prompt I/O.
+Most software tooling still assumes the old failure modes:
+- SQL injection
+- hardcoded secrets
+- broken builds
+
+AI-native projects fail differently:
+- prompt injection
+- unbounded model spend
+- unsafe tool use
+- brittle agent workflows
+- generic design drift
+
+nstack exists for that gap. It is the quality layer for projects that call
+models, orchestrate agents, and handle prompt I/O.
 
 Within that, the design cluster is deliberately narrower than gstack's. It is
 meant to provide design judgment, direction-setting, and polish without turning
