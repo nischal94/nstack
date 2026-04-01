@@ -15,6 +15,62 @@ Within that, the design cluster is deliberately narrower than gstack's. It is
 meant to provide design judgment, direction-setting, and polish without turning
 nstack into a heavyweight design platform.
 
+## Who nstack is for
+
+nstack is for builders who want stronger judgment around what they ship, not
+just more automation around how they ship it.
+
+- Solo builders working on AI-native products
+- Teams already using `superpowers` and wanting a non-overlapping quality layer
+- Builders who care about prompt security, QA, design quality, and release rigor
+- People who want Markdown skills that are readable, inspectable, and easy to adapt
+
+If you want a broad workflow framework that acts like a full virtual engineering
+team, reach for gstack. If you want a lighter, sharper layer for security,
+quality, observability, judgment, and design critique, reach for nstack.
+
+## Quick start
+
+If you only try five commands, try these:
+
+1. `/cso` on any AI-facing repo
+2. `/review` on any non-trivial diff
+3. `/qa` on a running app
+4. `/design-consultation` before building a new UI-heavy surface
+5. `/plan-design-review` before writing UI code
+
+That sequence shows the core shape of nstack quickly:
+- security before trust is assumed
+- review before changes are merged
+- QA before “works on my machine” becomes a belief
+- design direction before UI drift starts
+
+## What to try first
+
+**Starting a new AI product**
+- `/premise`
+- `/office-hours`
+- `/design-consultation`
+- `/autoplan`
+
+**Building a UI-heavy feature**
+- `/plan-design-review`
+- `/design-shotgun` if the direction is still unclear
+- `/design`
+- `/design-review` after implementation exists
+
+**Doing a security and quality pass**
+- `/cso`
+- `/review`
+- `/qa`
+- `/evals`
+
+**Getting ready to ship**
+- `/review`
+- `/qa` or `/qa-only`
+- `/ship`
+- `/canary`
+
 ## When to reach for which skill
 
 ```
