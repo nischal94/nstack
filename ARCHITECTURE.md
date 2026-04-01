@@ -110,6 +110,19 @@ The same idea applies inside the design cluster:
 
 The cluster is meant to be coherent and selective, not exhaustive.
 
+Read as a chain, the design flow is:
+
+1. `/design-consultation` establishes the visual system and writes `DESIGN.md`
+2. `/plan-design-review` critiques the intended UI before code is written
+3. `/design-shotgun` explores alternative directions when the answer is not obvious
+4. `/design` locks one coherent direction and turns it into an approved implementation reference
+5. normal implementation work builds the product in the actual codebase
+6. `/design-review` audits the built result and tightens polish
+
+This matters because nstack does not include a separate design-only production
+pipeline. The handoff is from design judgment to ordinary implementation work,
+not from one internal design runtime to another.
+
 There are no duplicate skill names. There are no conflicting invocation patterns.
 When you type `/cso`, there is exactly one thing that can happen.
 

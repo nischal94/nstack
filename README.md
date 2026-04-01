@@ -86,6 +86,34 @@ This cluster is intentionally lighter than gstack's design subsystem. It focuses
 on judgment, direction-setting, and critique. It does not try to be a full
 design platform.
 
+### Design cluster chain
+
+Think of the design skills as a sequence, not a menu of unrelated commands.
+
+1. Start with `/design-consultation` when the project has no strong visual system yet.
+   Output: `DESIGN.md` with the visual language, taste, constraints, and non-negotiables.
+2. Run `/plan-design-review` when you have a UI plan but have not built it yet.
+   Output: critique of the plan, missing states, hierarchy issues, and a sharper direction before code is written.
+3. Use `/design-shotgun` when the direction is still unclear and you need multiple visual options quickly.
+   Output: lightweight HTML variants that help you pick or blend a direction.
+4. Use `/design` when you need one approved, coherent direction to move forward with.
+   Output: an approved implementation reference the coding workflow can build from.
+5. Use `/design-review` after the UI exists in the real product.
+   Output: a live-product polish pass that catches hierarchy, spacing, typography, and interaction problems.
+
+The important model is:
+- `/design-consultation` sets the rules
+- `/plan-design-review` critiques the intended solution
+- `/design-shotgun` explores alternatives if the intended solution is still fuzzy
+- `/design` locks a direction
+- normal implementation flow builds the product
+- `/design-review` audits the built result
+
+There is no separate design-only build subsystem inside nstack. After a direction
+is approved, the next step is ordinary implementation work in the real codebase.
+The design skills exist to improve what gets built, not to replace the build
+workflow itself.
+
 ## Skills
 
 27 skills across 6 categories.
@@ -143,8 +171,8 @@ design platform.
 |---|-------|-------------|
 | 23 | `/design-consultation` | Create your design system. Researches the competitive space, proposes aesthetic/typography/color/layout/spacing/motion, writes `DESIGN.md` as the project's design source of truth. Run this first. |
 | 24 | `/plan-design-review` | Design review before implementation. Generates HTML mockups of planned components, screenshots them, produces an opinionated design plan. Run before writing UI code. |
-| 25 | `/design` | Generate UI from scratch. 3 HTML variants in parallel (minimal/bold/data-dense), screenshots each, applies the chosen design to the actual tech stack. |
-| 26 | `/design-shotgun` | Explore directions fast. Generates 4+ variants in parallel, presents a comparison board for selection. |
+| 25 | `/design` | Generate a first coherent direction. Produces an approved implementation reference the coding workflow can build from. |
+| 26 | `/design-shotgun` | Explore directions fast. Generates lightweight HTML variants so you can pick or blend a direction before building. |
 | 27 | `/design-review` | Visual design audit + fix loop. Screenshots running pages, analyzes 10 categories (~80 items): typography, color, spacing, accessibility, AI slop detection. Letter grades with evidence. Applies fixes with atomic commits — requires a clean working tree. |
 
 ## Usage
