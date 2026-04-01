@@ -89,38 +89,38 @@ Requires Bun at both install time and runtime (the CLI spawns a Bun server proce
 
 ```
 BEFORE YOU BUILD
-  Got an idea?              → /premise              (challenge whether to build it at all)
-  Need multiple views?      → /council              (adversarial deliberation before deciding)
+  Got an idea?              → /premise              (challenge whether to build it)
+  Need multiple views?      → /council              (adversarial deliberation)
   Big product decision?     → /office-hours         (YC-style validation)
-  Have a written plan?      → /autoplan             (review the plan before executing)
-  No design system yet?     → /design-consultation  (create DESIGN.md before touching UI)
-  Plan involves UI?         → /plan-design-review   (critique the plan before a line of code)
+  Have a written plan?      → /autoplan             (review before executing)
+  No design system yet?     → /design-consultation  (create DESIGN.md first)
+  Plan involves UI?         → /plan-design-review   (critique before writing UI)
 
 WHILE YOU BUILD
-  Working on risky code?    → /careful         (confirm before destructive commands)
+  Working on risky code?    → /careful         (confirm destructive commands)
   Focused refactor?         → /freeze          (lock edits to one directory)
   Done with the lock?       → /unfreeze        (remove the directory lock)
-  Both at once?             → /guard           (careful + freeze combined)
-  Running a DB migration?   → /migrate         (safety review before applying)
-  Need UI options fast?     → /design-shotgun  (explore directions when the visual path is unclear)
+  Both at once?             → /guard           (careful + freeze)
+  Running a DB migration?   → /migrate         (safety review first)
+  Need UI options fast?     → /design-shotgun  (explore directions quickly)
 
 AFTER YOU BUILD
-  No UI yet?                → /design              (generate a first coherent UI direction)
-  UI exists, needs review?  → /design-review       (visual audit + fix loop; mutates repo)
-  Changed a prompt?         → /evals               (did quality improve or regress?)
-  Ready to review?          → /review              (inline staff engineer review of your diff)
-  Ready to ship?            → /ship                (tests → review → version → changelog → PR)
+  No UI yet?                → /design              (lock a first direction)
+  UI exists, needs review?  → /design-review       (visual audit + fix loop)
+  Changed a prompt?         → /evals               (check quality or regressions)
+  Ready to review?          → /review              (review the diff)
+  Ready to ship?            → /ship                (tests → review → version → PR)
   Cutting a release?        → /document-release    (release notes from git history)
   PR open, waiting for CI?  → /land                (merge → deploy → health check)
-  Just deployed?            → /canary              (watch the live app after a deploy)
+  Just deployed?            → /canary              (watch the live app)
 
 WHEN SOMETHING FEELS OFF
-  Don't know where to start → /investigate     (triage the regression, find the suspect)
-  Security concerns?        → /cso             (full AI-native security audit)
-  App behaving wrong?       → /qa              (browser QA, find bugs, fix and re-verify)
+  Don't know where to start → /investigate     (triage the regression)
+  Security concerns?        → /cso             (AI-native security audit)
+  App behaving wrong?       → /qa              (browser QA, find and fix bugs)
   Just want a QA report?    → /qa-only         (report-only, no fixes)
-  Something seems slower?   → /benchmark       (before/after metrics, flag regressions)
-  Claude config drifting?   → /context         (audit CLAUDE.md, rules, memory for staleness)
+  Something seems slower?   → /benchmark       (flag performance regressions)
+  Claude config drifting?   → /context         (audit CLAUDE.md and rules)
 
 REFLECTION
   End of the week?          → /retro           (what shipped, what drifted, what to fix)
@@ -219,49 +219,21 @@ workflow itself.
 | 26 | `/design-shotgun` | Explore directions fast. Generates lightweight HTML variants so you can pick or blend a direction before building. |
 | 27 | `/design-review` | Visual design audit + fix loop. Screenshots running pages, analyzes 10 categories (~80 items): typography, color, spacing, accessibility, AI slop detection. Letter grades with evidence. Applies fixes with atomic commits — requires a clean working tree. |
 
-## Usage
+## Examples
 
-Just type the skill. No arguments needed to get started.
+Representative commands:
 
 ```
-# Thinking & deciding
-/premise "add multi-tenant support"    challenge whether to build it
-/office-hours                          YC-style product validation
-/council "should we go GraphQL-only?"  multi-perspective deliberation
-/autoplan                              review the plan before executing
-
-# Safety guardrails
-/careful                               confirm before destructive commands
-/freeze src/payments/                  lock edits to one directory
-/guard src/payments/                   careful + freeze combined
-/unfreeze                              remove the lock
-
-# Building
-/review                                staff engineer review of your diff
-/migrate                               safety review before applying a migration
-/evals                                 run LLM output quality tests
-/context                               audit your Claude Code config
-
-# Shipping
-/ship                                  tests → review → version → changelog → PR
-/land                                  merge → deploy → health check
-/document-release                      release notes from git history
-
-# Quality & monitoring
-/cso                                   audit for security vulnerabilities
-/qa https://localhost:3000             browser QA — find bugs, fix, re-verify
-/qa-only https://localhost:3000        QA report only, no fixes
-/benchmark                             performance regression check
-/canary                                monitor the live app after a deploy
-/investigate "costs spiked"            triage a regression
-/retro                                 weekly retrospective from git history
-
-# Design  ★ requires ./setup
-/design-consultation                   create your design system (start here)
-/plan-design-review                    design review before writing UI code
-/design                                generate a first approved design direction
-/design-shotgun                        explore multiple design directions fast
-/design-review https://localhost:3000  visual audit + fix loop (commits changes)
+/premise "add multi-tenant support"
+/autoplan
+/review
+/cso
+/qa https://localhost:3000
+/ship
+/design-consultation
+/plan-design-review
+/design
+/design-review https://localhost:3000
 ```
 
 ## Why not just use gstack?
