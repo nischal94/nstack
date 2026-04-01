@@ -219,23 +219,6 @@ workflow itself.
 | 26 | `/design-shotgun` | Explore directions fast. Generates lightweight HTML variants so you can pick or blend a direction before building. |
 | 27 | `/design-review` | Visual design audit + fix loop. Screenshots running pages, analyzes 10 categories (~80 items): typography, color, spacing, accessibility, AI slop detection. Letter grades with evidence. Applies fixes with atomic commits — requires a clean working tree. |
 
-## Examples
-
-Representative commands:
-
-```
-/premise "add multi-tenant support"
-/autoplan
-/review
-/cso
-/qa https://localhost:3000
-/ship
-/design-consultation
-/plan-design-review
-/design
-/design-review https://localhost:3000
-```
-
 ## Why not just use gstack?
 
 [gstack](https://github.com/garrytan/gstack) is excellent. 31 skills, a Bun-powered browser daemon, team-oriented workflow, multi-agent support (Codex, Gemini CLI, Factory Droid). If you want a broad AI engineering workflow covering the full team, use gstack.
