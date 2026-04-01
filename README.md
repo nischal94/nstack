@@ -1,16 +1,40 @@
 # nstack
 
-> "Clearly some powerful alien tool was handed around." — Andrej Karpathy
->
-> nstack is the quality layer for AI-native projects.
+> "I don't think I've typed like a line of code probably since December, basically, which is an extremely large change." — Andrej Karpathy, No Priors podcast, March 2026
+
+That line stuck with me because it names the shift directly. The bottleneck is
+not typing anymore. The bottleneck is judgment: knowing what to build, where the
+risks are, what the model can quietly break, and how to keep shipping without
+letting the stack turn into noise.
+
+I had already built a strong Claude Code workflow around
+[superpowers](https://github.com/obra/superpowers). Then I found
+[gstack](https://github.com/garrytan/gstack), which is excellent. It made the
+same thing obvious from another angle: one person with the right AI tooling can
+move with the leverage of a much larger team.
+
+But I did not adopt gstack as-is.
+
+For my workflow, there was too much overlap between gstack and superpowers in
+the core dev loop. Both touched planning, execution, and general engineering
+workflow. I did not want duplicate commands, conflicting habits, or a heavier
+stack than I actually needed.
+
+So I built nstack instead.
+
+nstack is the layer I wanted on top of superpowers: a zero-dependency skill pack
+for the gaps neither gstack nor superpowers covered cleanly for AI-native work.
+It focuses on security, QA, evals, migrations, observability, design judgment,
+release rigor, and premise challenge. It is meant to complement the development
+workflow, not compete with it.
 
 27 skills for security auditing, QA, bug triage, design, premise challenges,
 release notes, retrospectives, and safety guardrails for AI-native projects.
 Zero mandatory setup for core skills. Superpowers-compatible.
 
 AI lets a small team move at absurd speed. It also lets a small team ship
-hallucinated UX, prompt injection holes, invisible regressions, and vague plans
-faster than ever.
+hallucinated UX, prompt injection holes, invisible regressions, weak product
+premises, and brittle agent workflows faster than ever.
 
 Most software tooling still assumes the old failure modes:
 - SQL injection
@@ -27,9 +51,9 @@ AI-native projects fail differently:
 nstack exists for that gap. It is the quality layer for projects that call
 models, orchestrate agents, and handle prompt I/O.
 
-Within that, the design cluster is deliberately narrower than gstack's. It is
-meant to provide design judgment, direction-setting, and polish without turning
-nstack into a heavyweight design platform.
+The design cluster is deliberately narrower than gstack's. It is there for
+design judgment, direction-setting, and polish without turning nstack into a
+heavyweight design platform.
 
 ## Who nstack is for
 
@@ -41,9 +65,11 @@ just more automation around how they ship it.
 - Builders who care about prompt security, QA, design quality, and release rigor
 - People who want Markdown skills that are readable, inspectable, and easy to adapt
 
-If you want a broad workflow framework that acts like a full virtual engineering
-team, reach for gstack. If you want a lighter, sharper layer for security,
-quality, observability, judgment, and design critique, reach for nstack.
+If you want a broad workflow framework that behaves like a full virtual
+engineering team, reach for gstack. If you want a lighter, sharper layer for
+security, quality, observability, judgment, and design critique, reach for
+nstack. If you already run superpowers, nstack is designed to fit beside it
+cleanly.
 
 ## Quick start
 
@@ -242,32 +268,45 @@ workflow itself.
 
 ## Why not just use gstack?
 
-[gstack](https://github.com/garrytan/gstack) is excellent. 31 skills, a Bun-powered browser daemon, team-oriented workflow, multi-agent support (Codex, Gemini CLI, Factory Droid). If you want a broad AI engineering workflow covering the full team, use gstack.
+[gstack](https://github.com/garrytan/gstack) is excellent. Garry saw the same
+macro shift I did: one builder can now ship with the leverage of a much larger
+team. But I built nstack because I wanted different tradeoffs.
 
-nstack makes a different set of tradeoffs:
+The short version:
+- I was already using [superpowers](https://github.com/obra/superpowers), and gstack overlapped too much with it in the core dev loop.
+- I wanted core skills to work immediately after `git clone`, without Bun, Playwright, or a browser daemon.
+- I wanted stronger emphasis on AI-native security, prompt quality, migration safety, observability, and product judgment.
+- I wanted clean handoff points into superpowers instead of competing abstractions.
+
+nstack is not "gstack, smaller." It is a more opinionated layer for a different
+workflow shape.
 
 | | nstack | gstack |
 |---|---|---|
 | Install | `git clone` (core works instantly) | `git clone + ./setup` (requires Bun, ~2 min) |
 | Core skills | Zero mandatory setup | Bun + Playwright required |
 | Design skills | Optional `./setup` (same Bun + Playwright) | Required for all skills |
-| LLM/AI security | First-class — prompt injection, cost attacks, RAG poisoning, tool call validation | Covered but not the primary lens |
+| LLM/AI security | First-class: prompt injection, cost attacks, RAG poisoning, tool validation | Covered, but not the primary lens |
 | Skill count | 27 | 31 |
 | superpowers | Designed to complement | Independent workflow system |
 | Multi-agent | Designed for Claude Code workflows | Claude Code, Codex, Gemini CLI, Factory Droid |
 | Team features | Solo-builder defaults | Team-aware (teammate install, shared skills) |
 
-**Use nstack if:** You're building AI-native projects and want LLM security as a first-class concern. Or you want core Markdown skills with zero mandatory setup.
+**Use nstack if:** You want a lighter quality layer for AI-native work, especially if you already use superpowers or want zero-dependency core skills.
 
-**Use gstack if:** You want the full sprint workflow, multi-agent support, or team-oriented features.
+**Use gstack if:** You want a broader workflow framework with built-in team and multi-agent features.
 
-**Use both if:** They don't conflict — no overlapping skill names. nstack's AI-native security coverage complements gstack's broader workflow tooling.
+**Use both if:** You want gstack's broader workflow tooling and nstack's AI-native quality layer. The skill names do not collide.
 
 ## Compatibility
 
 nstack is designed to complement [superpowers](https://github.com/obra/superpowers).
-No overlapping skill names. No conflicting workflows. nstack hands off to superpowers
-at natural boundaries — debugging a finding, verifying a fix, reviewing remediation code.
+No overlapping skill names. No conflicting workflows. nstack hands off to
+superpowers at natural boundaries: debugging a finding, verifying a fix,
+reviewing remediation code, or pushing a broader implementation loop forward.
+
+That separation is the point. superpowers covers the development workflow.
+nstack sits on top as the quality layer.
 
 ## Design principles
 
