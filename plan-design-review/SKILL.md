@@ -180,23 +180,24 @@ The ONLY time you skip mockups is when:
 - The plan has zero UI scope (pure backend/API/infrastructure)
 - The user explicitly says "skip mockups" or "text only"
 
-**Before writing mockups:** Resolve `$TMPDIR` to its literal value:
+**Before writing mockups:** create a durable output directory inside the repo:
 ```bash
-echo "$TMPDIR"
-NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
+PLAN_REVIEW_DIR="$(pwd)/.nstack/plan-design-review/$(date +%Y%m%d)"
+mkdir -p "$PLAN_REVIEW_DIR"
+echo "$PLAN_REVIEW_DIR"
 ```
-Use the resolved path (e.g. `/var/folders/xx/.../T/`) in all file paths below. Do NOT use `$TMPDIR` as a shell variable in Write tool paths — it won't expand.
+Use the resolved path in all file paths below. This directory is the durable artifact location for approved mockups.
 
 **For each UI screen/section in scope:**
 
-1. Write a self-contained HTML file capturing the design. Use inline CSS and no external dependencies. File name: `<resolved-TMPDIR>/plan-design-review-<screen-name>-<variant>.html` — use the Write tool.
+1. Write a self-contained HTML file capturing the design. Use inline CSS and no external dependencies. File name: `<resolved-PLAN_REVIEW_DIR>/plan-design-review-<screen-name>-<variant>.html` — use the Write tool.
 
 2. Screenshot it (if binary is installed):
    ```bash
    NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
-   _TMPDIR="$(echo "$TMPDIR")"
-   "$NSTACK_BROWSE" goto "file://${_TMPDIR}/plan-design-review-<screen-name>-<variant>.html"
-   "$NSTACK_BROWSE" screenshot "${_TMPDIR}/plan-design-review-<screen-name>-<variant>.png"
+   PLAN_REVIEW_DIR="$(pwd)/.nstack/plan-design-review/$(date +%Y%m%d)"
+   "$NSTACK_BROWSE" goto "file://${PLAN_REVIEW_DIR}/plan-design-review-<screen-name>-<variant>.html"
+   "$NSTACK_BROWSE" screenshot "${PLAN_REVIEW_DIR}/plan-design-review-<screen-name>-<variant>.png"
    ```
    Substitute actual screen-name and variant before running.
 
@@ -209,15 +210,15 @@ Generate 3 variants per screen (A, B, C) with meaningfully different directions 
 
 **Save the approved direction** by appending a JSON line to `~/.nstack/plan-design-reviews/approved.jsonl`. Use the Write tool to build the JSON (user feedback may contain quotes or special chars that break shell echo), then append with Bash:
 
-Write the following JSON to a temp file at `<resolved-TMPDIR>/plan-design-review-approval.json` using the Write tool (use the literal path from the `echo "$TMPDIR"` step above — the Write tool does not expand shell variables):
+Write the following JSON to `<resolved-PLAN_REVIEW_DIR>/plan-design-review-approval.json` using the Write tool:
 ```json
 {"approved_variant":"A","feedback":"user feedback here","date":"2026-01-01T00:00:00Z","screen":"screen-name","branch":"main"}
 ```
-Then append (resolve TMPDIR first so the Bash path matches the Write tool path):
+Then append:
 ```bash
-_TMPDIR="$(echo "$TMPDIR")"
+PLAN_REVIEW_DIR="$(pwd)/.nstack/plan-design-review/$(date +%Y%m%d)"
 mkdir -p ~/.nstack/plan-design-reviews
-cat "${_TMPDIR}/plan-design-review-approval.json" >> ~/.nstack/plan-design-reviews/approved.jsonl
+cat "${PLAN_REVIEW_DIR}/plan-design-review-approval.json" >> ~/.nstack/plan-design-reviews/approved.jsonl
 echo "" >> ~/.nstack/plan-design-reviews/approved.jsonl
 ```
 
@@ -405,7 +406,7 @@ If mockups were generated in Step 0.5 and review passes changed significant desi
 
 AskUserQuestion: "The review passes changed [list major design changes]. Want me to regenerate mockups to reflect the updated plan? This ensures the visual reference matches what we're actually building."
 
-If yes, write updated HTML files and screenshot them. Save to `<resolved-TMPDIR>/plan-design-review-<screen>-updated-<variant>.html` (use the resolved TMPDIR from Step 0.5).
+If yes, write updated HTML files and screenshot them. Save to `<resolved-PLAN_REVIEW_DIR>/plan-design-review-<screen>-updated-<variant>.html` using the durable plan review directory from Step 0.5.
 
 ## CRITICAL RULE — How to ask questions
 
@@ -476,10 +477,10 @@ If visual mockups were generated during this review, add to the plan file:
 
 | Screen/Section | Mockup Path | Direction | Notes |
 |----------------|-------------|-----------|-------|
-| [screen name]  | <resolved-TMPDIR>/plan-design-review-[screen]-[variant].html | [brief description] | [constraints from review] |
+| [screen name]  | <resolved-PLAN_REVIEW_DIR>/plan-design-review-[screen]-[variant].html | [brief description] | [constraints from review] |
 ```
 
-Substitute the resolved TMPDIR value (from Step 0.5) when filling in the mockup path column — use the actual directory path, not the variable `$TMPDIR`.
+Substitute the resolved plan review directory value (from Step 0.5) when filling in the mockup path column — use the actual directory path, not the variable name.
 
 Include the full path to each approved mockup, a one-line description of the direction, and any constraints. The implementer reads this to know exactly which visual to build from. If no mockups were generated, omit this section.
 
@@ -489,12 +490,12 @@ After displaying the Completion Summary, recommend the next review(s) based on w
 
 **Recommend `superpowers:writing-plans` if eng review is needed** — if this design review added significant interaction specifications, new user flows, or changed the information architecture, a plan-level architecture review is the right next step.
 
-**Recommend design exploration when appropriate** — if this design review found visual issues that would benefit from exploring new directions, consider running `/design-shotgun` for more variants, or `/design-html` to turn approved mockups into working HTML.
+**Recommend design exploration when appropriate** — if this design review found visual issues that would benefit from exploring new directions, consider running `/design-shotgun` for more variants, or `/design` to lock one approved direction.
 
 Use AskUserQuestion to present the next step. Include only applicable options:
 - **A)** Run engineering review (via `superpowers:writing-plans`)
 - **B)** Run /design-shotgun — explore visual design variants for issues found
-- **C)** Run /design-html — generate HTML from approved mockups
+- **C)** Run /design — lock one approved direction for the coding workflow
 - **D)** Skip — I'll handle next steps manually
 
 ## Completion Status

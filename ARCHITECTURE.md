@@ -115,7 +115,7 @@ Read as a chain, the design flow is:
 1. `/design-consultation` establishes the visual system and writes `DESIGN.md`
 2. `/plan-design-review` critiques the intended UI before code is written
 3. `/design-shotgun` explores alternative directions when the answer is not obvious
-4. `/design` locks one coherent direction and turns it into an approved implementation reference
+4. `/design` locks one coherent direction and turns it into an approved design reference package
 5. normal implementation work builds the product in the actual codebase
 6. `/design-review` audits the built result and tightens polish
 

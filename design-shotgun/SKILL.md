@@ -378,7 +378,7 @@ If standalone, offer next steps via AskUserQuestion:
 
 > "Design direction locked in. What's next?
 > A) Iterate more — refine the approved variant with specific feedback
-> B) Apply it — use `/design` to adapt this direction into the project
+> B) Lock it — use `/design` to turn this into one approved direction reference
 > C) Save to plan — add this as an approved direction reference in the current plan
 > D) Done — I'll use this later"
 

@@ -73,6 +73,15 @@ If `CDP_MODE=true`: skip cookie import steps — the real browser already has co
 
 Look for `DESIGN.md`, `design-system.md`, or similar in the repo root. If found, read it — all design decisions must be calibrated against it. Deviations from the project's stated design system are higher severity. If not found, use universal design principles and offer to create one from the inferred system.
 
+**Check for an approved design reference:**
+
+Look for `.nstack/design/final/approved.html` and `.nstack/design/final/APPROVED_DIRECTION.md`.
+If they exist, read them before the audit. Treat them as the approved direction
+for this workflow:
+- compare the built result against the approved direction as well as the live UX bar
+- flag meaningful drift between the approved direction and the rendered product
+- do not assume the approved direction is perfect, but do treat unexplained drift as a finding
+
 **Check for clean working tree:**
 
 ```bash

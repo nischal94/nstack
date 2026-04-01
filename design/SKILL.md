@@ -2,8 +2,8 @@
 name: design
 description: Use when asked to "design this", "make it look good", "generate UI",
   or "build the frontend". Generates 2-3 HTML design directions, helps the user
-  pick one, then adapts the approved direction into the project's actual UI
-  layer. Use when there is no existing UI direction yet. For design-system work,
+  pick one, then packages the approved direction as a reference for the normal
+  coding workflow. Use when there is no existing UI direction yet. For design-system work,
   use /design-consultation. For option exploration on an existing direction, use
   /design-shotgun. For critique, use /design-review or /plan-design-review. (nstack)
 allowed-tools:
@@ -23,24 +23,26 @@ allowed-tools:
 This skill is the lightweight entry point for UI generation in nstack.
 
 Its job is not to run a heavyweight design factory. Its job is to get a project
-from "we need a UI direction" to "we have one coherent direction we can build."
+from "we need a UI direction" to "we have one coherent direction we can follow."
 
 What this skill produces:
 - 2-3 HTML design directions with realistic content
 - screenshots when the browse binary is available
-- one approved direction adapted into the project's actual UI layer
+- one approved direction packaged as a durable design reference
 
 What this skill does NOT produce:
 - a full design system, use `/design-consultation`
 - an exhaustive design critique, use `/design-review`
 - a broad exploration board with many alternatives, use `/design-shotgun`
+- direct implementation in the project codebase
 
 If a `DESIGN.md` exists, it is binding. This skill explores layout, hierarchy,
 and component direction inside that system. It does not invent a new visual
 language.
 
 When this skill finishes successfully, the next likely step is:
-- `/design-review` if the implemented result needs polish
+- normal implementation work in the real codebase
+- `/design-review` after the implemented result exists
 - `/plan-design-review` if the design direction exposed missing plan decisions
 
 ## Browser Detection (run first)
@@ -70,7 +72,8 @@ cat package.json 2>/dev/null || cat pyproject.toml 2>/dev/null || echo "NO_PACKA
 
 - Check for `DESIGN.md` in the project root. If found, load it — it is a binding design system constraint.
 - Scan for existing UI patterns: CSS files, component directories (`components/`, `src/`, `app/`), template files (`.html`, `.tsx`, `.vue`, `.erb`, `.jinja`).
-- Note the tech stack. This matters for Phase 6 — React needs components, Django needs templates, plain HTML is write-in-place.
+- Note the tech stack. This matters for the handoff note so the next coding step
+  knows what kind of UI layer will consume the approved direction.
 
 ```bash
 cat DESIGN.md 2>/dev/null || echo "NO_DESIGN_MD"
@@ -205,59 +208,44 @@ _TMPDIR="$TMPDIR"
 
 If no option satisfies: go back to Phase 2 with new direction from the user.
 
-## Phase 6: Apply to Project
+## Phase 6: Package The Approved Direction
 
-Take the approved HTML variant and adapt it to the actual project tech stack.
+Do not implement the design in the project codebase.
 
-Identify the UI layer from Phase 1:
+Instead, package the approved direction so the normal coding workflow can build
+it intentionally.
 
-- **React / Next.js:** Extract layout and components. Create component files with inline styles or CSS modules. Update `app/page.tsx`, `pages/index.tsx`, or the relevant entry point.
-- **Vue:** Create `.vue` single-file components with scoped styles.
-- **Plain HTML:** Write directly to `index.html` or the relevant template file.
-- **Django / Jinja:** Adapt to `base.html` + `{% block %}` partials. Extract CSS to a static file.
-- **Rails / ERB:** Adapt to `application.html.erb` + partials. Extract CSS to `application.css`.
-- **Unknown / ambiguous stack:** AskUserQuestion — "Which file should I write the UI to? (e.g. `src/index.html`, `templates/base.html`)" before writing anything.
+Create `.nstack/design/final/` and write:
+- `approved.html` — the approved variant as the canonical visual reference
+- `APPROVED_DIRECTION.md` — a short design-reference note for the coding workflow
 
-Do not dump the entire HTML variant as one blob. Break it into the structure the project expects.
+`APPROVED_DIRECTION.md` should capture:
+- what screen/page this design is for
+- the core layout structure
+- the main components and sections
+- important responsive behavior
+- key visual rules that should not drift
+- open questions or decisions still needing confirmation
+- the detected UI layer or stack from Phase 1
 
-Show a summary of what changed:
-- Which files were written or edited
-- What was extracted (components, styles, etc.)
-- Any decisions that need the user's input (e.g., where to put shared styles)
+If the approved direction is a blend, make sure `approved.html` reflects the
+blended result rather than pointing at an earlier variant.
 
-## Phase 7: Verify
+Show a short completion summary:
+- which variant was approved
+- where `approved.html` was written
+- where `APPROVED_DIRECTION.md` was written
+- the recommended next step: use the normal coding workflow to build it, then run `/design-review`
 
-Open the live result in the browser.
+## Phase 7: Close Cleanly
 
-```bash
-curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 2>/dev/null || \
-curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 2>/dev/null || \
-echo "NO_DEV_SERVER"
-```
+Do not claim the design has been implemented.
 
-If dev server running:
-```bash
-NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
-"$NSTACK_BROWSE" goto "http://localhost:3000"
-"$NSTACK_BROWSE" screenshot .nstack/design/result.png
-```
-
-If no dev server, open the file written in Phase 6:
-```bash
-NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
-_PWD="$(pwd)"
-"$NSTACK_BROWSE" goto "file://${_PWD}/<phase-6-output-file>"
-"$NSTACK_BROWSE" screenshot "${_PWD}/.nstack/design/result.png"
-```
-Replace `<phase-6-output-file>` with the actual file written in Phase 6. If no dev server and the stack isn't plain HTML, AskUserQuestion for the correct URL or file path.
-
-Show the screenshot to the user with the Read tool.
-
-Ask:
-
-> Does this match what you selected? Any adjustments needed?
-
-If adjustments are needed, make targeted edits and re-screenshot. Do not regenerate from scratch unless the user asks.
+End by stating:
+- the design direction is approved
+- the reference artifacts are ready
+- actual coding happens in the normal project workflow
+- `/design-review` should be used after the UI exists in the real product
 
 ## Rules
 

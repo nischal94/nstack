@@ -97,7 +97,7 @@ Think of the design skills as a sequence, not a menu of unrelated commands.
 3. Use `/design-shotgun` when the direction is still unclear and you need multiple visual options quickly.
    Output: lightweight HTML variants that help you pick or blend a direction.
 4. Use `/design` when you need one approved, coherent direction to move forward with.
-   Output: an approved implementation reference the coding workflow can build from.
+   Output: an approved design reference package the coding workflow can build from.
 5. Use `/design-review` after the UI exists in the real product.
    Output: a live-product polish pass that catches hierarchy, spacing, typography, and interaction problems.
 
@@ -171,7 +171,7 @@ workflow itself.
 |---|-------|-------------|
 | 23 | `/design-consultation` | Create your design system. Researches the competitive space, proposes aesthetic/typography/color/layout/spacing/motion, writes `DESIGN.md` as the project's design source of truth. Run this first. |
 | 24 | `/plan-design-review` | Design review before implementation. Generates HTML mockups of planned components, screenshots them, produces an opinionated design plan. Run before writing UI code. |
-| 25 | `/design` | Generate a first coherent direction. Produces an approved implementation reference the coding workflow can build from. |
+| 25 | `/design` | Generate a first coherent direction. Produces an approved design reference package for the normal coding workflow. |
 | 26 | `/design-shotgun` | Explore directions fast. Generates lightweight HTML variants so you can pick or blend a direction before building. |
 | 27 | `/design-review` | Visual design audit + fix loop. Screenshots running pages, analyzes 10 categories (~80 items): typography, color, spacing, accessibility, AI slop detection. Letter grades with evidence. Applies fixes with atomic commits — requires a clean working tree. |
 
@@ -215,7 +215,7 @@ Just type the skill. No arguments needed to get started.
 # Design  ★ requires ./setup
 /design-consultation                   create your design system (start here)
 /plan-design-review                    design review before writing UI code
-/design                                generate UI from scratch
+/design                                generate a first approved design direction
 /design-shotgun                        explore multiple design directions fast
 /design-review https://localhost:3000  visual audit + fix loop (commits changes)
 ```
