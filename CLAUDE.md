@@ -1,6 +1,6 @@
 # nstack
 
-A Claude Code skill pack for AI-native projects. Zero dependencies. Superpowers-compatible.
+A Claude Code skill pack for AI-native projects. Zero mandatory setup for core skills. Superpowers-compatible.
 
 ## Structure
 
@@ -26,11 +26,11 @@ office-hours/SKILL.md      ← /office-hours YC-style product validation
 qa-only/SKILL.md           ← /qa-only report-only browser QA
 benchmark/SKILL.md         ← /benchmark performance regression detection
 canary/SKILL.md            ← /canary post-deploy canary monitoring
-design/SKILL.md            ← /design generate UI from scratch
+design/SKILL.md            ← /design generate a first coherent UI direction
 design-consultation/SKILL.md ← /design-consultation interactive design system creation
 design-review/SKILL.md     ← /design-review designer's eye visual QA
-design-shotgun/SKILL.md    ← /design-shotgun design variant exploration
-plan-design-review/SKILL.md ← /plan-design-review designer's eye plan review
+design-shotgun/SKILL.md    ← /design-shotgun fast design direction exploration
+plan-design-review/SKILL.md ← /plan-design-review pre-build design critique
 ETHOS.md                   ← principles injected into skill preambles
 ARCHITECTURE.md            ← why nstack is built this way
 CONTRIBUTING.md            ← how to contribute
@@ -44,7 +44,7 @@ When editing skills, changes take effect immediately — no build step needed.
 
 - Skill descriptions start with "Use when..." and describe triggering conditions only
 - Every security finding needs a concrete exploit scenario
-- No dependencies introduced — skills use only Claude's built-in tools
+- Core skills avoid mandatory dependencies; design skills opt in to Bun + Playwright
 - Hand off to superpowers at natural boundaries (debugging, verification, review)
 
 ## Commit style

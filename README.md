@@ -11,6 +11,10 @@ calls draining your budget in minutes.
 nstack is the quality layer for projects that call models, orchestrate agents,
 and handle prompt I/O.
 
+Within that, the design cluster is deliberately narrower than gstack's. It is
+meant to provide design judgment, direction-setting, and polish without turning
+nstack into a heavyweight design platform.
+
 ## When to reach for which skill
 
 ```
@@ -20,7 +24,7 @@ BEFORE YOU BUILD
   Big product decision?     → /office-hours         (YC-style validation)
   Have a written plan?      → /autoplan             (review the plan before executing)
   No design system yet?     → /design-consultation  (create DESIGN.md before touching UI)
-  Plan involves UI?         → /plan-design-review   (design review before a line of code)
+  Plan involves UI?         → /plan-design-review   (critique the plan before a line of code)
 
 WHILE YOU BUILD
   Working on risky code?    → /careful         (confirm before destructive commands)
@@ -28,10 +32,10 @@ WHILE YOU BUILD
   Done with the lock?       → /unfreeze        (remove the directory lock)
   Both at once?             → /guard           (careful + freeze combined)
   Running a DB migration?   → /migrate         (safety review before applying)
-  Need UI options fast?     → /design-shotgun  (parallel variants, pick the best)
+  Need UI options fast?     → /design-shotgun  (explore directions when the visual path is unclear)
 
 AFTER YOU BUILD
-  No UI yet?                → /design              (generate UI from scratch)
+  No UI yet?                → /design              (generate a first coherent UI direction)
   UI exists, needs review?  → /design-review       (visual audit + fix loop; mutates repo)
   Changed a prompt?         → /evals               (did quality improve or regress?)
   Ready to review?          → /review              (inline staff engineer review of your diff)
@@ -69,6 +73,18 @@ cd ~/.claude/skills/nstack && ./setup
 ```
 
 Requires Bun at both install time and runtime (the CLI spawns a Bun server process). Downloads Playwright Chromium (~150MB, one-time). Design skills hard-stop with an install prompt if the binary is missing — `/design-consultation`, `/design-shotgun`, and `/plan-design-review` soft-skip screenshots instead.
+
+### Design cluster roles
+
+- `/design-consultation` defines the visual system and writes `DESIGN.md`
+- `/plan-design-review` critiques planned UI before implementation
+- `/design` generates a first coherent direction when no UI exists yet
+- `/design-shotgun` explores multiple directions when the visual path is unclear
+- `/design-review` audits and polishes the live result
+
+This cluster is intentionally lighter than gstack's design subsystem. It focuses
+on judgment, direction-setting, and critique. It does not try to be a full
+design platform.
 
 ## Skills
 

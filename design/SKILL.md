@@ -1,9 +1,11 @@
 ---
 name: design
 description: Use when asked to "design this", "make it look good", "generate UI",
-  or "build the frontend". Reads the codebase, generates multiple HTML design
-  variants, screenshots each, picks the best, and applies it to the project.
-  Proactively suggest when the user has no existing UI. (nstack)
+  or "build the frontend". Generates 2-3 HTML design directions, helps the user
+  pick one, then adapts the approved direction into the project's actual UI
+  layer. Use when there is no existing UI direction yet. For design-system work,
+  use /design-consultation. For option exploration on an existing direction, use
+  /design-shotgun. For critique, use /design-review or /plan-design-review. (nstack)
 allowed-tools:
   - Bash
   - Read
@@ -16,9 +18,30 @@ allowed-tools:
   - WebSearch
 ---
 
-# /design: UI Generation with Parallel Variant Selection
+# /design: Generate A First Coherent Direction
 
-Generate multiple design variants, screenshot each, let the user pick, then apply the chosen design to the actual project.
+This skill is the lightweight entry point for UI generation in nstack.
+
+Its job is not to run a heavyweight design factory. Its job is to get a project
+from "we need a UI direction" to "we have one coherent direction we can build."
+
+What this skill produces:
+- 2-3 HTML design directions with realistic content
+- screenshots when the browse binary is available
+- one approved direction adapted into the project's actual UI layer
+
+What this skill does NOT produce:
+- a full design system, use `/design-consultation`
+- an exhaustive design critique, use `/design-review`
+- a broad exploration board with many alternatives, use `/design-shotgun`
+
+If a `DESIGN.md` exists, it is binding. This skill explores layout, hierarchy,
+and component direction inside that system. It does not invent a new visual
+language.
+
+When this skill finishes successfully, the next likely step is:
+- `/design-review` if the implemented result needs polish
+- `/plan-design-review` if the design direction exposed missing plan decisions
 
 ## Browser Detection (run first)
 

@@ -1,9 +1,10 @@
 ---
 name: design-shotgun
 description: Use when asked to "show me options", "generate variants", "multiple
-  designs", or "explore directions". Generates 4+ design variants in parallel
-  using Agent dispatch, screenshots each, presents a comparison board for
-  selection. (nstack)
+  designs", or "explore directions". Explores several lightweight design
+  directions quickly so the user can compare them and choose what to push
+  further. Use when the direction is unclear, not when you need a full design
+  system or a finished implementation plan. (nstack)
 allowed-tools:
   - Bash
   - Read
@@ -53,51 +54,46 @@ ATTEMPTED: [what you tried]
 RECOMMENDATION: [what the user should do next]
 ```
 
-# /design-shotgun: Visual Design Exploration
+# /design-shotgun: Fast Direction Exploration
 
 You are a design brainstorming partner. Generate multiple AI design variants, open them
 side-by-side in the user's browser, and iterate until they approve a direction. This is
 visual brainstorming, not a review process.
 
+This skill is intentionally narrower than a full design platform.
+
+Its role in nstack is:
+- explore multiple directions quickly
+- help the user compare them
+- identify the direction worth carrying forward
+
+Its role is NOT:
+- define the whole design system, use `/design-consultation`
+- critique a live product, use `/design-review`
+- critique a written plan, use `/plan-design-review`
+- promise a heavyweight generative design runtime just because gstack has one
+
+The output of this skill is a clearer direction, not a finished design system or
+an implementation-ready subsystem on its own.
+
 ## DESIGN SETUP (run this check BEFORE any design mockup command)
 
 ```bash
-_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-D=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/nstack/design/dist/design" ] && D="$_ROOT/.claude/skills/nstack/design/dist/design"
-[ -z "$D" ] && D=~/.claude/skills/nstack/design/dist/design
-if [ -x "$D" ]; then
-  echo "DESIGN_READY: $D"
-else
-  echo "DESIGN_NOT_AVAILABLE"
-fi
 NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
 if [ -x "$NSTACK_BROWSE" ]; then
   echo "BROWSE_READY: $NSTACK_BROWSE"
 else
-  echo "BROWSE_NOT_AVAILABLE (will use 'open' to view comparison boards)"
+  echo "BROWSE_NOT_AVAILABLE"
 fi
 ```
 
-If `DESIGN_NOT_AVAILABLE`: skip visual mockup generation and fall back to the
-HTML wireframe approach (`DESIGN_SKETCH`). Design mockups are a progressive
-enhancement, not a hard requirement.
+This skill uses lightweight, inspectable HTML variants as its primary artifact.
 
-If `BROWSE_NOT_AVAILABLE`: use `open file://...` instead of `$B goto` to open
-comparison boards. The user just needs to see the HTML file in any browser.
+If `BROWSE_NOT_AVAILABLE`, the skill still works. Show the HTML file paths and let
+the user open them manually if they want a closer look.
 
-If `DESIGN_READY`: the design binary is available for visual mockup generation.
-Commands:
-- `$D generate --brief "..." --output /path.png` — generate a single mockup
-- `$D variants --brief "..." --count 3 --output-dir /path/` — generate N style variants
-- `$D compare --images "a.png,b.png,c.png" --output /path/board.html --serve` — comparison board + HTTP server
-- `$D serve --html /path/board.html` — serve comparison board and collect feedback via HTTP
-- `$D check --image /path.png --brief "..."` — vision quality gate
-- `$D iterate --session /path/session.json --feedback "..." --output /path.png` — iterate
-
-**CRITICAL PATH RULE:** All design artifacts (mockups, comparison boards, approved.json)
-MUST be saved to `.nstack/design-shotgun/`. Use `$TMPDIR` only as a staging area before
-copying to the final location.
+**CRITICAL PATH RULE:** All design artifacts MUST be saved to `.nstack/design-shotgun/`.
+Use `$TMPDIR` only as a staging area before copying to the final location.
 
 ## Step 0: Session Detection
 
@@ -125,10 +121,10 @@ If B: proceed to Step 1.
 
 **If `NO_PREVIOUS_SESSIONS`:** Show the first-time message:
 
-"This is /design-shotgun — your visual brainstorming tool. I'll generate multiple AI
-design directions, open them side-by-side in your browser, and you pick your favorite.
-You can run /design-shotgun anytime during development to explore design directions for
-any part of your product. Let's start."
+"This is /design-shotgun — your lightweight visual brainstorming tool. I'll generate
+multiple design directions, show them side-by-side, and help you pick what is worth
+carrying forward. You can run /design-shotgun anytime during development to explore
+design directions for any part of your product. Let's start."
 
 ## Step 1: Context Gathering
 
@@ -165,15 +161,15 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 2>/dev/null || echo
 ```
 
 If a local site is running AND the user referenced a URL or said something like "I don't
-like how this looks," screenshot the current page and use `$D evolve` instead of
-`$D variants` to generate improvement variants from the existing design.
+like how this looks," screenshot the current page and use that screenshot as reference
+for the HTML variants you generate. Do not assume a separate image-evolution runtime exists.
 
 **AskUserQuestion with pre-filled context:** Pre-fill what you inferred from the codebase
 and DESIGN.md. Then ask for what's missing. Frame as ONE question covering all gaps:
 
 > "Here's what I know: [pre-filled context]. I'm missing [gaps].
 > Tell me: [specific questions about the gaps].
-> How many variants? (default 4, up to 8 for important screens)"
+> How many variants? (default 4, max 6)"
 
 Two rounds max of context gathering, then proceed with what you have and note assumptions.
 
@@ -225,13 +221,13 @@ D) "Name" — one-line visual description of this direction
 ```
 
 Draw on DESIGN.md, taste memory, and the user's request to make each concept distinct.
+Different hierarchy, density, composition, and tone. Not just color swaps.
 
 ### Step 3b: Concept Confirmation
 
 Use AskUserQuestion to confirm before generating:
 
-> "These are the {N} directions I'll generate. I'll run them all in parallel so total
-> time is ~60 seconds regardless of count."
+> "These are the {N} directions I'll generate as lightweight HTML variants."
 
 Options:
 - A) Generate all {N} — looks good
@@ -254,11 +250,7 @@ $B screenshot "$_DESIGN_DIR/current.png"
 
 **Launch N Agent subagents in a single message** (parallel execution). Dispatch all
 variants simultaneously using multiple Agent tool calls in one message. Each agent is
-independent and handles its own generation, quality check, verification, and retry.
-
-**Important: $D path propagation.** The `$D` variable is a shell variable that agents
-do NOT inherit. Substitute the resolved absolute path (from the `DESIGN_READY: /path/to/design`
-output in DESIGN SETUP) into each agent prompt.
+independent and writes one self-contained HTML variant.
 
 **Before dispatching agents:** Resolve shell variables to literal values — agents don't inherit the parent shell's environment:
 ```bash
@@ -270,38 +262,29 @@ Substitute both results into each agent prompt. Do NOT pass `$TMPDIR` or `$_DESI
 **Agent prompt template** (one per variant, substitute all `{...}` values):
 
 ```
-Generate a design variant and save it.
+Generate one lightweight design exploration variant and save it as HTML.
 
-Design binary: {absolute path to $D binary}
+Variant: {letter}
+Direction: {variant-specific concept}
 Brief: {the full variant-specific brief for this direction}
-Output: <resolved-TMPDIR>/variant-{letter}.png
-Final location: {_DESIGN_DIR absolute path}/variant-{letter}.png
+Output: <resolved-TMPDIR>/design-shotgun-variant-{letter}.html
+Final location: {_DESIGN_DIR absolute path}/variant-{letter}.html
+
+Requirements:
+- Fully self-contained HTML
+- Inline CSS only
+- No external dependencies
+- Realistic content, not lorem ipsum
+- Distinct hierarchy and layout from the other variants
+- Match DESIGN.md if present
 
 Steps:
-1. Run: {$D path} generate --brief "{brief}" --output <resolved-TMPDIR>/variant-{letter}.png
-2. If the command fails with a rate limit error (429 or "rate limit"), wait 5 seconds
-   and retry. Up to 3 retries.
-3. If the output file is missing or empty after the command succeeds, retry once.
-4. Copy: cp <resolved-TMPDIR>/variant-{letter}.png {_DESIGN_DIR}/variant-{letter}.png
-5. Quality check: {$D path} check --image {_DESIGN_DIR}/variant-{letter}.png --brief "{brief}"
-   If quality check fails, retry generation once.
-6. Verify: ls -lh {_DESIGN_DIR}/variant-{letter}.png
-7. Report exactly one of:
-   VARIANT_{letter}_DONE: {file size}
-   VARIANT_{letter}_FAILED: {error description}
-   VARIANT_{letter}_RATE_LIMITED: exhausted retries
+1. Write the HTML file to <resolved-TMPDIR>/design-shotgun-variant-{letter}.html
+2. Copy it to {_DESIGN_DIR}/variant-{letter}.html
+3. Report exactly one of:
+   VARIANT_{letter}_DONE
+   VARIANT_{letter}_FAILED: {error}
 ```
-
-For the evolve path, replace step 1 with:
-```
-{$D path} evolve --screenshot {_DESIGN_DIR}/current.png --brief "{brief}" --output <resolved-TMPDIR>/variant-{letter}.png
-```
-
-**If DESIGN_NOT_AVAILABLE**, each agent instead writes a self-contained HTML file:
-- Output path: `<resolved-TMPDIR>/design-shotgun-variant-{N}.html` (use the resolved TMPDIR from the dispatch step above)
-- Final location: `{_DESIGN_DIR}/variant-{letter}.html`
-- The HTML should be fully self-contained (inline CSS, no external dependencies)
-- Include a screenshot step using the browse binary or MCP if available
 
 **Why $TMPDIR then cp?** Generating directly to `~/.nstack/...` can fail with sandbox
 restrictions. Always generate to `$TMPDIR` first, then `cp` to the final location.
@@ -310,129 +293,56 @@ restrictions. Always generate to `$TMPDIR` first, then `cp` to the final locatio
 
 After all agents complete:
 
-1. Read each generated image or HTML inline (Read tool) so the user sees all variants at once.
+1. Read each generated HTML file inline (Read tool) so the user sees all variants at once.
 2. Report status: "All {N} variants generated. {successes} succeeded, {failures} failed."
 3. For any failures: report explicitly with the error. Do NOT silently skip.
 4. If zero variants succeeded: fall back to sequential generation (one at a time,
-   showing each as it lands). Tell the user: "Parallel generation failed (likely rate
-   limiting). Falling back to sequential..."
-5. Proceed to Step 4 (comparison board).
+   showing each as it lands).
+5. Proceed to Step 4 (comparison and selection).
 
-**Dynamic image list for comparison board:** When proceeding to Step 4, construct the
-image list from whatever variant files actually exist:
+## Step 4: Comparison And Selection
 
-**All of the following (image list, guard, compare, and port capture) must run in a single Bash block** — shell variables die between Bash calls.
-
-```bash
-# Re-read persisted _DESIGN_DIR (shell vars don't survive across Bash calls)
-_DESIGN_DIR="$(cat "$TMPDIR/design-shotgun-dir")"
-
-setopt +o nomatch 2>/dev/null || true  # zsh compat
-_IMAGES=$(ls "$_DESIGN_DIR"/variant-*.png 2>/dev/null | tr '\n' ',' | sed 's/,$//')
-# Fall back to HTML variants if no PNGs
-[ -z "$_IMAGES" ] && _IMAGES=$(ls "$_DESIGN_DIR"/variant-*.html 2>/dev/null | tr '\n' ',' | sed 's/,$//')
-
-if [ -z "$_IMAGES" ]; then
-  echo "NO_VARIANT_FILES_FOUND: $_DESIGN_DIR"
-  exit 1
-fi
-
-$D compare --images "$_IMAGES" --output "$_DESIGN_DIR/design-board.html" --serve 2>"$_DESIGN_DIR/serve.log" &
-# Wait up to 10 seconds for the port to appear in the log
-for _i in 1 2 3 4 5 6 7 8 9 10; do
-  _PORT=$(grep -oE 'port=[0-9]+' "$_DESIGN_DIR/serve.log" 2>/dev/null | tail -1 | cut -d= -f2)
-  [ -z "$_PORT" ] && _PORT=$(grep -oE 'localhost:[0-9]+' "$_DESIGN_DIR/serve.log" 2>/dev/null | tail -1 | cut -d: -f2)
-  [ -z "$_PORT" ] && _PORT=$(grep -oE ':[0-9]{4,5}' "$_DESIGN_DIR/serve.log" 2>/dev/null | tail -1 | tr -d ':')
-  [ -n "$_PORT" ] && break
-  sleep 1
-done
-[ -n "$_PORT" ] && echo "$_PORT" > "$TMPDIR/design-shotgun-port"
-[ -z "$_PORT" ] && echo "SERVE_PORT_UNKNOWN (reload will use AskUserQuestion fallback)" || echo "SERVE_PORT: $_PORT"
-```
-`_PORT` is persisted to `$TMPDIR/design-shotgun-port`. Re-read it in subsequent blocks with: `_PORT="$(cat "$TMPDIR/design-shotgun-port" 2>/dev/null)"`
-
-If `DESIGN_NOT_AVAILABLE` or `$D compare` fails: write a minimal HTML comparison board
-that iframes or embeds all variant HTML files side-by-side, then open it:
+If browse is available, screenshot each variant so the user can compare them inline:
 
 ```bash
 _DESIGN_DIR="$(cat "$TMPDIR/design-shotgun-dir")"
-open file://"$_DESIGN_DIR/design-board.html"
-```
-
-**Reading feedback via file polling (not stdout):**
-
-The server writes feedback to files next to the board HTML. Poll for these:
-- `$_DESIGN_DIR/feedback.json` — written when user clicks Submit (final choice)
-- `$_DESIGN_DIR/feedback-pending.json` — written when user clicks Regenerate/Remix/More Like This
-
-**Polling loop** (run after launching serve in background):
-
-Poll for feedback files using multiple short Bash calls (30 seconds each, up to 20 rounds = 10 minutes max). Between each poll call, return control and re-invoke:
-
-```bash
-# Run this check repeatedly until feedback arrives (30s per call, up to 20 rounds)
-for i in $(seq 1 6); do
-  if [ -f "$_DESIGN_DIR/feedback.json" ]; then
-    echo "SUBMIT_RECEIVED"
-    cat "$_DESIGN_DIR/feedback.json"
-    exit 0
-  elif [ -f "$_DESIGN_DIR/feedback-pending.json" ]; then
-    echo "REGENERATE_RECEIVED"
-    cat "$_DESIGN_DIR/feedback-pending.json"
-    rm "$_DESIGN_DIR/feedback-pending.json"
-    exit 0
-  fi
-  sleep 5
+mkdir -p "$_DESIGN_DIR/screenshots"
+for f in "$_DESIGN_DIR"/variant-*.html; do
+  [ -f "$f" ] || continue
+  _name=$(basename "$f" .html)
+  "$B" goto "file://$f"
+  "$B" screenshot "$_DESIGN_DIR/screenshots/${_name}.png"
 done
-echo "POLL_TIMEOUT_RETRY"
 ```
 
-If this returns `POLL_TIMEOUT_RETRY`, re-run the same Bash block. After 20 retries with no feedback, fall back to AskUserQuestion.
+Use the Read tool on each generated PNG.
 
-The feedback JSON has this shape:
-```json
-{
-  "preferred": "A",
-  "ratings": { "A": 4, "B": 3, "C": 2 },
-  "comments": { "A": "Love the spacing" },
-  "overall": "Go with A, bigger CTA",
-  "regenerated": false
-}
-```
+If browse is not available:
+- show the HTML file paths
+- tell the user to open them locally if they want closer inspection
 
-**If `feedback-pending.json` found (`"regenerated": true`):**
-1. Read `regenerateAction` from the JSON (`"different"`, `"match"`, `"more_like_B"`,
-   `"remix"`, or custom text)
-2. If `regenerateAction` is `"remix"`, read `remixSpec` (e.g. `{"layout":"A","colors":"B"}`)
-3. Generate new variants with `$D iterate` or `$D variants` using updated brief
-4. Create new board: `$D compare --images "..." --output "$_DESIGN_DIR/design-board.html"`
-5. Reload the board in the user's browser (same tab) using the port captured at launch:
-   First, resolve TMPDIR to its literal value:
-   ```bash
-   echo "$TMPDIR"
-   ```
-   Write the following JSON to `<resolved-TMPDIR>/design-shotgun-reload.json` using the **Write tool** with the literal resolved path (not the `$TMPDIR` variable — the Write tool won't expand it):
-   ```json
-   {"html": "<_DESIGN_DIR absolute path>/design-board.html"}
-   ```
-   Then run:
-   ```bash
-   _TMPDIR="$TMPDIR"
-   curl -s -X POST "http://127.0.0.1:$_PORT/api/reload" -H 'Content-Type: application/json' --data @"${_TMPDIR}/design-shotgun-reload.json"
-   ```
-6. The board auto-refreshes. **Poll again** for the next feedback file.
-7. Repeat until `feedback.json` appears (user clicked Submit).
+Then use AskUserQuestion:
 
-**If `feedback.json` found (`"regenerated": false`):**
-1. Read `preferred`, `ratings`, `comments`, `overall` from the JSON
-2. Proceed with the approved variant
+> "Which direction should we carry forward?
+> A) Variant A
+> B) Variant B
+> C) Variant C
+> D) Blend specific elements
+> E) None of these, generate a new round"
 
-**If serve fails or no feedback within 10 minutes:** Fall back to AskUserQuestion:
-"I've opened the design board. Which variant do you prefer? Any feedback?"
+If the user chooses D:
+- ask for one concise blend instruction
+- generate one additional HTML variant that combines the selected elements
+- show it
+- confirm again
+
+If the user chooses E:
+- go back to Step 3 with a revised brief
+- do not keep generating indefinitely, two rounds max unless the user explicitly wants more
 
 ## Step 5: Feedback Confirmation
 
-After receiving feedback (via HTTP POST or AskUserQuestion fallback), output a clear
+After receiving feedback, output a clear
 summary confirming what was understood:
 
 "Here's what I understood from your feedback:
@@ -462,14 +372,14 @@ Write the following JSON to `$_DESIGN_DIR/approved.json` using the `Write` tool 
 ```
 
 If invoked from another skill: return the structured feedback for that skill to consume.
-The calling skill reads `approved.json` and the approved variant PNG or HTML.
+The calling skill reads `approved.json` and the approved variant HTML.
 
 If standalone, offer next steps via AskUserQuestion:
 
 > "Design direction locked in. What's next?
 > A) Iterate more — refine the approved variant with specific feedback
-> B) Finalize — generate production HTML/CSS from the approved design
-> C) Save to plan — add this as an approved mockup reference in the current plan
+> B) Apply it — use `/design` to adapt this direction into the project
+> C) Save to plan — add this as an approved direction reference in the current plan
 > D) Done — I'll use this later"
 
 ## Important Rules
@@ -477,12 +387,13 @@ If standalone, offer next steps via AskUserQuestion:
 1. **Never save to `.context/`, `docs/designs/`, or `/tmp/`.** All design artifacts go
    to `.nstack/design-shotgun/`. Use `$TMPDIR` only as a staging area before copying
    to the final location.
-2. **Show variants inline before opening the board.** The user should see designs
-   immediately in their terminal. The browser board is for detailed feedback.
+2. **Show variants inline before asking for a decision.** The user should see the
+   designs before they choose.
 3. **Confirm feedback before saving.** Always summarize what you understood and verify.
 4. **Taste memory is automatic.** Prior approved designs inform new generations by default.
 5. **Two rounds max on context gathering.** Don't over-interrogate. Proceed with assumptions.
 6. **DESIGN.md is the default constraint.** Unless the user says otherwise.
-7. **Parallel dispatch is non-negotiable for 2+ variants.** Use multiple Agent tool calls
-   in a single message. Never generate variants sequentially unless parallel generation
-   fails entirely.
+7. **Parallel dispatch is preferred for 2+ variants.** Use multiple Agent tool calls
+   in a single message when practical. Fall back to sequential only if needed.
+8. **This is a direction tool, not a design platform.** Keep the workflow lightweight,
+   inspectable, and grounded in HTML artifacts.

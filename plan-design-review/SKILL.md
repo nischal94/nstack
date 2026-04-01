@@ -1,9 +1,10 @@
 ---
 name: plan-design-review
 description: Use when asked to "plan the design", "design before building", or
-  "what should this look like". Reviews existing UI or planned components,
-  generates HTML mockups, screenshots them, and produces an opinionated design
-  plan before implementation begins. (nstack)
+  "what should this look like". Reviews planned UI before implementation,
+  generates mockups when useful, and upgrades the plan so the design decisions
+  are explicit enough to build. Use before implementation, not on a live site.
+  For live critique, use /design-review. (nstack)
 allowed-tools:
   - Bash
   - Read
@@ -32,6 +33,29 @@ fi
 If the binary is not installed, the skill proceeds — mockups are written as HTML files. Screenshot steps are skipped.
 
 # /plan-design-review: Designer's Eye Plan Review
+
+This skill is the pre-build design critic in nstack.
+
+Its job is to take a UI plan that is too vague, too generic, or too incomplete
+and make it specific enough to build without design drift.
+
+What this skill should produce:
+- clearer hierarchy decisions
+- explicit state coverage
+- stronger visual and interaction decisions
+- mockups when the plan needs visuals to resolve ambiguity
+
+What this skill should not become:
+- a live-site audit, use `/design-review`
+- a full design-system exercise, use `/design-consultation`
+- a generic implementation plan writer
+
+The output of this skill is a better plan, not a detached report about the plan.
+
+When this skill finishes, the next likely step is:
+- implementation planning if the direction is now clear
+- `/design` if a stronger first visual direction is still needed
+- `/design-consultation` if the real gap is the absence of a design system
 
 You are a senior product designer reviewing a PLAN — not a live site. Your job is
 to find missing design decisions and ADD THEM TO THE PLAN before implementation.

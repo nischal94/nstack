@@ -42,6 +42,10 @@ These skills render HTML variants and take screenshots. They use a Bun-powered C
 
 This is an intentional opt-in tier. The runtime requirement is real and documented — not a footnote.
 
+The design cluster is intentionally narrower than gstack's design subsystem.
+Its purpose is to add design judgment, direction-setting, and critique to the
+builder workflow, not to reproduce every part of a heavyweight design platform.
+
 ---
 
 ## Why Playwright for design skills
@@ -96,6 +100,15 @@ nstack skills are designed to hand off to superpowers at natural boundaries:
 This works because nstack and superpowers have non-overlapping scopes.
 Superpowers covers the development workflow (plan → build → debug → review → ship).
 nstack covers the quality layer on top (security audit → browser QA → retrospective).
+
+The same idea applies inside the design cluster:
+- `/design-consultation` owns the design system
+- `/plan-design-review` owns pre-build critique
+- `/design` owns first-direction generation
+- `/design-shotgun` owns quick exploration when direction is unclear
+- `/design-review` owns live-product polish
+
+The cluster is meant to be coherent and selective, not exhaustive.
 
 There are no duplicate skill names. There are no conflicting invocation patterns.
 When you type `/cso`, there is exactly one thing that can happen.

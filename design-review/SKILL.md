@@ -4,8 +4,9 @@ description: Use when asked to "review the design", "design critique", "UX audit
   or "does this look right". Screenshots running pages, analyzes visual design
   quality, typography, color, spacing, accessibility contrast, and UX patterns.
   Produces a structured design critique with severity ratings, then applies fixes
-  with atomic commits. Requires a clean working tree — will prompt to commit or
-  stash before starting. Use /qa-only if you want a report without repo changes. (nstack)
+  with atomic commits. Requires a clean working tree. Use when you need a live
+  product polished, not when you are still deciding the direction. For pre-build
+  critique, use /plan-design-review. For report-only QA, use /qa-only. (nstack)
 allowed-tools:
   - Bash
   - Read
@@ -32,6 +33,22 @@ fi
 ```
 
 Hard gate: if the binary is not installed, stop here and show the install command.
+
+`/design-review` is the design-quality and polish layer of nstack.
+
+Its job is to look at the rendered product like a sharp product designer would:
+- hierarchy
+- typography
+- spacing
+- interaction feel
+- accessibility
+- AI-slop patterns
+
+This is not the skill for creating a design system from scratch, use
+`/design-consultation`.
+
+This is not the skill for deciding what a planned UI should be, use
+`/plan-design-review`.
 
 **Parse the user's request for these parameters:**
 
