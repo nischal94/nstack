@@ -95,7 +95,7 @@ nstack skills are designed to hand off to superpowers at natural boundaries:
 | `/retro` | none | Self-contained retrospective |
 | `/migrate` | none | Self-contained — runs its own verification |
 | `/evals` | none | Self-contained — runs its own baseline comparison |
-| `/context` | none | Self-contained — fixes issues inline |
+| `/context-audit` | none | Self-contained — fixes issues inline |
 
 This works because nstack and superpowers have non-overlapping scopes.
 Superpowers covers the development workflow (plan → build → debug → review → ship).

@@ -167,7 +167,7 @@ WHEN SOMETHING FEELS OFF
   App behaving wrong?       → /qa              (browser QA, find and fix bugs)
   Just want a QA report?    → /qa-only         (report-only, no fixes)
   Something seems slower?   → /benchmark       (flag performance regressions)
-  Claude config drifting?   → /context         (audit CLAUDE.md and rules)
+  Claude config drifting?   → /context-audit   (audit CLAUDE.md and rules)
 
 REFLECTION
   End of the week?          → /retro           (what shipped, what drifted, what to fix)
@@ -234,7 +234,7 @@ workflow itself.
 | 9 | `/review` | Inline staff engineer code review of the current diff. AUTO-FIX commits for obvious issues. FLAGS security issues and logic questions for your decision. |
 | 10 | `/migrate` | Database migration safety. Classifies risk, checks for missing rollback, warns on lock contention, runs dry-run + backup check + post-migration verification. |
 | 11 | `/evals` | LLM output quality testing. Create and run eval suites with string checks and LLM-as-judge scoring. Baseline comparison across prompt or model changes. |
-| 12 | `/context` | Claude Code config audit. Finds stale file references, contradictory rules, and bloat across CLAUDE.md, rules files, and memory. |
+| 12 | `/context-audit` | Claude Code config audit. Finds stale file references, contradictory rules, and bloat across CLAUDE.md, rules files, and memory. |
 
 ### Shipping (3)
 

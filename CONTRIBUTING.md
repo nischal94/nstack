@@ -107,7 +107,7 @@ nstack has no automated test suite (no build step, no test runner). Testing is m
 2. Run on an additive migration (ADD COLUMN nullable) — verify LOW risk
 3. Verify dry-run runs before any apply step
 
-**For `/context` changes:**
+**For `/context-audit` changes:**
 1. Introduce a stale file reference in CLAUDE.md — verify it's caught
 2. Introduce a contradiction between two rules files — verify it's caught
 3. Verify no memory files are modified without confirmation
