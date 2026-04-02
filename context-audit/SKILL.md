@@ -1,9 +1,10 @@
 ---
-name: context
-description: Use when Claude Code feels slow, confused, or repetitive — when it's ignoring instructions, repeating mistakes you've corrected before, or when you want to audit your CLAUDE.md, rules files, and memory for staleness and contradictions. Use when the user says "audit my claude config", "check my context", "why is claude ignoring X", "clean up my rules", or "context health check".
+name: context-audit
+description: Use when Claude Code feels slow, confused, or repetitive — when it's ignoring instructions, repeating mistakes you've corrected before, or when you want to audit your CLAUDE.md, rules files, and memory for staleness and contradictions. Use when the user says "audit my claude config", "context audit", "why is claude ignoring X", "clean up my rules", or "context health check".
+disable-model-invocation: true
 ---
 
-# /context — Claude Code Configuration Audit
+# /context-audit — Claude Code Configuration Audit
 
 You are auditing the Claude Code configuration for the current project and user.
 Your job: find what's stale, contradictory, missing, or bloated — and surface it.
@@ -13,11 +14,11 @@ A degraded one causes repeated mistakes, ignored instructions, and confused beha
 
 ## Arguments
 
-- `/context` — full audit (project CLAUDE.md + global rules + memory)
-- `/context --project` — project configuration only
-- `/context --global` — global CLAUDE.md and rules only
-- `/context --memory` — memory files only
-- `/context --fix` — apply safe fixes automatically (reorder, deduplicate); flag the rest
+- `/context-audit` — full audit (project CLAUDE.md + global rules + memory)
+- `/context-audit --project` — project configuration only
+- `/context-audit --global` — global CLAUDE.md and rules only
+- `/context-audit --memory` — memory files only
+- `/context-audit --fix` — apply safe fixes automatically (reorder, deduplicate); flag the rest
 
 ---
 
