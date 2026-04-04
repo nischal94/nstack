@@ -5,7 +5,7 @@ description: Use when saving working state at the end of a session, or resuming 
 
 # /checkpoint — Save & Resume Working State
 
-Zero-dependency git checkpoint for solo builders. Works in two modes:
+Git checkpoint for founders building at speed. Works in two modes:
 
 - **Save mode** — commit current state with structured context for future recovery
 - **Resume mode** — read the last checkpoint and surface exactly where you left off

@@ -94,8 +94,9 @@ Most Claude Code users are one person shipping fast. nstack's defaults
 reflect this: no team assumptions, no per-person breakdowns, no workflow
 gates designed for pull request approval chains.
 
-A solo builder needs to know: what shipped, what's broken, what's risky,
-and what to fix next. That's the question every nstack skill is designed
+A founder building to scale needs to know: what shipped, what's broken, what's risky,
+and what to fix next — without a security team, compliance officer, or QA department
+to catch what slips through. That's the question every nstack skill is designed
 to answer.
 
 When you're a team, nstack still works — the defaults just don't get in

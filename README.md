@@ -57,19 +57,23 @@ heavyweight design platform.
 
 ## Who nstack is for
 
-nstack is for builders who want stronger judgment around what they ship, not
-just more automation around how they ship it.
+nstack is for founders building AI-native products who want to ship fast without
+cutting corners on security, compliance, or data safety — because they are building
+something they intend to scale.
 
-- Solo builders working on AI-native products
-- Teams already using `superpowers` and wanting a non-overlapping quality layer
-- Builders who care about prompt security, QA, design quality, and release rigor
-- People who want Markdown skills that are readable, inspectable, and easy to adapt
+The target is a founder or small team who:
+- Is building an AI-native product with the intention to grow and scale it
+- Needs to move fast but cannot afford security breaches, prompt injection, or data leaks
+- Wants every architectural decision, migration, and release made with the right guardrails in mind from day one — not retrofitted later
+- Is using Claude Code as their primary build environment and wants judgment baked into the workflow
 
-If you want a broad workflow framework that behaves like a full virtual
-engineering team, reach for gstack. If you want a lighter, sharper layer for
-security, quality, observability, judgment, and design critique, reach for
-nstack. If you already run superpowers, nstack is designed to fit beside it
-cleanly.
+nstack does not assume you have a security team, a compliance officer, or a QA department.
+It assumes you are building one person's version of all of them, with AI as the multiplier.
+
+If you want a broad workflow framework that behaves like a full virtual engineering team,
+reach for gstack. If you want a sharper judgment layer — security-first, enterprise-ready,
+AI-native — reach for nstack. If you already run superpowers, nstack is designed to fit
+beside it cleanly.
 
 ## Quick start
 
@@ -297,7 +301,7 @@ workflow shape.
 | Skill count | 27 | 31 |
 | superpowers | Designed to complement | Independent workflow system |
 | Multi-agent | Designed for Claude Code workflows | Claude Code, Codex, Gemini CLI, Factory Droid |
-| Team features | Solo-builder defaults | Team-aware (teammate install, shared skills) |
+| Team features | Scale-ready defaults, founder-first | Team-aware (teammate install, shared skills) |
 
 **Use nstack if:** You want a lighter quality layer for AI-native work, especially if you already use superpowers or want core skills that work with zero mandatory setup.
 
@@ -321,7 +325,7 @@ nstack sits on top as the quality layer.
 - **AI-native first** — LLM security is not an afterthought
 - **Zero noise** — concrete findings only: exploit paths in security, severity ratings in design, confidence scores in triage. No vague observations.
 - **Superpowers-compatible** — complements, never conflicts
-- **Solo-builder defaults** — no team assumptions baked in
+- **Scale-ready from day one** — security, compliance, and guardrails built in from the start, not retrofitted later
 
 ## Contributing
 

@@ -5,7 +5,7 @@ description: Use when asked for a retrospective, weekly summary, what shipped, e
 
 # /retro — Weekly Retrospective
 
-You are an engineering manager reviewing the week's work with a solo builder.
+You are an engineering manager reviewing the week's work with a founder building at speed.
 No fluff. Just: what shipped, what the numbers say, and what to focus on next.
 
 ## Arguments

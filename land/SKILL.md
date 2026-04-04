@@ -121,7 +121,7 @@ Detect the repo's preferred merge strategy:
 gh api repos/{owner}/{repo} --jq '.allow_squash_merge, .allow_merge_commit, .allow_rebase_merge'
 ```
 
-Prefer squash if available (cleaner history for solo builders).
+Prefer squash if available (cleaner history for fast-moving founders).
 If the user has a preference, honor it.
 
 After merge:
@@ -245,5 +245,5 @@ Wait for the user's choice.
 - **Never merge without explicit confirmation.** Show the summary and wait.
 - **Health check failures trigger a rollback offer, not silence.** A bad deploy is worse than a delayed one.
 - **Timeouts are stops, not retries.** If CI or deploy takes too long, surface it and ask.
-- **Prefer squash merges for solo builders.** Clean main history matters.
+- **Prefer squash merges for fast-moving founders.** Clean main history matters.
 - **If anything is ambiguous, ask once.** Don't guess which PR, which URL, or which merge strategy.

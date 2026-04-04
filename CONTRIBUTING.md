@@ -23,12 +23,12 @@ No restart, no rebuild, no deploy.
 - Deeper LLM/AI security patterns in `/cso`
 - New attack vectors that aren't covered (new OWASP categories, emerging AI threats)
 - `/qa` patterns for specific frameworks (Next.js, FastAPI, Rails)
-- `/retro` metrics that matter to solo builders
+- `/retro` metrics that matter to founders building at speed
 - Fixes for findings that are false positives or missed findings in practice
 
 **Low value:**
 - Adding generic security advice already covered by gstack
-- Adding team-oriented workflow features (nstack is solo-builder-first)
+- Adding team-oriented workflow features (nstack is founder-first, not team-workflow-first)
 - Adding dependencies to core skills (core skills have zero mandatory setup)
 - Translating skills to other languages (one excellent example beats many mediocre ones)
 
