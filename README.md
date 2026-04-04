@@ -28,8 +28,8 @@ It focuses on security, QA, evals, migrations, observability, design judgment,
 release rigor, and premise challenge. It is meant to complement the development
 workflow, not compete with it.
 
-27 skills for security auditing, QA, bug triage, design, premise challenges,
-release notes, retrospectives, and safety guardrails for AI-native projects.
+28 skills for security auditing, QA, bug triage, design, premise challenges,
+release notes, retrospectives, session continuity, and safety guardrails for AI-native projects.
 Zero mandatory setup for core skills. Superpowers-compatible.
 
 AI lets a small team move at absurd speed. It also lets a small team ship
