@@ -7,7 +7,7 @@ All notable changes to nstack are documented here.
 ## [0.5.0] — 2026-04-04
 
 ### Added
-- `/devex-review` — Live developer experience audit across 8 passes (getting started, API/CLI ergonomics, error messages, docs, upgrade path, dev environment, community, DX measurement). Uses Playwright browse binary for screenshots. Scores each pass 0-10 with evidence labels (TESTED/INFERRED/PARTIAL). Tracks history via `.claude/devex-history.jsonl`. Gracefully degrades to file-only mode without browser binary.
+- `/devex-audit` — Live developer experience audit across 8 passes (getting started, API/CLI ergonomics, error messages, docs, upgrade path, dev environment, community, DX measurement). Uses Playwright browse binary for screenshots. Scores each pass 0-10 with evidence labels (TESTED/INFERRED/PARTIAL). Tracks history via `.claude/devex-history.jsonl`. Gracefully degrades to file-only mode without browser binary.
 
 ---
 

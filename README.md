@@ -266,7 +266,7 @@ workflow itself.
 |---|-------|-------------|
 | 28 | `/checkpoint` | Save and resume working state. Commits with structured `Context:` + `Next:` lines so `git log` tells you why and where to pick up. Resume mode surfaces last checkpoint at session start. |
 | 29 | `/health` | Code quality dashboard. Auto-detects project tools (tsc, eslint/biome/ruff, test runner, knip, shellcheck), scores each category, produces a composite 0-10 score, and tracks trend across runs via `.claude/health-history.jsonl`. |
-| 30 | `/devex-review` | Live developer experience audit across 8 passes: getting started, API/CLI ergonomics, error messages, docs, upgrade path, dev environment, community, and DX measurement. Scores each 0-10 with evidence. Tracks history via `.claude/devex-history.jsonl`. ★ requires `./setup` for screenshots. |
+| 30 | `/devex-audit` | Live developer experience audit across 8 passes: getting started, API/CLI ergonomics, error messages, docs, upgrade path, dev environment, community, and DX measurement. Scores each 0-10 with evidence. Tracks history via `.claude/devex-history.jsonl`. ★ requires `./setup` for screenshots. |
 
 ### Design (5) ★ requires `./setup`
 

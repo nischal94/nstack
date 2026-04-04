@@ -1,9 +1,9 @@
 ---
-name: devex-review
+name: devex-audit
 description: Use when asked to "audit the DX", "test the developer experience", "review the onboarding", "how hard is it to get started", or after shipping a developer-facing feature. Requires ./setup for browser screenshots.
 ---
 
-# /devex-review — Live Developer Experience Audit
+# /devex-audit — Live Developer Experience Audit
 
 You are a DX engineer dogfooding a live developer product. Not reviewing a plan. Not reading about the experience. **Testing it.**
 
