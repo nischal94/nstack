@@ -80,7 +80,7 @@ Ask the user (AskUserQuestion):
 
 If B: ask for the URL. If A: read CLAUDE.md and README.md to discover docs URL, install command, and API/CLI surface.
 
-Also check for a prior `/devex-review` score in `.claude/devex-history.jsonl` — if found, display it as the baseline for comparison.
+Also check for a prior `/devex-audit` score in `.claude/devex-history.jsonl` — if found, display it as the baseline for comparison.
 
 ---
 
@@ -279,7 +279,7 @@ DX SCORECARD
 ============
 Product:  <name>
 Audited:  <date>
-Auditor:  nstack /devex-review
+Auditor:  nstack /devex-audit
 
 Pass                        Score   Status        Evidence
 --------------------------  -----   -----------   --------
