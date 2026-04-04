@@ -207,7 +207,7 @@ workflow itself.
 
 ## Skills
 
-27 skills across 6 categories.
+28 skills across 7 categories.
 
 ### Thinking & deciding (4)
 
@@ -255,6 +255,12 @@ workflow itself.
 | 20 | `/canary` | Post-deploy canary monitoring. Watches the live app after a deploy: console errors, performance regressions, page failures, screenshot comparisons. |
 | 21 | `/investigate` | Bug triage when you don't know where to start. Reconstructs the timeline, diffs the suspect range, builds a hypothesis with confidence rating. |
 | 22 | `/retro` | Weekly retrospective from git history. What shipped, lines added, test health, files touched most, open findings. |
+
+### Session continuity (1)
+
+| # | Skill | What it does |
+|---|-------|-------------|
+| 28 | `/checkpoint` | Save and resume working state. Commits with structured `Context:` + `Next:` lines so `git log` tells you why and where to pick up. Resume mode surfaces last checkpoint at session start. |
 
 ### Design (5) ★ requires `./setup`
 
