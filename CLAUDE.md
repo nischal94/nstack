@@ -21,6 +21,7 @@ review/SKILL.md            ← /review inline staff engineer code review
 autoplan/SKILL.md          ← /autoplan plan review before execution
 evals/SKILL.md             ← /evals LLM output quality testing
 context-audit/SKILL.md     ← /context-audit Claude Code configuration audit
+checkpoint/SKILL.md        ← /checkpoint save & resume working state across sessions
 migrate/SKILL.md           ← /migrate database migration safety
 office-hours/SKILL.md      ← /office-hours YC-style product validation
 qa-only/SKILL.md           ← /qa-only report-only browser QA
