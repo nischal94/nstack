@@ -88,11 +88,13 @@ The goal is a coherent toolchain, not another monolith.
 
 ---
 
-## 5. Built for Solo Builders
+## 5. Built for Founders Building at Scale
 
-Most Claude Code users are one person shipping fast. nstack's defaults
-reflect this: no team assumptions, no per-person breakdowns, no workflow
-gates designed for pull request approval chains.
+nstack is built for founders and builders who are shipping fast with AI but
+cannot afford to cut corners on security, compliance, or data safety — because
+they are building something they intend to scale. The defaults reflect this:
+no unnecessary team friction, no per-person breakdowns, no workflow gates
+designed for large engineering organisations.
 
 A founder building to scale needs to know: what shipped, what's broken, what's risky,
 and what to fix next — without a security team, compliance officer, or QA department

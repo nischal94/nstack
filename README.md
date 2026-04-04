@@ -285,7 +285,7 @@ team. But I built nstack because I wanted different tradeoffs.
 
 The short version:
 - I was already using [superpowers](https://github.com/obra/superpowers), and gstack overlapped too much with it in the core dev loop.
-- I wanted core skills to work immediately after `git clone`, without Bun, Playwright, or a browser daemon.
+- I wanted core skills to work immediately after `git clone` with zero mandatory setup — browser skills opt in via `./setup`.
 - I wanted stronger emphasis on AI-native security, prompt quality, migration safety, observability, and product judgment.
 - I wanted clean handoff points into superpowers instead of competing abstractions.
 
