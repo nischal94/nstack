@@ -4,6 +4,13 @@ All notable changes to nstack are documented here.
 
 ---
 
+## [0.4.0] — 2026-04-04
+
+### Added
+- `/health` — Code quality dashboard. Auto-detects project tools (tsc, eslint/biome/ruff, pytest/bun test/cargo test, knip, shellcheck), scores each category 0-10 with weighted composite score, and tracks trend across runs via `.claude/health-history.jsonl`. No binary dependencies — wraps whatever tools the project already has.
+
+---
+
 ## [0.3.0] — 2026-04-04
 
 ### Added

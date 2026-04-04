@@ -28,8 +28,8 @@ It focuses on security, QA, evals, migrations, observability, design judgment,
 release rigor, and premise challenge. It is meant to complement the development
 workflow, not compete with it.
 
-28 skills for security auditing, QA, bug triage, design, premise challenges,
-release notes, retrospectives, session continuity, and safety guardrails for AI-native projects.
+29 skills for security auditing, QA, bug triage, design, premise challenges,
+release notes, retrospectives, session continuity, code health, and safety guardrails for AI-native projects.
 Zero mandatory setup for core skills. Superpowers-compatible.
 
 AI lets a small team move at absurd speed. It also lets a small team ship
@@ -207,7 +207,7 @@ workflow itself.
 
 ## Skills
 
-28 skills across 7 categories.
+29 skills across 7 categories.
 
 ### Thinking & deciding (4)
 
@@ -256,11 +256,12 @@ workflow itself.
 | 21 | `/investigate` | Bug triage when you don't know where to start. Reconstructs the timeline, diffs the suspect range, builds a hypothesis with confidence rating. |
 | 22 | `/retro` | Weekly retrospective from git history. What shipped, lines added, test health, files touched most, open findings. |
 
-### Session continuity (1)
+### Session continuity (2)
 
 | # | Skill | What it does |
 |---|-------|-------------|
 | 28 | `/checkpoint` | Save and resume working state. Commits with structured `Context:` + `Next:` lines so `git log` tells you why and where to pick up. Resume mode surfaces last checkpoint at session start. |
+| 29 | `/health` | Code quality dashboard. Auto-detects project tools (tsc, eslint/biome/ruff, test runner, knip, shellcheck), scores each category, produces a composite 0-10 score, and tracks trend across runs via `.claude/health-history.jsonl`. |
 
 ### Design (5) ★ requires `./setup`
 
