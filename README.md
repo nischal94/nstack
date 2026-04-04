@@ -28,8 +28,8 @@ It focuses on security, QA, evals, migrations, observability, design judgment,
 release rigor, and premise challenge. It is meant to complement the development
 workflow, not compete with it.
 
-29 skills for security auditing, QA, bug triage, design, premise challenges,
-release notes, retrospectives, session continuity, code health, and safety guardrails for AI-native projects.
+30 skills for security auditing, QA, bug triage, design, premise challenges,
+release notes, retrospectives, session continuity, code health, DX auditing, and safety guardrails for AI-native projects.
 Zero mandatory setup for core skills. Superpowers-compatible.
 
 AI lets a small team move at absurd speed. It also lets a small team ship
@@ -211,7 +211,7 @@ workflow itself.
 
 ## Skills
 
-29 skills across 7 categories.
+30 skills across 7 categories.
 
 ### Thinking & deciding (4)
 
@@ -266,6 +266,7 @@ workflow itself.
 |---|-------|-------------|
 | 28 | `/checkpoint` | Save and resume working state. Commits with structured `Context:` + `Next:` lines so `git log` tells you why and where to pick up. Resume mode surfaces last checkpoint at session start. |
 | 29 | `/health` | Code quality dashboard. Auto-detects project tools (tsc, eslint/biome/ruff, test runner, knip, shellcheck), scores each category, produces a composite 0-10 score, and tracks trend across runs via `.claude/health-history.jsonl`. |
+| 30 | `/devex-review` | Live developer experience audit across 8 passes: getting started, API/CLI ergonomics, error messages, docs, upgrade path, dev environment, community, and DX measurement. Scores each 0-10 with evidence. Tracks history via `.claude/devex-history.jsonl`. ★ requires `./setup` for screenshots. |
 
 ### Design (5) ★ requires `./setup`
 

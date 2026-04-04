@@ -23,6 +23,7 @@ evals/SKILL.md             ← /evals LLM output quality testing
 context-audit/SKILL.md     ← /context-audit Claude Code configuration audit
 checkpoint/SKILL.md        ← /checkpoint save & resume working state across sessions
 health/SKILL.md            ← /health code quality dashboard with composite score and trend tracking
+devex-review/SKILL.md     ← /devex-review live developer experience audit across 8 passes
 migrate/SKILL.md           ← /migrate database migration safety
 office-hours/SKILL.md      ← /office-hours YC-style product validation
 qa-only/SKILL.md           ← /qa-only report-only browser QA
