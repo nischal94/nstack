@@ -22,7 +22,7 @@ stack than I actually needed.
 
 So I built nstack instead.
 
-nstack is the layer I wanted on top of superpowers: a zero-dependency skill pack
+nstack is the layer I wanted on top of superpowers: a zero-mandatory-setup skill pack
 for the gaps neither gstack nor superpowers covered cleanly for AI-native work.
 It focuses on security, QA, evals, migrations, observability, design judgment,
 release rigor, and premise challenge. It is meant to complement the development
@@ -299,7 +299,7 @@ workflow shape.
 | Multi-agent | Designed for Claude Code workflows | Claude Code, Codex, Gemini CLI, Factory Droid |
 | Team features | Solo-builder defaults | Team-aware (teammate install, shared skills) |
 
-**Use nstack if:** You want a lighter quality layer for AI-native work, especially if you already use superpowers or want zero-dependency core skills.
+**Use nstack if:** You want a lighter quality layer for AI-native work, especially if you already use superpowers or want core skills that work with zero mandatory setup.
 
 **Use gstack if:** You want a broader workflow framework with built-in team and multi-agent features.
 
