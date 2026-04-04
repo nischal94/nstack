@@ -4,6 +4,13 @@ All notable changes to nstack are documented here.
 
 ---
 
+## [0.3.0] — 2026-04-04
+
+### Added
+- `/checkpoint` — Save and resume working state across sessions. Save mode commits with structured `Context:` + `Next:` lines so git history tells you why changes were made and where to pick up. Resume mode reads the last checkpoint and surfaces state at session start. Zero dependencies.
+
+---
+
 ## [0.2.0] — 2026-04-01
 
 ### Added
