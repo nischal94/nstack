@@ -95,7 +95,7 @@ binaries. No package manager. Includes: `/cso`, `/review`, `/ship`, `/land`,
 `/autoplan`, `/premise`, `/retro`, `/investigate`, `/evals`, `/migrate`,
 `/context-audit`, `/checkpoint`, `/health`, `/careful`, `/freeze`,
 `/document-release`, `/office-hours`, `/mcp-audit`, `/compliance-scaffold`,
-`/plan-devex-review`.
+`/plan-dev-review`.
 
 ### Tier 2 — Browser (one-time `./setup`)
 
@@ -111,7 +111,7 @@ builds the local browser binary. Bun must stay on PATH at runtime.
 
 Tier 2 runtime notes:
 - Tier 1 skills keep working even without Bun
-- `/design`, `/design-review`, `/qa`, `/benchmark`, `/canary`, `/devex-audit` hard-stop with a setup prompt if the browser binary is missing — never silent fallback
+- `/design`, `/design-review`, `/qa`, `/benchmark`, `/canary`, `/dev-audit` hard-stop with a setup prompt if the browser binary is missing — never silent fallback
 - `/design-consultation` and `/plan-design-review` can proceed without screenshots (soft-skip)
 
 ### Tier 3 — Live observability (per-project integration)
@@ -139,7 +139,7 @@ BEFORE YOU BUILD
   Reviewing a written plan?        → /autoplan                (full plan-review pipeline: scope / architecture / tests / gate)
   No design system exists?         → /design-consultation     (creates DESIGN.md for the whole project)
   About to write UI code?          → /plan-design-review      (critiques the UI plan before you build it)
-  About to ship developer tooling? → /plan-devex-review       (critiques the dev-facing plan before you build it)
+  About to ship developer tooling? → /plan-dev-review       (critiques the dev-facing plan before you build it)
 
 WHILE YOU BUILD
   Need a first UI direction?       → /design                  (generate 2-3 HTML directions; `/design sketch N` to explore N variants)
@@ -163,7 +163,7 @@ WHEN SOMETHING FEELS OFF
   Preparing for SOC 2 / GDPR?      → /compliance-scaffold     (pre-audit gap map with remediation order)
   App behaving wrong?               → /qa                      (browser-based bug find + fix; `/qa watch` for report-only)
   Performance regressed?           → /benchmark               (TTFB / FCP / LCP / bundle-size comparison)
-  Onboarding feels clunky?         → /devex-audit             (live dev-facing audit: getting started, API, errors, docs, upgrade, environment, community)
+  Onboarding feels clunky?         → /dev-audit             (live dev-facing audit: getting started, API, errors, docs, upgrade, environment, community)
   Claude Code config drifting?     → /context-audit           (CLAUDE.md + rules + memory audit)
 
 REFLECTION / HYGIENE
@@ -257,7 +257,7 @@ workflow itself.
 |---|-------|------|-------------|
 | 19 | `/checkpoint` | 1 | Save and resume working state. Commits with structured `Context:` + `Next:` lines so `git log` tells you why and where to pick up. Resume mode surfaces last checkpoint at session start. |
 | 20 | `/health` | 1 | Code quality dashboard. Auto-detects project tools (tsc, eslint/biome/ruff, test runner, knip, shellcheck), scores each category, composite 0–10 score, tracks trend via `.claude/health-history.jsonl`. |
-| 21 | `/devex-audit` | 2 | Live developer experience audit across 8 passes: getting started, API/CLI ergonomics, error messages, docs, upgrade path, dev environment, community, DX measurement. Scores each 0–10 with evidence. Tracks history via `.claude/devex-history.jsonl`. |
+| 21 | `/dev-audit` | 2 | Live developer experience audit across 8 passes: getting started, API/CLI ergonomics, error messages, docs, upgrade path, dev environment, community, DX measurement. Scores each 0–10 with evidence. Tracks history via `.claude/dev-history.jsonl`. Renamed from /devex-audit in 0.6.0 to drop the "devex" acronym. |
 
 ### Design (4) — Tier 2
 
@@ -279,7 +279,7 @@ workflow itself.
 
 | # | Skill | What it does |
 |---|-------|-------------|
-| 28 | `/plan-devex-review` | Plan-stage developer-experience review (mirrors `/plan-design-review` for developer-facing surfaces). Persona interrogation, empathy narrative, competitive benchmarking, magical-moment design, mode selection (EXPANSION / POLISH / TRIAGE), journey trace across 6 stages, first-time developer roleplay, 8 scored review passes with evidence recall and gap method. Hand-off to `/devex-audit` after the plan ships. |
+| 28 | `/plan-dev-review` | Plan-stage developer-experience review (mirrors `/plan-design-review` for developer-facing surfaces). Persona interrogation, empathy narrative, competitive benchmarking, magical-moment design, mode selection (EXPANSION / POLISH / TRIAGE), journey trace across 6 stages, first-time developer roleplay, 8 scored review passes with evidence recall and gap method. Hand-off to `/dev-audit` after the plan ships. |
 
 ## Compatibility
 

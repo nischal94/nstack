@@ -36,7 +36,7 @@ These skills use a Bun-powered CLI (`browse/`) — a compiled entry point (`brow
 - Run `./setup` once to satisfy both requirements (~2 minutes)
 
 **Behavior when setup is missing:**
-- `/design`, `/design-review`, `/qa`, `/benchmark`, `/canary`, `/devex-audit` hard-stop with a setup prompt
+- `/design`, `/design-review`, `/qa`, `/benchmark`, `/canary`, `/dev-audit` hard-stop with a setup prompt
 - `/design-consultation` and `/plan-design-review` soft-skip screenshots and proceed
 
 This is an intentional opt-in tier. The runtime requirement is real and documented — not a footnote.

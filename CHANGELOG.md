@@ -29,7 +29,7 @@ A proposed `/office-hours` → `/premise office` merge was reviewed and reverted
 - `/cso` — Phase 3 install-script hunt (supply-chain RCE), Phase 7 RAG poisoning + cost-amplification loop patterns with concrete regex examples, Phase 8 FP exceptions (15 precedents), Phase 8a Snyk ToxicSkills threat context, Phase 8b agent tool blast-radius (NEW), Phase 12 Agent-tool parallel verification, Phase 14 JSON schema with fingerprints. New Phase 7c (RAG), 7d (cost attack-surface), 8b (agent tool blast-radius) absorb what would have been standalone `/rag-audit`, `/cost-audit`, `/agent-safety` skills. 503 → 676 lines.
 - `/autoplan` — dual-voice architecture (Claude + Codex consensus tables), Phase 0 scope detection, decision classification (mechanical / taste / user-challenge), 6 decision principles with phase-specific tiebreakers, sequential phase execution, audit trail logging, pre-gate verification (18-item checklist), final approval gate with user-challenge handling and 3-cycle revision limit. 200 → 538 lines.
 - `/investigate` — Step 2.5 bug pattern catalog (race conditions, nil propagation, cache staleness, config drift, dependency drift, AI-native regressions) with signatures and fast-check patterns, Step 7.5 structured DEBUG REPORT format (symptom / root cause / pattern classification / fix / evidence / regression test / related issues / captured learnings), minimal-diff discipline for the systematic-debugging handoff.
-- `/devex-audit` — Step 0.5 Boomerang Baseline (plan-vs-reality delta when a prior `/plan-devex-review` output exists — 🟢/🟡/🔴 per-row flags; plan-missed rows become highest-priority recommendations), Completion Status Protocol (DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT).
+- `/dev-audit` — Step 0.5 Boomerang Baseline (plan-vs-reality delta when a prior `/plan-dev-review` output exists — 🟢/🟡/🔴 per-row flags; plan-missed rows become highest-priority recommendations), Completion Status Protocol (DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT).
 - `/retro` — Step 1a AI-assisted commit split via `Co-Authored-By: Claude` signature, Step 1b shipping streak tracking (per-author for team repos), Step 3a backlog health (TODOS.md deltas: P0/P1/P2 counts, items closed in window, delta direction), Step 3b week-over-week trend buckets for windows ≥ 14 days with inflection-point flagging.
 
 **New Tier 1 skills (shipped)**
@@ -37,10 +37,14 @@ A proposed `/office-hours` → `/premise office` merge was reviewed and reverted
 - `/compliance-scaffold` — Pre-audit gap map for AI-native products. SOC 2 Common Criteria CC6/CC7/CC8 with AI-native extensions (LLM vendor console access, cost anomaly alerting, prompt-change review gates). GDPR Articles 5/6/22/28 with emphasis on Article 22 automated decision-making and Article 28 model-vendor DPAs. HIPAA BAA requirements for model providers touching PHI. P0/P1/P2/P3 remediation ordering with leverage-per-hour sorting. Zero setup.
 
 **Ported skill (shipped)**
-- `/plan-devex-review` — Plan-stage developer-experience review mirroring `/plan-design-review` for developer-facing surfaces. Persona interrogation, empathy narrative, competitive benchmarking, magical-moment design, mode selection (EXPANSION / POLISH / TRIAGE), 6-stage journey trace, first-time developer roleplay, 8 scored review passes with evidence recall + gap method. Hand-off to `/devex-audit` after the plan ships. Zero setup.
+- `/plan-dev-review` — Plan-stage developer-experience review mirroring `/plan-design-review` for developer-facing surfaces. Persona interrogation, empathy narrative, competitive benchmarking, magical-moment design, mode selection (EXPANSION / POLISH / TRIAGE), 6-stage journey trace, first-time developer roleplay, 8 scored review passes with evidence recall + gap method. Hand-off to `/dev-audit` after the plan ships. Zero setup.
 
 **Dropped from original plan**
 - `/prompt-author` — evaluated as non-load-bearing; `/evals` already owns the prompt quality surface. If prompt-authoring discipline proves needed later, it can ship as `/evals --author` (a mode, not a new skill — principle #6 applied to its own proposal).
+
+**Renamed**
+- `/devex-audit` → `/dev-audit` — drops the "devex" acronym that was flagged as jargon during the rename audit; the description still spells out "developer experience audit" explicitly. History file path also renamed (`.claude/devex-history.jsonl` → `.claude/dev-history.jsonl`) — no existing users affected since this ships in 0.6.0 before any broad release.
+- `/plan-devex-review` → `/plan-dev-review` — same reasoning. Trigger aliases in the description preserve the old phrasing ("plan devex review") for search discoverability.
 
 ### Added (documentation — this session)
 - ETHOS.md — new principle #6 "Depth over count"; principle #3 refined into explicit three setup tiers.
@@ -53,7 +57,7 @@ A proposed `/office-hours` → `/premise office` merge was reviewed and reverted
 ## [0.5.0] — 2026-04-04
 
 ### Added
-- `/devex-audit` — Live developer experience audit across 8 passes (getting started, API/CLI ergonomics, error messages, docs, upgrade path, dev environment, community, DX measurement). Uses Playwright browse binary for screenshots. Scores each pass 0-10 with evidence labels (TESTED/INFERRED/PARTIAL). Tracks history via `.claude/devex-history.jsonl`. Gracefully degrades to file-only mode without browser binary.
+- `/dev-audit` — Live developer experience audit across 8 passes (getting started, API/CLI ergonomics, error messages, docs, upgrade path, dev environment, community, DX measurement). Uses Playwright browse binary for screenshots. Scores each pass 0-10 with evidence labels (TESTED/INFERRED/PARTIAL). Tracks history via `.claude/dev-history.jsonl`. Gracefully degrades to file-only mode without browser binary.
 
 ---
 

@@ -7,7 +7,7 @@ The definitive AI-native quality layer for Claude Code. Three setup tiers — co
 ```
 # Structure at 0.6.0 — 29 skills total.
 # 26 original skills post-merge (4 merges done; /office-hours kept separate from /premise),
-# 3 added: /mcp-audit, /compliance-scaffold, /plan-devex-review.
+# 3 added: /mcp-audit, /compliance-scaffold, /plan-dev-review.
 
 # Core / Tier 1 — zero setup
 cso/SKILL.md               ← /cso security audit (absorbs /rag-audit, /cost-audit attack-surface, /agent-safety as phases 7c, 7d, 8b)
@@ -30,13 +30,13 @@ freeze/SKILL.md            ← /freeze directory edit lock — modes: default (l
 # Planned Tier 1 additions
 mcp-audit/SKILL.md         ← /mcp-audit MCP server supply chain + permission scope + tool-description injection scan
 compliance-scaffold/SKILL.md ← /compliance-scaffold SOC2/GDPR/HIPAA pre-audit gap map for AI-native products
-plan-devex-review/SKILL.md ← /plan-devex-review plan-stage developer-experience review (mirrors /plan-design-review)
+plan-dev-review/SKILL.md ← /plan-dev-review plan-stage developer-experience review (mirrors /plan-design-review)
 
 # Browser / Tier 2 — requires ./setup (Bun + Playwright)
 qa/SKILL.md                ← /qa browser QA — modes: default (find + fix), `watch` (observer, no writes, absorbs /qa-only)
 benchmark/SKILL.md         ← /benchmark performance regression detection
 canary/SKILL.md            ← /canary post-deploy canary monitoring
-devex-audit/SKILL.md       ← /devex-audit live developer experience audit (depth restoration planned)
+dev-audit/SKILL.md       ← /dev-audit live developer experience audit (depth restoration planned)
 design/SKILL.md            ← /design UI direction — modes: default (3 variants → package), `sketch N` (N variants → compare, absorbs /design-shotgun)
 design-consultation/SKILL.md ← /design-consultation design system from scratch
 design-review/SKILL.md     ← /design-review live design visual QA

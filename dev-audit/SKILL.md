@@ -1,9 +1,9 @@
 ---
-name: devex-audit
+name: dev-audit
 description: Use when asked to "audit the DX", "test the developer experience", "review the onboarding", "how hard is it to get started", or after shipping a developer-facing feature. Requires ./setup for browser screenshots.
 ---
 
-# /devex-audit — Live Developer Experience Audit
+# /dev-audit — Live Developer Experience Audit
 
 You are a DX engineer dogfooding a live developer product. Not reviewing a plan. Not reading about the experience. **Testing it.**
 
@@ -80,21 +80,21 @@ Ask the user (AskUserQuestion):
 
 If B: ask for the URL. If A: read CLAUDE.md and README.md to discover docs URL, install command, and API/CLI surface.
 
-Also check for a prior `/devex-audit` score in `.claude/devex-history.jsonl` — if found, display it as the baseline for comparison.
+Also check for a prior `/dev-audit` score in `.claude/dev-history.jsonl` — if found, display it as the baseline for comparison.
 
 ---
 
 ## Step 0.5: Boomerang Baseline — plan vs reality
 
-This is the most valuable signal in a live DX audit: comparing what the plan claimed to deliver against what actually shipped. If a prior `/plan-devex-review` ran on this repo, its projected scores and TTHW estimates become the baseline we measure reality against.
+This is the most valuable signal in a live DX audit: comparing what the plan claimed to deliver against what actually shipped. If a prior `/plan-dev-review` ran on this repo, its projected scores and TTHW estimates become the baseline we measure reality against.
 
 ```bash
-# Look for prior plan-devex-review output in docs/ or the plan file itself
-ls -t docs/plan-devex-review-*.md 2>/dev/null | head -1
+# Look for prior plan-dev-review output in docs/ or the plan file itself
+ls -t docs/plan-dev-review-*.md 2>/dev/null | head -1
 grep -l "Developer Experience Review" docs/*.md 2>/dev/null | head -5
 ```
 
-If a plan-devex-review output is found, extract:
+If a plan-dev-review output is found, extract:
 - The target persona (from Step 0A of the plan review)
 - The target TTHW tier (from Step 0C)
 - The target magical-moment delivery vehicle (from Step 0D)
@@ -117,7 +117,7 @@ Error Messages        | N/10        | N/10          | ±N
 
 Flag with `🟢 on-track`, `🟡 minor drift`, `🔴 plan-missed` per row. The plan-missed rows become the highest-priority recommendations in the final output.
 
-If no plan-devex-review output exists for this repo, note "No prior plan — running first-time audit; next run becomes the boomerang baseline."
+If no plan-dev-review output exists for this repo, note "No prior plan — running first-time audit; next run becomes the boomerang baseline."
 
 Skip this step silently if neither prior audit history nor plan output exists.
 
@@ -318,7 +318,7 @@ DX SCORECARD
 ============
 Product:  <name>
 Audited:  <date>
-Auditor:  nstack /devex-audit
+Auditor:  nstack /dev-audit
 
 Pass                        Score   Status        Evidence
 --------------------------  -----   -----------   --------
@@ -366,11 +366,11 @@ Never give generic advice. Every recommendation must cite a specific finding fro
 
 ## Persist to History
 
-Append one JSONL line to `.claude/devex-history.jsonl`:
+Append one JSONL line to `.claude/dev-history.jsonl`:
 
 ```bash
 mkdir -p .claude
-echo '{"ts":"<ISO8601>","target":"<product name or URL>","score":<composite>,"getting_started":<n>,"api_cli":<n>,"errors":<n>,"docs":<n>,"upgrade":<n>,"dev_env":<n>,"community":<n>,"measurement":<n>,"tthw_minutes":<n>}' >> .claude/devex-history.jsonl
+echo '{"ts":"<ISO8601>","target":"<product name or URL>","score":<composite>,"getting_started":<n>,"api_cli":<n>,"errors":<n>,"docs":<n>,"upgrade":<n>,"dev_env":<n>,"community":<n>,"measurement":<n>,"tthw_minutes":<n>}' >> .claude/dev-history.jsonl
 ```
 
 Set any skipped passes to `null`.
@@ -397,5 +397,5 @@ Escalation is always OK. Bad work is worse than no work. You will not be penaliz
 - **INFERRED scores are valid** — but label them clearly; don't pretend you tested what you read
 - **One pass at a time** — complete each pass fully before moving to the next
 - **If browser is unavailable** — continue with bash and file inspection; mark all browser-dependent passes as INFERRED
-- **Boomerang first, scores second.** If a plan-devex-review output exists, display the Boomerang table at the top — plan-vs-reality drift is the single highest-signal finding and should be visible before the per-pass scores
+- **Boomerang first, scores second.** If a plan-dev-review output exists, display the Boomerang table at the top — plan-vs-reality drift is the single highest-signal finding and should be visible before the per-pass scores
 - **End with status, not prose.** DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT — parseable by downstream workflows

@@ -164,7 +164,7 @@ If `/plan-design-review` returns BLOCKED, propagate that status — Phase 4 stil
 
 Skip if Phase 0 detected no DX signals.
 
-Hand off to `/plan-devex-review`. Same pattern as Phase 2: that skill evaluates developer personas, competitive benchmarks, magical-moment design, journey-trace friction, and 8 DX dimensions with evidence-grounded scoring.
+Hand off to `/plan-dev-review`. Same pattern as Phase 2: that skill evaluates developer personas, competitive benchmarks, magical-moment design, journey-trace friction, and 8 DX dimensions with evidence-grounded scoring.
 
 Record the resulting scores and plan edits in the audit trail.
 
