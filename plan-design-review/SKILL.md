@@ -490,12 +490,12 @@ After displaying the Completion Summary, recommend the next review(s) based on w
 
 **Recommend `superpowers:writing-plans` if eng review is needed** — if this design review added significant interaction specifications, new user flows, or changed the information architecture, a plan-level architecture review is the right next step.
 
-**Recommend design exploration when appropriate** — if this design review found visual issues that would benefit from exploring new directions, consider running `/design-shotgun` for more variants, or `/design` to lock one approved direction.
+**Recommend design exploration when appropriate** — if this design review found visual issues that would benefit from exploring new directions, consider running `/design sketch N` for more variants, or `/design` to lock one approved direction.
 
 Use AskUserQuestion to present the next step. Include only applicable options:
 - **A)** Run engineering review (via `superpowers:writing-plans`)
-- **B)** Run /design-shotgun — explore visual design variants for issues found
-- **C)** Run /design — lock one approved direction for the coding workflow
+- **B)** Run `/design sketch N` — explore N visual design variants for issues found
+- **C)** Run `/design` — lock one approved direction for the coding workflow
 - **D)** Skip — I'll handle next steps manually
 
 ## Completion Status

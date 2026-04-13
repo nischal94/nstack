@@ -6,7 +6,7 @@ description: Use when asked to "review the design", "design critique", "UX audit
   Produces a structured design critique with severity ratings, then applies fixes
   with atomic commits. Requires a clean working tree. Use when you need a live
   product polished, not when you are still deciding the direction. For pre-build
-  critique, use /plan-design-review. For report-only QA, use /qa-only. (nstack)
+  critique, use /plan-design-review. For report-only QA, use `/qa watch`.
 allowed-tools:
   - Bash
   - Read

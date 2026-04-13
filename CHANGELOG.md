@@ -15,12 +15,13 @@ Reframe release: nstack is the definitive AI-native quality layer for founders b
 - **Tier 2 — Browser (one-time `./setup`):** Bun + Playwright. Design cluster, QA, benchmark, canary, DevEx audit.
 - **Tier 3 — Live observability (per-project integration):** Forward-declared for future agent-loop tracing, prompt replay, live RAG auditing. Each skill publishes its own integration contract.
 
-**Skill consolidation (30 → 25)** — functional duplicates merged into richer parent skills with creative mode names:
+**Skill consolidation (30 → 26)** — functional duplicates merged into richer parent skills with creative mode names:
 - `/unfreeze` → `/freeze lift`
 - `/qa-only` → `/qa watch`
-- `/office-hours` → `/premise office`
 - `/design-shotgun` → `/design sketch N`
-- `/guard` → `/careful here`
+- `/guard` → `/careful <path>` (or `/careful here` for current directory)
+
+A proposed `/office-hours` → `/premise office` merge was reviewed and reverted during implementation — the two skills share a philosophical premise but have distinct jobs (`/premise` is a 5-10 minute gate, `/office-hours` is a 30-60 minute YC-style diagnostic producing a full design doc). Principle #6 applied honestly: when jobs aren't identical, don't merge.
 
 **Depth restoration (5 skills)** — a content-diff against the upstream source material surfaced substantive signal loss in the initial port. Planned restorations:
 - `/cso` — Phase 3 install-script hunt (supply-chain RCE), Phase 7 RAG poisoning + cost-amplification loop patterns with concrete regex examples, Phase 8 FP exceptions, Phase 8a Snyk ToxicSkills threat context, Phase 12 Agent-tool parallel verification, Phase 14 JSON schema with fingerprints. New Phase 7c (RAG), 7d (cost attack-surface), 8b (agent tool blast-radius) absorb what would have been standalone `/rag-audit`, `/cost-audit`, `/agent-safety` skills.

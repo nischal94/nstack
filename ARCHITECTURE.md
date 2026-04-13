@@ -64,17 +64,18 @@ Future skills that tap into a running application's telemetry: agent-loop tracin
 
 ## Skill consolidation rationale
 
-Skill count is vanity; finding quality is the filter. When two skills share a job-to-be-done and differ only by style or output artifact, merge them. The 0.6.0 release consolidates 5 pairs:
+Skill count is vanity; finding quality is the filter. When two skills share a job-to-be-done and differ only by style or output artifact, merge them. The 0.6.0 release consolidates 4 pairs:
 
 | Merge | Default invocation | Alt mode |
 |---|---|---|
 | `/unfreeze` → `/freeze` | locks edits to a path | `/freeze lift` — clears the lock |
 | `/qa-only` → `/qa` | find + fix bugs | `/qa watch` — observer mode, no writes |
-| `/office-hours` → `/premise` | structured 5-lens challenge | `/premise office` — conversational YC-style, same 5 lenses |
 | `/design-shotgun` → `/design` | 3 variants → pick → package | `/design sketch N` — N variants → comparison board → no commit |
-| `/guard` → `/careful` | destructive-command warnings | `/careful here` — warnings + scope lock on current directory |
+| `/guard` → `/careful` | destructive-command warnings | `/careful <path>` or `/careful here` — warnings + scope lock |
 
 Every surviving skill passes the one-sentence test: "I run this when X happens, and the output is Y."
+
+**Not merged: `/office-hours` and `/premise`.** Both share the philosophical premise "challenge before building," but their jobs are distinct. `/premise` is a 5-10 minute structured gate that outputs a CONFIRMED / NARROWED / CHALLENGED / DEFER verdict. `/office-hours` is a 30-60 minute YC-style product diagnostic that produces a full design doc with premises, alternatives, and a recommended approach. Different artifacts = different skills. Principle #6 applied honestly.
 
 ## `/cso` phase absorption
 

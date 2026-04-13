@@ -91,7 +91,7 @@ That sequence shows the core shape of nstack quickly:
 - design direction before UI drift starts
 
 By use case:
-- Starting a new AI product: `/premise` (or `/premise office` for conversational), `/design-consultation`, `/autoplan`
+- Starting a new AI product: `/premise` (quick gate), `/office-hours` (deep YC-style diagnostic), `/design-consultation`, `/autoplan`
 - Building a UI-heavy feature: `/plan-design-review`, `/design sketch N` (explore), `/design` (commit), `/design-review`
 - Doing a security and quality pass: `/cso`, `/review`, `/qa`, `/evals`
 - Getting ready to ship: `/review`, `/qa` (or `/qa watch` for report-only), `/ship`, `/canary`
@@ -116,7 +116,7 @@ Every Tier 1 skill works in the next Claude Code session. No build step. No
 binaries. No package manager. Includes: `/cso`, `/review`, `/ship`, `/land`,
 `/autoplan`, `/premise`, `/retro`, `/investigate`, `/evals`, `/migrate`,
 `/context-audit`, `/checkpoint`, `/health`, `/careful`, `/freeze`,
-`/document-release`, and (planned for 0.6.0) `/mcp-audit`, `/prompt-author`,
+`/document-release`, `/office-hours`, and (planned for 0.6.0) `/mcp-audit`,
 `/compliance-scaffold`, `/plan-devex-review`.
 
 ### Tier 2 — Browser (one-time `./setup`)
@@ -155,8 +155,8 @@ instead of treating `~/.claude/skills/nstack` as the only copy.
 
 ```
 BEFORE YOU BUILD
-  Got an idea?                → /premise              (challenge whether to build it)
-  Want it conversational?     → /premise office       (YC-style flow, same 5 lenses)
+  Got an idea?                → /premise              (5-10 min gate: should you build it?)
+  Need full product diagnostic? → /office-hours       (30-60 min YC-style diagnostic → design doc)
   Need multiple views?        → /council              (adversarial deliberation)
   Have a written plan?        → /autoplan             (review before executing)
   No design system yet?       → /design-consultation  (create DESIGN.md first)
@@ -169,7 +169,6 @@ WHILE YOU BUILD
   Focused refactor?           → /freeze <path>        (lock edits to one directory)
   Done with the lock?         → /freeze lift          (remove the lock)
   Running a DB migration?     → /migrate              (safety review first)
-  Authoring a prompt?         → /prompt-author        (injection-proof, cache-friendly)
   Need UI options fast?       → /design sketch N      (explore N variants)
 
 AFTER YOU BUILD
@@ -232,15 +231,16 @@ workflow itself.
 
 ## Skills
 
-25 skills across 7 categories. 4 more planned for 0.6.0 (3 new Tier 1 + 1 port). Skills that share a core job merge into one skill with a mode flag, rather than shipping as two commands.
+26 skills across 7 categories. 3 more planned for 0.6.0 (2 new Tier 1 + 1 port). Skills that share a core job merge into one skill with a mode flag, rather than shipping as two commands.
 
-### Thinking & deciding (3) — Tier 1
+### Thinking & deciding (4) — Tier 1
 
 | # | Skill | What it does |
 |---|-------|-------------|
-| 1 | `/premise` | Premise challenge before building. Five structured lenses (status quo, assumption killer, minimum wedge, existing leverage, regret test). Outputs CONFIRMED / NARROWED / CHALLENGED / DEFER. Modes: default (structured Q&A); `/premise office` (conversational YC-style flow — same 5 lenses). |
-| 2 | `/council` | Multi-agent adversarial deliberation. 11 personas (Socrates, Feynman, Torvalds, etc.), 3-round protocol: independent analysis → cross-examination → synthesis. For architecture choices, strategic pivots, build-vs-buy. |
-| 3 | `/autoplan` | Plan review before execution. Scope challenge, architecture review, AI-native checks, test matrix. Outputs BLOCKED / READY with specific gaps. |
+| 1 | `/premise` | 5-10 minute premise gate. Five structured lenses (status quo, assumption killer, minimum wedge, existing leverage, regret test). Outputs CONFIRMED / NARROWED / CHALLENGED / DEFER. Use before any new feature or project to decide whether to build at all. |
+| 2 | `/office-hours` | 30-60 minute YC-style product diagnostic with startup and builder modes, forcing questions, pushback patterns, landscape awareness, cross-model second opinion, alternatives generation. Produces a design doc. Use for deep product thinking before committing to an approach. |
+| 3 | `/council` | Multi-agent adversarial deliberation. 11 personas (Socrates, Feynman, Torvalds, etc.), 3-round protocol: independent analysis → cross-examination → synthesis. For architecture choices, strategic pivots, build-vs-buy. |
+| 4 | `/autoplan` | Plan review before execution. Scope challenge, architecture review, AI-native checks, test matrix. Outputs BLOCKED / READY with specific gaps. |
 
 ### Safety guardrails (2) — Tier 1
 
@@ -299,7 +299,6 @@ workflow itself.
 | Skill | Tier | What it will do |
 |-------|------|----------------|
 | `/mcp-audit` | 1 | MCP server supply chain + permission scope + command-line exploit surface + tool-description injection scan. |
-| `/prompt-author` | 1 | Opinionated prompt authoring discipline: system/user boundary, injection-proof structure, cache-friendly layout, testability checklist. |
 | `/compliance-scaffold` | 1 | SOC2 / GDPR / HIPAA prep gap map for AI-native products at pre-audit stage. Not enforcement — a remediation order. |
 | `/plan-devex-review` | 1 | Plan-stage DX review. Explores developer personas, benchmarks against competitors, designs magical moments, traces friction points before scoring. |
 

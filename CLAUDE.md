@@ -6,7 +6,9 @@ The definitive AI-native quality layer for Claude Code. Three setup tiers — co
 
 ```
 # Target structure for 0.6.0 (consolidation + new Tier 1 skills in progress)
-# 25 skills post-merge, 3 new Tier 1 skills planned, 1 ported skill planned.
+# 26 skills post-merge (4 merges done; /office-hours kept separate from /premise),
+# 2 new Tier 1 skills planned (/mcp-audit, /compliance-scaffold),
+# 1 ported skill planned (/plan-devex-review).
 
 # Core / Tier 1 — zero setup
 cso/SKILL.md               ← /cso security audit (absorbs /rag-audit, /cost-audit attack-surface, /agent-safety as phases 7c, 7d, 8b)
@@ -14,7 +16,8 @@ review/SKILL.md            ← /review inline staff engineer code review
 ship/SKILL.md              ← /ship full release checklist
 land/SKILL.md              ← /land merge + deploy + health check
 autoplan/SKILL.md          ← /autoplan plan review before execution (depth restoration planned)
-premise/SKILL.md           ← /premise challenge whether to build — modes: default (structured), `office` (conversational)
+premise/SKILL.md           ← /premise challenge whether to build (5-10 min structured gate)
+office-hours/SKILL.md      ← /office-hours YC-style product diagnostic (30-60 min, produces design doc)
 document-release/SKILL.md  ← /document-release release notes from git history
 retro/SKILL.md             ← /retro weekly retrospective (depth restoration planned)
 investigate/SKILL.md       ← /investigate bug triage (depth restoration planned)
@@ -26,9 +29,8 @@ health/SKILL.md            ← /health code quality dashboard
 careful/SKILL.md           ← /careful destructive command guardrails — modes: default, `here` (scope + warn, absorbs /guard)
 freeze/SKILL.md            ← /freeze directory edit lock — modes: default (lock), `lift` (clear, absorbs /unfreeze)
 # Planned Tier 1 additions
-mcp-audit/SKILL.md         ← /mcp-audit MCP server supply chain + permission + injection scan (NEW)
-prompt-author/SKILL.md     ← /prompt-author opinionated prompt authoring discipline (NEW)
-compliance-scaffold/SKILL.md ← /compliance-scaffold SOC2/GDPR/HIPAA prep gap map (NEW)
+mcp-audit/SKILL.md         ← /mcp-audit MCP server supply chain + permission + injection scan (NEW — validated on real config)
+compliance-scaffold/SKILL.md ← /compliance-scaffold SOC2/GDPR/HIPAA prep gap map for AI-native products (NEW)
 plan-devex-review/SKILL.md ← /plan-devex-review plan-stage DX review (PORT)
 
 # Browser / Tier 2 — requires ./setup (Bun + Playwright)
