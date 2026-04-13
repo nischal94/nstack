@@ -5,10 +5,9 @@ The definitive AI-native quality layer for Claude Code. Three setup tiers — co
 ## Structure
 
 ```
-# Target structure for 0.6.0 (consolidation + new Tier 1 skills in progress)
-# 26 skills post-merge (4 merges done; /office-hours kept separate from /premise),
-# 2 new Tier 1 skills planned (/mcp-audit, /compliance-scaffold),
-# 1 ported skill planned (/plan-devex-review).
+# Structure at 0.6.0 — 29 skills total.
+# 26 original skills post-merge (4 merges done; /office-hours kept separate from /premise),
+# 3 added: /mcp-audit, /compliance-scaffold, /plan-devex-review.
 
 # Core / Tier 1 — zero setup
 cso/SKILL.md               ← /cso security audit (absorbs /rag-audit, /cost-audit attack-surface, /agent-safety as phases 7c, 7d, 8b)
@@ -29,9 +28,9 @@ health/SKILL.md            ← /health code quality dashboard
 careful/SKILL.md           ← /careful destructive command guardrails — modes: default, `here` (scope + warn, absorbs /guard)
 freeze/SKILL.md            ← /freeze directory edit lock — modes: default (lock), `lift` (clear, absorbs /unfreeze)
 # Planned Tier 1 additions
-mcp-audit/SKILL.md         ← /mcp-audit MCP server supply chain + permission + injection scan (NEW — validated on real config)
-compliance-scaffold/SKILL.md ← /compliance-scaffold SOC2/GDPR/HIPAA prep gap map for AI-native products (NEW)
-plan-devex-review/SKILL.md ← /plan-devex-review plan-stage DX review (PORT)
+mcp-audit/SKILL.md         ← /mcp-audit MCP server supply chain + permission scope + tool-description injection scan
+compliance-scaffold/SKILL.md ← /compliance-scaffold SOC2/GDPR/HIPAA pre-audit gap map for AI-native products
+plan-devex-review/SKILL.md ← /plan-devex-review plan-stage developer-experience review (mirrors /plan-design-review)
 
 # Browser / Tier 2 — requires ./setup (Bun + Playwright)
 qa/SKILL.md                ← /qa browser QA — modes: default (find + fix), `watch` (observer, no writes, absorbs /qa-only)

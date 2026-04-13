@@ -4,11 +4,13 @@ All notable changes to nstack are documented here.
 
 ---
 
-## [0.6.0] — Unreleased (planning)
+## [0.6.0] — Unreleased (implementation complete, awaiting tag)
 
 Reframe release: nstack is the definitive AI-native quality layer for founders building at scale. Depth and judgment per skill over breadth of coverage.
 
-### Planned
+All planned work shipped. Final count: 29 skills (26 post-merge + 3 additions).
+
+### Added
 
 **Three setup tiers (formalized in ETHOS.md + ARCHITECTURE.md)**
 - **Tier 1 — Core (zero setup):** Markdown-only skills. `git clone` and they work.
@@ -23,20 +25,22 @@ Reframe release: nstack is the definitive AI-native quality layer for founders b
 
 A proposed `/office-hours` → `/premise office` merge was reviewed and reverted during implementation — the two skills share a philosophical premise but have distinct jobs (`/premise` is a 5-10 minute gate, `/office-hours` is a 30-60 minute YC-style diagnostic producing a full design doc). Principle #6 applied honestly: when jobs aren't identical, don't merge.
 
-**Depth restoration (5 skills)** — a content-diff against the upstream source material surfaced substantive signal loss in the initial port. Planned restorations:
-- `/cso` — Phase 3 install-script hunt (supply-chain RCE), Phase 7 RAG poisoning + cost-amplification loop patterns with concrete regex examples, Phase 8 FP exceptions, Phase 8a Snyk ToxicSkills threat context, Phase 12 Agent-tool parallel verification, Phase 14 JSON schema with fingerprints. New Phase 7c (RAG), 7d (cost attack-surface), 8b (agent tool blast-radius) absorb what would have been standalone `/rag-audit`, `/cost-audit`, `/agent-safety` skills.
-- `/autoplan` — dual-voice architecture (Claude + Codex consensus tables), Phase 0 scope detection, decision classification (mechanical / taste / user-challenge), 6 decision principles with tiebreakers, sequential phase execution, audit trail logging, pre-gate verification, final approval gate with user-challenge handling.
-- `/investigate` — Phase 2 bug pattern catalog (race conditions, nil propagation, cache staleness, config drift), structured DEBUG REPORT format, "3+ failed attempts → stop" thrashing guard, regression test minimal-diff discipline.
-- `/devex-audit` — Seven DX Characteristics calibration framework, Hall of Fame reference for scoring, Boomerang Baseline (plan vs reality delta), Completion Status Protocol.
-- `/retro` — Backlog Health (TODOS.md deltas), Streak tracking, Week-over-week trend buckets, AI-assisted-commit detection via `Co-Authored-By: noreply@anthropic.com`.
+**Depth restoration (5 skills shipped)** — a content-diff against the upstream source surfaced substantive signal loss in the initial port. All restorations complete:
+- `/cso` — Phase 3 install-script hunt (supply-chain RCE), Phase 7 RAG poisoning + cost-amplification loop patterns with concrete regex examples, Phase 8 FP exceptions (15 precedents), Phase 8a Snyk ToxicSkills threat context, Phase 8b agent tool blast-radius (NEW), Phase 12 Agent-tool parallel verification, Phase 14 JSON schema with fingerprints. New Phase 7c (RAG), 7d (cost attack-surface), 8b (agent tool blast-radius) absorb what would have been standalone `/rag-audit`, `/cost-audit`, `/agent-safety` skills. 503 → 676 lines.
+- `/autoplan` — dual-voice architecture (Claude + Codex consensus tables), Phase 0 scope detection, decision classification (mechanical / taste / user-challenge), 6 decision principles with phase-specific tiebreakers, sequential phase execution, audit trail logging, pre-gate verification (18-item checklist), final approval gate with user-challenge handling and 3-cycle revision limit. 200 → 538 lines.
+- `/investigate` — Step 2.5 bug pattern catalog (race conditions, nil propagation, cache staleness, config drift, dependency drift, AI-native regressions) with signatures and fast-check patterns, Step 7.5 structured DEBUG REPORT format (symptom / root cause / pattern classification / fix / evidence / regression test / related issues / captured learnings), minimal-diff discipline for the systematic-debugging handoff.
+- `/devex-audit` — Step 0.5 Boomerang Baseline (plan-vs-reality delta when a prior `/plan-devex-review` output exists — 🟢/🟡/🔴 per-row flags; plan-missed rows become highest-priority recommendations), Completion Status Protocol (DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT).
+- `/retro` — Step 1a AI-assisted commit split via `Co-Authored-By: Claude` signature, Step 1b shipping streak tracking (per-author for team repos), Step 3a backlog health (TODOS.md deltas: P0/P1/P2 counts, items closed in window, delta direction), Step 3b week-over-week trend buckets for windows ≥ 14 days with inflection-point flagging.
 
-**New Tier 1 skills**
-- `/mcp-audit` — MCP server supply chain + permission scope + command-line exploit surface + tool-description injection scan. Dry-run on the nstack author's machine surfaced one real MEDIUM finding (unpinned global npm package on a reputable publisher). Zero setup.
-- `/prompt-author` — Opinionated prompt authoring discipline: system/user boundary, injection-proof structure, cache-friendly layout, testability checklist. Zero setup.
-- `/compliance-scaffold` — SOC2 / GDPR / HIPAA prep gap map for AI-native products at pre-audit stage. Not enforcement — a remediation order for founders building to scale. Zero setup.
+**New Tier 1 skills (shipped)**
+- `/mcp-audit` — MCP server supply chain + permission scope + command-line exploit surface + tool-description injection scan. Config discovery across Claude Code (including nested `projects.*.mcpServers`), Claude Desktop, project-local `.mcp.json`. Source-trust tier classification (A/B/C/D). 8/10 confidence gate. Fingerprint-based trend tracking. Zero setup.
+- `/compliance-scaffold` — Pre-audit gap map for AI-native products. SOC 2 Common Criteria CC6/CC7/CC8 with AI-native extensions (LLM vendor console access, cost anomaly alerting, prompt-change review gates). GDPR Articles 5/6/22/28 with emphasis on Article 22 automated decision-making and Article 28 model-vendor DPAs. HIPAA BAA requirements for model providers touching PHI. P0/P1/P2/P3 remediation ordering with leverage-per-hour sorting. Zero setup.
 
-**Ported skill**
-- `/plan-devex-review` — plan-stage DX review. Mirrors the `/plan-design-review` ↔ `/design-review` pattern. Explores developer personas, benchmarks against competitors, designs magical moments, and traces friction points before scoring. Zero setup.
+**Ported skill (shipped)**
+- `/plan-devex-review` — Plan-stage developer-experience review mirroring `/plan-design-review` for developer-facing surfaces. Persona interrogation, empathy narrative, competitive benchmarking, magical-moment design, mode selection (EXPANSION / POLISH / TRIAGE), 6-stage journey trace, first-time developer roleplay, 8 scored review passes with evidence recall + gap method. Hand-off to `/devex-audit` after the plan ships. Zero setup.
+
+**Dropped from original plan**
+- `/prompt-author` — evaluated as non-load-bearing; `/evals` already owns the prompt quality surface. If prompt-authoring discipline proves needed later, it can ship as `/evals --author` (a mode, not a new skill — principle #6 applied to its own proposal).
 
 ### Added (documentation — this session)
 - ETHOS.md — new principle #6 "Depth over count"; principle #3 refined into explicit three setup tiers.

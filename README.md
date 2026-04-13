@@ -94,8 +94,8 @@ Every Tier 1 skill works in the next Claude Code session. No build step. No
 binaries. No package manager. Includes: `/cso`, `/review`, `/ship`, `/land`,
 `/autoplan`, `/premise`, `/retro`, `/investigate`, `/evals`, `/migrate`,
 `/context-audit`, `/checkpoint`, `/health`, `/careful`, `/freeze`,
-`/document-release`, `/office-hours`, and (planned for 0.6.0) `/mcp-audit`,
-`/compliance-scaffold`, `/plan-devex-review`.
+`/document-release`, `/office-hours`, `/mcp-audit`, `/compliance-scaffold`,
+`/plan-devex-review`.
 
 ### Tier 2 — Browser (one-time `./setup`)
 
@@ -133,47 +133,43 @@ instead of treating `~/.claude/skills/nstack` as the only copy.
 
 ```
 BEFORE YOU BUILD
-  Got an idea?                → /premise              (5-10 min gate: should you build it?)
-  Need full product diagnostic? → /office-hours       (30-60 min YC-style diagnostic → design doc)
-  Need multiple views?        → /council              (adversarial deliberation)
-  Have a written plan?        → /autoplan             (review before executing)
-  No design system yet?       → /design-consultation  (create DESIGN.md first)
-  Plan involves UI?           → /plan-design-review   (critique before writing UI)
-  Developer-facing product?   → /plan-devex-review    (DX critique before code)
+  Should I build this at all?      → /premise                 (5-min structured gate; verdict: build / narrow / challenge / defer)
+  Need a deep product diagnostic?  → /office-hours            (30-60 min YC-style, produces a design doc)
+  Stuck on a big decision?         → /council                 (11-persona adversarial deliberation)
+  Reviewing a written plan?        → /autoplan                (full plan-review pipeline: scope / architecture / tests / gate)
+  No design system exists?         → /design-consultation     (creates DESIGN.md for the whole project)
+  About to write UI code?          → /plan-design-review      (critiques the UI plan before you build it)
+  About to ship developer tooling? → /plan-devex-review       (critiques the dev-facing plan before you build it)
 
 WHILE YOU BUILD
-  Working on risky code?      → /careful              (confirm destructive commands)
-  Scope + warn at once?       → /careful here         (warnings + current-dir lock)
-  Focused refactor?           → /freeze <path>        (lock edits to one directory)
-  Done with the lock?         → /freeze lift          (remove the lock)
-  Running a DB migration?     → /migrate              (safety review first)
-  Need UI options fast?       → /design sketch N      (explore N variants)
+  Need a first UI direction?       → /design                  (generate 2-3 HTML directions; `/design sketch N` to explore N variants)
+  Risky operations ahead?          → /careful                 (warns before rm -rf, DROP TABLE, force push; `/careful <path>` also scope-locks edits)
+  Scoping a focused refactor?      → /freeze <path>           (locks edits to one dir; `/freeze lift` clears the lock)
+  Running a DB migration?          → /migrate                 (risk classification, rollback check, dry-run, post-migration verify)
+  Changed a prompt?                → /evals                   (quality tests, regression checks, prompt diffs)
 
 AFTER YOU BUILD
-  No UI yet?                  → /design               (lock a first direction)
-  UI exists, needs review?    → /design-review        (visual audit + fix loop)
-  Changed a prompt?           → /evals                (check quality or regressions)
-  Ready to review?            → /review               (review the diff)
-  Ready to ship?              → /ship                 (tests → review → version → PR)
-  Cutting a release?          → /document-release     (release notes from git history)
-  PR open, waiting for CI?    → /land                 (merge → deploy → health check)
-  Just deployed?              → /canary               (watch the live app)
+  UI is live, needs polish?        → /design-review           (visual audit with fixes + atomic commits)
+  Ready to review the diff?        → /review                  (inline staff-engineer review; auto-fixes obvious issues)
+  Tests pass, open a PR?           → /ship                    (tests → review → version bump → CHANGELOG → PR)
+  Cutting a tagged release?        → /document-release        (release notes from git history)
+  PR open, CI green?               → /land                    (merge → deploy → health check → rollback offer)
+  Deploy just landed?              → /canary                  (watches live app for console errors / regressions / page failures)
 
 WHEN SOMETHING FEELS OFF
-  Don't know where to start   → /investigate          (triage the regression)
-  Security concerns?          → /cso                  (AI-native security audit)
-  MCP servers installed?      → /mcp-audit            (MCP supply chain + injection)
-  Compliance looming?         → /compliance-scaffold  (SOC2/GDPR/HIPAA gap map)
-  App behaving wrong?         → /qa                   (find and fix bugs)
-  Just want a bug report?     → /qa watch             (report-only, no fixes)
-  Something seems slower?     → /benchmark            (flag performance regressions)
-  DX feels clunky?            → /devex-audit          (live DX audit across 8 passes)
-  Claude config drifting?     → /context-audit        (audit CLAUDE.md and rules)
+  Don't know where to start?       → /investigate             (bug triage: timeline → pattern catalog → hypothesis → handoff)
+  Worried about security?          → /cso                     (AI-native security audit: secrets, CI/CD, prompt injection, RAG, agent tools)
+  MCP servers installed?           → /mcp-audit               (MCP supply chain + permission scope + tool-description injection)
+  Preparing for SOC 2 / GDPR?      → /compliance-scaffold     (pre-audit gap map with remediation order)
+  App behaving wrong?               → /qa                      (browser-based bug find + fix; `/qa watch` for report-only)
+  Performance regressed?           → /benchmark               (TTFB / FCP / LCP / bundle-size comparison)
+  Onboarding feels clunky?         → /devex-audit             (live dev-facing audit: getting started, API, errors, docs, upgrade, environment, community)
+  Claude Code config drifting?     → /context-audit           (CLAUDE.md + rules + memory audit)
 
-REFLECTION
-  End of the week?            → /retro                (what shipped, what drifted)
-  Code quality snapshot?      → /health               (composite score, trend)
-  Session boundary?           → /checkpoint           (save or resume state)
+REFLECTION / HYGIENE
+  End of the week?                 → /retro                   (what shipped, lines, streak, backlog delta, AI-commits, test health)
+  Code-quality snapshot?           → /health                  (composite 0-10 from tsc/linter/test/dead-code/shellcheck, trend tracked)
+  Saving / resuming session state? → /checkpoint              (commits a Context+Next marker so git log tells you where to pick up)
 ```
 
 ### Design cluster chain
@@ -209,7 +205,7 @@ workflow itself.
 
 ## Skills
 
-26 skills across 7 categories. 3 more planned for 0.6.0 (2 new Tier 1 + 1 port). Skills that share a core job merge into one skill with a mode flag, rather than shipping as two commands.
+29 skills across 7 categories. Skills that share a core job merge into one skill with a mode flag, rather than shipping as two commands.
 
 ### Thinking & deciding (4) — Tier 1
 
@@ -272,13 +268,18 @@ workflow itself.
 | 24 | `/design` | Generate a first coherent UI direction. Modes: default (3 variants → pick → packaged as approved reference); `/design sketch N` (N variants → comparison board → no commit). |
 | 25 | `/design-review` | Visual design audit + fix loop. Screenshots running pages, analyzes 10 categories (~80 items): typography, color, spacing, accessibility, AI slop detection. Letter grades with evidence. Applies fixes with atomic commits — requires a clean working tree. |
 
-### Planned for 0.6.0
+### AI-native auditing (2) — Tier 1
 
-| Skill | Tier | What it will do |
-|-------|------|----------------|
-| `/mcp-audit` | 1 | MCP server supply chain + permission scope + command-line exploit surface + tool-description injection scan. |
-| `/compliance-scaffold` | 1 | SOC2 / GDPR / HIPAA prep gap map for AI-native products at pre-audit stage. Not enforcement — a remediation order. |
-| `/plan-devex-review` | 1 | Plan-stage DX review. Explores developer personas, benchmarks against competitors, designs magical moments, traces friction points before scoring. |
+| # | Skill | What it does |
+|---|-------|-------------|
+| 26 | `/mcp-audit` | MCP server supply-chain audit: config discovery across Claude Code + Claude Desktop + project-local, source-trust tiers, permission scope (filesystem/network/shell/credential), command-line exploit surface (auto-update via npx-latest, remote code execution), config hygiene (inline secrets = CRITICAL), optional live tool-description injection scan. 8/10 confidence gate, fingerprint-based trend tracking. |
+| 27 | `/compliance-scaffold` | Pre-audit gap map for AI-native products. SOC 2 Common Criteria (CC6/CC7/CC8 with AI-native extensions — LLM vendor access, cost alerting, prompt-change review gates), GDPR (Articles 5/6/22/28 with emphasis on Article 22 automated decision-making and Article 28 vendor DPAs), HIPAA (BAA requirements for model providers touching PHI). Priority-ordered remediation (P0/P1/P2/P3) with leverage-per-hour sorting. |
+
+### Plan-stage developer review (1) — Tier 1
+
+| # | Skill | What it does |
+|---|-------|-------------|
+| 28 | `/plan-devex-review` | Plan-stage developer-experience review (mirrors `/plan-design-review` for developer-facing surfaces). Persona interrogation, empathy narrative, competitive benchmarking, magical-moment design, mode selection (EXPANSION / POLISH / TRIAGE), journey trace across 6 stages, first-time developer roleplay, 8 scored review passes with evidence recall and gap method. Hand-off to `/devex-audit` after the plan ships. |
 
 ## Compatibility
 
