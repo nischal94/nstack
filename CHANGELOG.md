@@ -22,7 +22,7 @@ Reframe release: nstack is the definitive AI-native quality layer for founders b
 - `/design-shotgun` → `/design sketch N`
 - `/guard` → `/careful here`
 
-**Depth restoration (5 skills)** — content-diff against gstack source surfaced substantive signal loss in the initial port. Planned restorations:
+**Depth restoration (5 skills)** — a content-diff against the upstream source material surfaced substantive signal loss in the initial port. Planned restorations:
 - `/cso` — Phase 3 install-script hunt (supply-chain RCE), Phase 7 RAG poisoning + cost-amplification loop patterns with concrete regex examples, Phase 8 FP exceptions, Phase 8a Snyk ToxicSkills threat context, Phase 12 Agent-tool parallel verification, Phase 14 JSON schema with fingerprints. New Phase 7c (RAG), 7d (cost attack-surface), 8b (agent tool blast-radius) absorb what would have been standalone `/rag-audit`, `/cost-audit`, `/agent-safety` skills.
 - `/autoplan` — dual-voice architecture (Claude + Codex consensus tables), Phase 0 scope detection, decision classification (mechanical / taste / user-challenge), 6 decision principles with tiebreakers, sequential phase execution, audit trail logging, pre-gate verification, final approval gate with user-challenge handling.
 - `/investigate` — Phase 2 bug pattern catalog (race conditions, nil propagation, cache staleness, config drift), structured DEBUG REPORT format, "3+ failed attempts → stop" thrashing guard, regression test minimal-diff discipline.
@@ -34,14 +34,14 @@ Reframe release: nstack is the definitive AI-native quality layer for founders b
 - `/prompt-author` — Opinionated prompt authoring discipline: system/user boundary, injection-proof structure, cache-friendly layout, testability checklist. Zero setup.
 - `/compliance-scaffold` — SOC2 / GDPR / HIPAA prep gap map for AI-native products at pre-audit stage. Not enforcement — a remediation order for founders building to scale. Zero setup.
 
-**Port from gstack**
+**Ported skill**
 - `/plan-devex-review` — plan-stage DX review. Mirrors the `/plan-design-review` ↔ `/design-review` pattern. Explores developer personas, benchmarks against competitors, designs magical moments, and traces friction points before scoring. Zero setup.
 
 ### Added (documentation — this session)
 - ETHOS.md — new principle #6 "Depth over count"; principle #3 refined into explicit three setup tiers.
 - ARCHITECTURE.md — three-tier formalization; skill consolidation rationale; `/cso` phase absorption documentation.
 - CLAUDE.md — target 0.6.0 structure list with tier labels and merge notes.
-- docs/audit-2026-04-13.md — full three-way audit (nstack ↔ gstack ↔ superpowers) and five-skill depth-diff findings that drove the reframe.
+- docs/detection-patterns.md — canonical reference for secret patterns, prompt-injection triggers, and credential-access patterns shared across skills.
 
 ---
 

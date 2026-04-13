@@ -1,12 +1,12 @@
 # nstack
 
-A Claude Code skill pack for AI-native projects. Zero mandatory setup for core skills. Superpowers-compatible.
+The definitive AI-native quality layer for Claude Code. Three setup tiers — core skills work on `git clone`; browser skills opt in via `./setup`; live-observability skills publish per-project integration contracts. Superpowers-compatible.
 
 ## Structure
 
 ```
 # Target structure for 0.6.0 (consolidation + new Tier 1 skills in progress)
-# 25 skills post-merge, 3 new Tier 1 skills planned, 1 port from gstack.
+# 25 skills post-merge, 3 new Tier 1 skills planned, 1 ported skill planned.
 
 # Core / Tier 1 — zero setup
 cso/SKILL.md               ← /cso security audit (absorbs /rag-audit, /cost-audit attack-surface, /agent-safety as phases 7c, 7d, 8b)
@@ -29,7 +29,7 @@ freeze/SKILL.md            ← /freeze directory edit lock — modes: default (l
 mcp-audit/SKILL.md         ← /mcp-audit MCP server supply chain + permission + injection scan (NEW)
 prompt-author/SKILL.md     ← /prompt-author opinionated prompt authoring discipline (NEW)
 compliance-scaffold/SKILL.md ← /compliance-scaffold SOC2/GDPR/HIPAA prep gap map (NEW)
-plan-devex-review/SKILL.md ← /plan-devex-review plan-stage DX review (PORT from gstack)
+plan-devex-review/SKILL.md ← /plan-devex-review plan-stage DX review (PORT)
 
 # Browser / Tier 2 — requires ./setup (Bun + Playwright)
 qa/SKILL.md                ← /qa browser QA — modes: default (find + fix), `watch` (observer, no writes, absorbs /qa-only)

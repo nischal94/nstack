@@ -27,9 +27,9 @@ No restart, no rebuild, no deploy.
 - Fixes for findings that are false positives or missed findings in practice
 
 **Low value:**
-- Adding generic security advice already covered by gstack
-- Adding team-oriented workflow features (nstack is founder-first, not team-workflow-first)
-- Adding dependencies to core skills (core skills have zero mandatory setup)
+- Generic security advice that isn't AI-native (traditional OWASP tooling already covers it)
+- Team-oriented workflow features (nstack is founder-first, not team-workflow-first)
+- Adding mandatory dependencies to Tier 1 core skills (core stays zero-setup by design)
 - Translating skills to other languages (one excellent example beats many mediocre ones)
 
 ---
@@ -112,11 +112,11 @@ nstack has no automated test suite (no build step, no test runner). Testing is m
 2. Introduce a contradiction between two rules files — verify it's caught
 3. Verify no memory files are modified without confirmation
 
-**For `/careful`, `/freeze`, `/guard`, `/unfreeze` changes:**
+**For `/careful` and `/freeze` changes (including modes `/careful here` and `/freeze lift`):**
 1. Run `/careful` and attempt a destructive command — verify confirmation prompt
-2. Run `/freeze src/` and attempt an edit outside src/ — verify refusal
-3. Run `/guard` and verify both protections are active simultaneously
-4. Run `/unfreeze` and verify edits outside the locked directory are permitted again
+2. Run `/freeze src/` and attempt an edit outside `src/` — verify refusal
+3. Run `/careful here` in a subdirectory and verify both protections (warnings + scope lock) are active simultaneously
+4. Run `/freeze lift` and verify edits outside the locked directory are permitted again
 
 **For `/ship` and `/land` changes:**
 1. Run `/ship` with a failing test — verify it stops at the test step
@@ -133,14 +133,14 @@ nstack has no automated test suite (no build step, no test runner). Testing is m
 2. Verify semver bump determination (feat → MINOR, fix → PATCH)
 3. Verify it never tags without explicit confirmation
 
-**For `/office-hours` changes:**
+**For `/premise office` mode changes:**
 1. Run on a product idea with a clear assumption to challenge — verify it fires the right lens
 2. Verify the output produces a CONFIRMED / NARROWED / CHALLENGED / DEFER verdict
-3. Verify it asks one question at a time, not a batched interview
+3. Verify it asks one question at a time in conversational flow, not a batched interview
 
-**For `/qa-only` changes:**
+**For `/qa watch` mode changes:**
 1. Run on a running local app — verify it produces a health report with screenshots
-2. Verify it never writes code or commits anything
+2. Verify it never writes code or commits anything — observer mode is read-only
 3. Verify the health score reflects the actual findings
 
 **For `/benchmark` changes:**
@@ -168,8 +168,8 @@ nstack has no automated test suite (no build step, no test runner). Testing is m
 2. Verify the AI Slop detection section fires on generic layouts
 3. Verify each finding has a screenshot as evidence
 
-**For `/design-shotgun` changes:**
-1. Run and verify N variants are generated in parallel
+**For `/design sketch` mode changes:**
+1. Run `/design sketch 4` and verify 4 variants are generated in parallel
 2. Verify the comparison board is produced and served
 3. Verify BLOCKED is reported if all variants fail, not silent skip
 
@@ -227,8 +227,9 @@ The most important ones for contributors:
 an 8/10 confidence gate. A check that fires on every codebase teaches engineers
 to ignore the output.
 
-**Zero mandatory setup for core skills.** If your contribution requires installing something for a core skill, it's out of scope. Design skills are the explicit exception — they require Bun and Playwright, opt-in via `./setup`. Don't expand that exception without a strong reason.
+**Three setup tiers.** Tier 1 (core) stays zero-setup — if your contribution requires installing something to run a Tier 1 skill, it's out of scope. Tier 2 (browser) skills opt in to Bun + Playwright via `./setup`. Tier 3 (live observability) skills publish per-project integration contracts. Don't blur the tier boundaries.
 
-**AI-native first.** If the finding doesn't apply specifically to AI-native
-projects, check if gstack already covers it. nstack's value is in the coverage
-that gstack misses, not in duplicating what gstack does well.
+**AI-native first.** nstack's value is in the coverage traditional tooling misses
+— prompt injection, unbounded model spend, RAG poisoning, agent tool blast-radius,
+MCP supply chain. Findings that apply to any codebase regardless of AI use belong
+in general-purpose linters and scanners, not here.

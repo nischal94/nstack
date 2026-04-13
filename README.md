@@ -8,19 +8,12 @@ risks are, what the model can quietly break, and how to keep shipping without
 letting the stack turn into noise.
 
 I had already built a strong Claude Code workflow around
-[superpowers](https://github.com/obra/superpowers). Then I found
-[gstack](https://github.com/garrytan/gstack), which is excellent. It made the
-same thing obvious from another angle: one person with the right AI tooling can
-move with the leverage of a much larger team.
+[superpowers](https://github.com/obra/superpowers). It covers the core
+development loop — planning, debugging, TDD, code review, verification. But
+the quality layer on top — AI-native security, evals, migrations, observability,
+design judgment, release rigor — was missing.
 
-But I did not adopt gstack as-is.
-
-For my workflow, there was too much overlap between gstack and superpowers in
-the core dev loop. Both touched planning, execution, and general engineering
-workflow. I did not want duplicate commands, conflicting habits, or a heavier
-stack than I actually needed.
-
-So I built nstack instead.
+So I built nstack.
 
 nstack is the layer I wanted on top of superpowers: **the definitive AI-native
 quality layer** for founders building to scale. It focuses on security,
@@ -59,9 +52,9 @@ AI-native projects fail differently:
 nstack exists for that gap. It is the quality layer for projects that call
 models, orchestrate agents, and handle prompt I/O.
 
-The design cluster is deliberately narrower than gstack's. It is there for
-design judgment, direction-setting, and polish without turning nstack into a
-heavyweight design platform.
+The design cluster is deliberately narrow. It is there for design judgment,
+direction-setting, and polish without turning nstack into a heavyweight design
+platform.
 
 ## Who nstack is for
 
@@ -78,10 +71,8 @@ The target is a founder or small team who:
 nstack does not assume you have a security team, a compliance officer, or a QA department.
 It assumes you are building one person's version of all of them, with AI as the multiplier.
 
-If you want a broad workflow framework that behaves like a full virtual engineering team,
-reach for gstack. If you want a sharper judgment layer — security-first, enterprise-ready,
-AI-native — reach for nstack. If you already run superpowers, nstack is designed to fit
-beside it cleanly.
+nstack is the sharper judgment layer — security-first, enterprise-ready,
+AI-native. It fits beside superpowers cleanly and doesn't try to replace it.
 
 ## Quick start
 
@@ -164,48 +155,54 @@ instead of treating `~/.claude/skills/nstack` as the only copy.
 
 ```
 BEFORE YOU BUILD
-  Got an idea?              → /premise              (challenge whether to build it)
-  Need multiple views?      → /council              (adversarial deliberation)
-  Big product decision?     → /office-hours         (YC-style validation)
-  Have a written plan?      → /autoplan             (review before executing)
-  No design system yet?     → /design-consultation  (create DESIGN.md first)
-  Plan involves UI?         → /plan-design-review   (critique before writing UI)
+  Got an idea?                → /premise              (challenge whether to build it)
+  Want it conversational?     → /premise office       (YC-style flow, same 5 lenses)
+  Need multiple views?        → /council              (adversarial deliberation)
+  Have a written plan?        → /autoplan             (review before executing)
+  No design system yet?       → /design-consultation  (create DESIGN.md first)
+  Plan involves UI?           → /plan-design-review   (critique before writing UI)
+  Developer-facing product?   → /plan-devex-review    (DX critique before code)
 
 WHILE YOU BUILD
-  Working on risky code?    → /careful         (confirm destructive commands)
-  Focused refactor?         → /freeze          (lock edits to one directory)
-  Done with the lock?       → /unfreeze        (remove the directory lock)
-  Both at once?             → /guard           (careful + freeze)
-  Running a DB migration?   → /migrate         (safety review first)
-  Need UI options fast?     → /design-shotgun  (explore directions quickly)
+  Working on risky code?      → /careful              (confirm destructive commands)
+  Scope + warn at once?       → /careful here         (warnings + current-dir lock)
+  Focused refactor?           → /freeze <path>        (lock edits to one directory)
+  Done with the lock?         → /freeze lift          (remove the lock)
+  Running a DB migration?     → /migrate              (safety review first)
+  Authoring a prompt?         → /prompt-author        (injection-proof, cache-friendly)
+  Need UI options fast?       → /design sketch N      (explore N variants)
 
 AFTER YOU BUILD
-  No UI yet?                → /design              (lock a first direction)
-  UI exists, needs review?  → /design-review       (visual audit + fix loop)
-  Changed a prompt?         → /evals               (check quality or regressions)
-  Ready to review?          → /review              (review the diff)
-  Ready to ship?            → /ship                (tests → review → version → PR)
-  Cutting a release?        → /document-release    (release notes from git history)
-  PR open, waiting for CI?  → /land                (merge → deploy → health check)
-  Just deployed?            → /canary              (watch the live app)
+  No UI yet?                  → /design               (lock a first direction)
+  UI exists, needs review?    → /design-review        (visual audit + fix loop)
+  Changed a prompt?           → /evals                (check quality or regressions)
+  Ready to review?            → /review               (review the diff)
+  Ready to ship?              → /ship                 (tests → review → version → PR)
+  Cutting a release?          → /document-release     (release notes from git history)
+  PR open, waiting for CI?    → /land                 (merge → deploy → health check)
+  Just deployed?              → /canary               (watch the live app)
 
 WHEN SOMETHING FEELS OFF
-  Don't know where to start → /investigate     (triage the regression)
-  Security concerns?        → /cso             (AI-native security audit)
-  App behaving wrong?       → /qa              (browser QA, find and fix bugs)
-  Just want a QA report?    → /qa-only         (report-only, no fixes)
-  Something seems slower?   → /benchmark       (flag performance regressions)
-  Claude config drifting?   → /context-audit   (audit CLAUDE.md and rules)
+  Don't know where to start   → /investigate          (triage the regression)
+  Security concerns?          → /cso                  (AI-native security audit)
+  MCP servers installed?      → /mcp-audit            (MCP supply chain + injection)
+  Compliance looming?         → /compliance-scaffold  (SOC2/GDPR/HIPAA gap map)
+  App behaving wrong?         → /qa                   (find and fix bugs)
+  Just want a bug report?     → /qa watch             (report-only, no fixes)
+  Something seems slower?     → /benchmark            (flag performance regressions)
+  DX feels clunky?            → /devex-audit          (live DX audit across 8 passes)
+  Claude config drifting?     → /context-audit        (audit CLAUDE.md and rules)
 
 REFLECTION
-  End of the week?          → /retro           (what shipped, what drifted, what to fix)
+  End of the week?            → /retro                (what shipped, what drifted)
+  Code quality snapshot?      → /health               (composite score, trend)
+  Session boundary?           → /checkpoint           (save or resume state)
 ```
 
 ### Design cluster chain
 
-The design cluster is intentionally lighter than gstack's design subsystem. It
-focuses on judgment, direction-setting, and critique. It does not try to be a
-full design platform.
+The design cluster is intentionally narrow. It focuses on judgment,
+direction-setting, and critique. It does not try to be a full design platform.
 
 Think of the design skills as a sequence, not a menu of unrelated commands.
 
@@ -213,8 +210,8 @@ Think of the design skills as a sequence, not a menu of unrelated commands.
    Output: `DESIGN.md` with the visual language, taste, constraints, and non-negotiables.
 2. Run `/plan-design-review` when you have a UI plan but have not built it yet.
    Output: critique of the plan, missing states, hierarchy issues, and a sharper direction before code is written.
-3. Use `/design-shotgun` when the direction is still unclear and you need multiple visual options quickly.
-   Output: lightweight HTML variants that help you pick or blend a direction.
+3. Use `/design sketch N` when the direction is still unclear and you need multiple visual options quickly.
+   Output: N lightweight HTML variants that help you pick or blend a direction.
 4. Use `/design` when you need one approved, coherent direction to move forward with.
    Output: an approved design reference package the coding workflow can build from.
 5. Use `/design-review` after the UI exists in the real product.
@@ -223,7 +220,7 @@ Think of the design skills as a sequence, not a menu of unrelated commands.
 The important model is:
 - `/design-consultation` sets the rules
 - `/plan-design-review` critiques the intended solution
-- `/design-shotgun` explores alternatives if the intended solution is still fuzzy
+- `/design sketch N` explores alternatives if the intended solution is still fuzzy
 - `/design` locks a direction
 - normal implementation flow builds the product
 - `/design-review` audits the built result
@@ -235,104 +232,76 @@ workflow itself.
 
 ## Skills
 
-30 skills across 7 categories.
+25 skills across 7 categories. 4 more planned for 0.6.0 (3 new Tier 1 + 1 port). Skills that share a core job merge into one skill with a mode flag, rather than shipping as two commands.
 
-### Thinking & deciding (4)
-
-| # | Skill | What it does |
-|---|-------|-------------|
-| 1 | `/premise` | Premise challenge before building. Five structured challenges: status quo, assumption killer, minimum wedge, existing leverage, regret test. Outputs CONFIRMED / NARROWED / CHALLENGED / DEFER. |
-| 2 | `/office-hours` | YC-style product validation. Same 5 lenses as `/premise` but conversational — for ideas still being shaped. |
-| 3 | `/council` | Multi-agent adversarial deliberation. 11 personas (Socrates, Feynman, Torvalds, etc.), 3-round protocol: independent analysis → cross-examination → synthesis. For architecture choices, strategic pivots, build-vs-buy. |
-| 4 | `/autoplan` | Plan review before execution. Scope challenge, architecture review, AI-native checks, test matrix. Outputs BLOCKED / READY with specific gaps. |
-
-### Safety guardrails (4)
+### Thinking & deciding (3) — Tier 1
 
 | # | Skill | What it does |
 |---|-------|-------------|
-| 5 | `/careful` | Warns before `rm -rf`, `DROP TABLE`, force-push, `kubectl delete`, and other hard-to-reverse operations. |
-| 6 | `/freeze [path]` | Lock all edits to a specific directory for the session. Reads remain unrestricted. |
-| 7 | `/guard [path]` | Full safety mode: `/careful` + `/freeze` combined. For high-stakes sessions on production code. |
-| 8 | `/unfreeze` | Remove a `/freeze` or `/guard` directory lock. |
+| 1 | `/premise` | Premise challenge before building. Five structured lenses (status quo, assumption killer, minimum wedge, existing leverage, regret test). Outputs CONFIRMED / NARROWED / CHALLENGED / DEFER. Modes: default (structured Q&A); `/premise office` (conversational YC-style flow — same 5 lenses). |
+| 2 | `/council` | Multi-agent adversarial deliberation. 11 personas (Socrates, Feynman, Torvalds, etc.), 3-round protocol: independent analysis → cross-examination → synthesis. For architecture choices, strategic pivots, build-vs-buy. |
+| 3 | `/autoplan` | Plan review before execution. Scope challenge, architecture review, AI-native checks, test matrix. Outputs BLOCKED / READY with specific gaps. |
 
-### Building (4)
-
-| # | Skill | What it does |
-|---|-------|-------------|
-| 9 | `/review` | Inline staff engineer code review of the current diff. AUTO-FIX commits for obvious issues. FLAGS security issues and logic questions for your decision. |
-| 10 | `/migrate` | Database migration safety. Classifies risk, checks for missing rollback, warns on lock contention, runs dry-run + backup check + post-migration verification. |
-| 11 | `/evals` | LLM output quality testing. Create and run eval suites with string checks and LLM-as-judge scoring. Baseline comparison across prompt or model changes. |
-| 12 | `/context-audit` | Claude Code config audit. Finds stale file references, contradictory rules, and bloat across CLAUDE.md, rules files, and memory. |
-
-### Shipping (3)
+### Safety guardrails (2) — Tier 1
 
 | # | Skill | What it does |
 |---|-------|-------------|
-| 13 | `/ship` | Full release checklist: tests → self-review → code review → version bump → CHANGELOG → push → PR. Stops on any failure. |
-| 14 | `/land` | Merge, deploy, and verify. Waits for CI → merges → waits for deploy → health checks production. Offers rollback on failure. |
-| 15 | `/document-release` | Release notes from git history. Groups commits, determines semver bump, updates CHANGELOG.md. Never tags without confirmation. |
+| 4 | `/careful` | Warns before `rm -rf`, `DROP TABLE`, force-push, `kubectl delete`, and other hard-to-reverse operations. Modes: default (warnings); `/careful here` (warnings + scope lock to current directory). |
+| 5 | `/freeze` | Lock all edits to a specific directory for the session. Reads remain unrestricted. Modes: `/freeze <path>` (lock); `/freeze lift` (clear the lock). |
 
-### Quality & monitoring (7)
-
-| # | Skill | What it does |
-|---|-------|-------------|
-| 16 | `/cso` | 14-phase security audit. OWASP Top 10, STRIDE, secrets archaeology, CI/CD pipeline security, LLM/AI security. 8/10 confidence gate — zero noise by default. |
-| 17 | `/qa` | Browser QA via Claude-in-Chrome. Find bugs, fix with atomic commits, generate regression tests, re-verify. |
-| 18 | `/qa-only` | Report-only browser QA. Same as `/qa` but never fixes — produces a health score and repro steps only. |
-| 19 | `/benchmark` | Performance regression detection. Baselines TTFB, FCP, LCP, bundle size. Flags regressions with WARN/REGRESSION thresholds. Supports `--trend` for historical drift. |
-| 20 | `/canary` | Post-deploy canary monitoring. Watches the live app after a deploy: console errors, performance regressions, page failures, screenshot comparisons. |
-| 21 | `/investigate` | Bug triage when you don't know where to start. Reconstructs the timeline, diffs the suspect range, builds a hypothesis with confidence rating. |
-| 22 | `/retro` | Weekly retrospective from git history. What shipped, lines added, test health, files touched most, open findings. |
-
-### Session continuity (2)
+### Building (4) — Tier 1
 
 | # | Skill | What it does |
 |---|-------|-------------|
-| 28 | `/checkpoint` | Save and resume working state. Commits with structured `Context:` + `Next:` lines so `git log` tells you why and where to pick up. Resume mode surfaces last checkpoint at session start. |
-| 29 | `/health` | Code quality dashboard. Auto-detects project tools (tsc, eslint/biome/ruff, test runner, knip, shellcheck), scores each category, produces a composite 0-10 score, and tracks trend across runs via `.claude/health-history.jsonl`. |
-| 30 | `/devex-audit` | Live developer experience audit across 8 passes: getting started, API/CLI ergonomics, error messages, docs, upgrade path, dev environment, community, and DX measurement. Scores each 0-10 with evidence. Tracks history via `.claude/devex-history.jsonl`. ★ requires `./setup` for screenshots. |
+| 6 | `/review` | Inline staff engineer code review of the current diff. AUTO-FIX commits for obvious issues. FLAGS security issues and logic questions for your decision. |
+| 7 | `/migrate` | Database migration safety. Classifies risk, checks for missing rollback, warns on lock contention, runs dry-run + backup check + post-migration verification. |
+| 8 | `/evals` | LLM output quality testing. Create and run eval suites with string checks and LLM-as-judge scoring. Baseline comparison across prompt or model changes. |
+| 9 | `/context-audit` | Claude Code config audit. Finds stale file references, contradictory rules, and bloat across CLAUDE.md, rules files, and memory. |
 
-### Design (5) ★ requires `./setup`
+### Shipping (3) — Tier 1
 
 | # | Skill | What it does |
 |---|-------|-------------|
-| 23 | `/design-consultation` | Create your design system. Researches the competitive space, proposes aesthetic/typography/color/layout/spacing/motion, writes `DESIGN.md` as the project's design source of truth. Run this first. |
-| 24 | `/plan-design-review` | Design review before implementation. Generates HTML mockups of planned components, screenshots them, produces an opinionated design plan. Run before writing UI code. |
-| 25 | `/design` | Generate a first coherent direction. Produces an approved design reference package for the normal coding workflow. |
-| 26 | `/design-shotgun` | Explore directions fast. Generates lightweight HTML variants so you can pick or blend a direction before building. |
-| 27 | `/design-review` | Visual design audit + fix loop. Screenshots running pages, analyzes 10 categories (~80 items): typography, color, spacing, accessibility, AI slop detection. Letter grades with evidence. Applies fixes with atomic commits — requires a clean working tree. |
+| 10 | `/ship` | Full release checklist: tests → self-review → code review → version bump → CHANGELOG → push → PR. Stops on any failure. |
+| 11 | `/land` | Merge, deploy, and verify. Waits for CI → merges → waits for deploy → health checks production. Offers rollback on failure. |
+| 12 | `/document-release` | Release notes from git history. Groups commits, determines semver bump, updates CHANGELOG.md. Never tags without confirmation. |
 
-## Why not just use gstack?
+### Quality & monitoring (6) — Tier 1 + Tier 2
 
-[gstack](https://github.com/garrytan/gstack) is excellent. Garry saw the same
-macro shift I did: one builder can now ship with the leverage of a much larger
-team. But I built nstack because I wanted different tradeoffs.
+| # | Skill | Tier | What it does |
+|---|-------|------|-------------|
+| 13 | `/cso` | 1 | Security audit: OWASP Top 10, STRIDE, secrets archaeology, CI/CD, dependency supply chain with install-script hunt, LLM/AI security (prompt injection, RAG poisoning, unbounded cost), skill supply chain, agent tool blast-radius. 8/10 confidence gate, zero noise, parallel verification, fingerprint-based trend tracking. |
+| 14 | `/qa` | 2 | Browser QA. Modes: default (find bugs + fix with atomic commits + regression tests); `/qa watch` (report-only, no writes, no commits). |
+| 15 | `/benchmark` | 2 | Performance regression detection. Baselines TTFB, FCP, LCP, bundle size. Flags regressions with WARN/REGRESSION thresholds. Supports `--trend` for historical drift. |
+| 16 | `/canary` | 2 | Post-deploy canary monitoring. Watches the live app after a deploy: console errors, performance regressions, page failures, screenshot comparisons. |
+| 17 | `/investigate` | 1 | Bug triage when you don't know where to start. Reconstructs the timeline, diffs the suspect range, builds a hypothesis with confidence rating. |
+| 18 | `/retro` | 1 | Weekly retrospective from git history. What shipped, lines added, test health, files touched most, open findings. |
 
-The short version:
-- I was already using [superpowers](https://github.com/obra/superpowers), and gstack overlapped too much with it in the core dev loop.
-- I wanted core skills to work immediately after `git clone` with zero mandatory setup — browser skills opt in via `./setup`.
-- I wanted stronger emphasis on AI-native security, prompt quality, migration safety, observability, and product judgment.
-- I wanted clean handoff points into superpowers instead of competing abstractions.
+### Session continuity (3) — Tier 1 + Tier 2
 
-nstack is not "gstack, smaller." It is a more opinionated layer for a different
-workflow shape.
+| # | Skill | Tier | What it does |
+|---|-------|------|-------------|
+| 19 | `/checkpoint` | 1 | Save and resume working state. Commits with structured `Context:` + `Next:` lines so `git log` tells you why and where to pick up. Resume mode surfaces last checkpoint at session start. |
+| 20 | `/health` | 1 | Code quality dashboard. Auto-detects project tools (tsc, eslint/biome/ruff, test runner, knip, shellcheck), scores each category, composite 0–10 score, tracks trend via `.claude/health-history.jsonl`. |
+| 21 | `/devex-audit` | 2 | Live developer experience audit across 8 passes: getting started, API/CLI ergonomics, error messages, docs, upgrade path, dev environment, community, DX measurement. Scores each 0–10 with evidence. Tracks history via `.claude/devex-history.jsonl`. |
 
-| | nstack | gstack |
-|---|---|---|
-| Install | `git clone` (core works instantly) | `git clone + ./setup` (requires Bun, ~2 min) |
-| Core skills | Zero mandatory setup | Bun + Playwright required |
-| Design skills | Optional `./setup` (same Bun + Playwright) | Required for all skills |
-| LLM/AI security | First-class: prompt injection, cost attacks, RAG poisoning, tool validation | Covered, but not the primary lens |
-| Skill count | 27 | 31 |
-| superpowers | Designed to complement | Independent workflow system |
-| Multi-agent | Designed for Claude Code workflows | Claude Code, Codex, Gemini CLI, Factory Droid |
-| Team features | Scale-ready defaults, founder-first | Team-aware (teammate install, shared skills) |
+### Design (4) — Tier 2
 
-**Use nstack if:** You want a lighter quality layer for AI-native work, especially if you already use superpowers or want core skills that work with zero mandatory setup.
+| # | Skill | What it does |
+|---|-------|-------------|
+| 22 | `/design-consultation` | Create your design system. Researches the competitive space, proposes aesthetic/typography/color/layout/spacing/motion, writes `DESIGN.md` as the project's design source of truth. Run this first. |
+| 23 | `/plan-design-review` | Design review before implementation. Generates HTML mockups of planned components, screenshots them, produces an opinionated design plan. Run before writing UI code. |
+| 24 | `/design` | Generate a first coherent UI direction. Modes: default (3 variants → pick → packaged as approved reference); `/design sketch N` (N variants → comparison board → no commit). |
+| 25 | `/design-review` | Visual design audit + fix loop. Screenshots running pages, analyzes 10 categories (~80 items): typography, color, spacing, accessibility, AI slop detection. Letter grades with evidence. Applies fixes with atomic commits — requires a clean working tree. |
 
-**Use gstack if:** You want a broader workflow framework with built-in team and multi-agent features.
+### Planned for 0.6.0
 
-**Use both if:** You want gstack's broader workflow tooling and nstack's AI-native quality layer. The skill names do not collide.
+| Skill | Tier | What it will do |
+|-------|------|----------------|
+| `/mcp-audit` | 1 | MCP server supply chain + permission scope + command-line exploit surface + tool-description injection scan. |
+| `/prompt-author` | 1 | Opinionated prompt authoring discipline: system/user boundary, injection-proof structure, cache-friendly layout, testability checklist. |
+| `/compliance-scaffold` | 1 | SOC2 / GDPR / HIPAA prep gap map for AI-native products at pre-audit stage. Not enforcement — a remediation order. |
+| `/plan-devex-review` | 1 | Plan-stage DX review. Explores developer personas, benchmarks against competitors, designs magical moments, traces friction points before scoring. |
 
 ## Compatibility
 
@@ -346,8 +315,9 @@ nstack sits on top as the quality layer.
 
 ## Design principles
 
-- **Zero mandatory setup** — clone and core Markdown skills work immediately; design skills opt in to Bun + Playwright via `./setup`
-- **AI-native first** — LLM security is not an afterthought
+- **Three setup tiers** — Tier 1 core skills work on `git clone`; Tier 2 browser skills opt in to Bun + Playwright via `./setup`; Tier 3 live-observability skills publish per-project integration contracts
+- **Depth over count** — one excellent skill with concrete exploit paths beats three skills with pattern-match warnings
+- **AI-native first** — LLM security is the primary lens, not an afterthought
 - **Zero noise** — concrete findings only: exploit paths in security, severity ratings in design, confidence scores in triage. No vague observations.
 - **Superpowers-compatible** — complements, never conflicts
 - **Scale-ready from day one** — security, compliance, and guardrails built in from the start, not retrofitted later

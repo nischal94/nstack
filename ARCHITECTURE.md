@@ -13,23 +13,22 @@ nstack is organized into three explicit capability tiers. Each tier is an honest
 
 **Tier 1 — Core skills (zero setup)**
 
-22 skills: security, QA, bug triage, retrospectives, release, workflow guardrails, and more.
+Pure Markdown skills covering: security audit, code review, ship pipeline, plan review, safety guardrails, retrospectives, migrations, context audits, checkpoint / health, and more.
 
 Every core skill is a single `SKILL.md` file. Claude Code discovers it from `~/.claude/skills/nstack/`, reads it, and executes the workflow using its built-in tools (Grep, Read, Bash, Agent).
 
 - `git clone` and done — no build step, no binaries, no package manager
-- `/qa` uses Claude-in-Chrome MCP, which is already installed if you use Claude Code
 - Nothing to install, nothing to fail
 
-This is the "zero mandatory setup" claim. It applies to Tier 1 only.
+Tier 1 is the "zero setup" tier — the one that survives every runtime drift.
 
 ---
 
-**Tier 2 — Design skills (requires Bun + Playwright)**
+**Tier 2 — Browser skills (requires Bun + Playwright)**
 
-5 skills: `/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`.
+Skills that render HTML, take screenshots, or automate a browser: the full design cluster, QA, benchmark, canary, DevEx audit.
 
-These skills render HTML variants and take screenshots. They use a Bun-powered CLI (`browse/`) — a compiled entry point (`browse/dist/browse`) that spawns `browse/src/server.ts` as a background Bun process on first use.
+These skills use a Bun-powered CLI (`browse/`) — a compiled entry point (`browse/dist/browse`) that spawns `browse/src/server.ts` as a background Bun process on first use.
 
 **Runtime contract:**
 - Bun must be installed and on PATH — it is required at runtime, not just build time
@@ -37,14 +36,14 @@ These skills render HTML variants and take screenshots. They use a Bun-powered C
 - Run `./setup` once to satisfy both requirements (~2 minutes)
 
 **Behavior when setup is missing:**
-- `/design` and `/design-review` hard-stop with an install prompt
-- `/design-consultation`, `/design-shotgun`, `/plan-design-review` soft-skip screenshots and proceed
+- `/design`, `/design-review`, `/qa`, `/benchmark`, `/canary`, `/devex-audit` hard-stop with a setup prompt
+- `/design-consultation` and `/plan-design-review` soft-skip screenshots and proceed
 
 This is an intentional opt-in tier. The runtime requirement is real and documented — not a footnote.
 
-The design cluster is intentionally narrower than gstack's design subsystem.
-Its purpose is to add design judgment, direction-setting, and critique to the
-builder workflow, not to reproduce every part of a heavyweight design platform.
+The design cluster is intentionally narrow. Its purpose is to add design
+judgment, direction-setting, and critique to the builder workflow, not to
+reproduce every part of a heavyweight design platform.
 
 ---
 
@@ -115,7 +114,7 @@ nstack uses two different browser strategies for two different problems.
 - Headless is fine for rendering static HTML variants — no auth, no real-browser state needed
 - The binary renders at ~100ms per screenshot with zero token cost after install
 
-MCP was removed from all design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`) for this reason. The token cost was too high to justify as a fallback path.
+MCP was removed from all design skills (`/design`, `/design-review`, `/design-consultation`, `/plan-design-review`) for this reason. The token cost was too high to justify as a fallback path.
 
 ---
 
@@ -147,8 +146,7 @@ nstack covers the quality layer on top (security audit → browser QA → retros
 The same idea applies inside the design cluster:
 - `/design-consultation` owns the design system
 - `/plan-design-review` owns pre-build critique
-- `/design` owns first-direction generation
-- `/design-shotgun` owns quick exploration when direction is unclear
+- `/design` owns first-direction generation (default mode commits a direction; `/design sketch N` explores alternatives)
 - `/design-review` owns live-product polish
 
 The cluster is meant to be coherent and selective, not exhaustive.
@@ -157,7 +155,7 @@ Read as a chain, the design flow is:
 
 1. `/design-consultation` establishes the visual system and writes `DESIGN.md`
 2. `/plan-design-review` critiques the intended UI before code is written
-3. `/design-shotgun` explores alternative directions when the answer is not obvious
+3. `/design sketch N` explores alternative directions when the answer is not obvious
 4. `/design` locks one coherent direction and turns it into an approved design reference package
 5. normal implementation work builds the product in the actual codebase
 6. `/design-review` audits the built result and tightens polish

@@ -71,7 +71,7 @@ Its role is NOT:
 - define the whole design system, use `/design-consultation`
 - critique a live product, use `/design-review`
 - critique a written plan, use `/plan-design-review`
-- promise a heavyweight generative design runtime just because gstack has one
+- promise a heavyweight generative design runtime
 
 The output of this skill is a clearer direction, not a finished design system or
 an implementation-ready subsystem on its own.
