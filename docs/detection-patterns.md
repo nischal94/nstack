@@ -4,9 +4,9 @@ Canonical reference for regex and string patterns used by multiple nstack skills
 Factored out to avoid duplication and drift. Update here; every skill that
 references a section picks up the change on the next invocation.
 
-Consumers today: `/cso` Phase 2, `/cso` Phase 8a, `/mcp-audit` (forthcoming).
-Future consumers: `/prompt-author`, `/compliance-scaffold`, any new skill
-that audits for secrets, prompt injection, or credential access.
+Consumers today: `/cso` Phase 2 (Secrets Archaeology), `/cso` Phase 7a (prompt injection detection), `/cso` Phase 8a (skill supply chain), `/cso` Phase 8b (agent tool descriptions), `/mcp-audit` Phase 5 (tool-description scan) and Phase 6 (config hygiene), `/compliance-scaffold` (credential access surface analysis), `/review` Step 2a (AI-slop pass).
+
+Future consumers: any new skill that audits for secrets, prompt injection, or credential access.
 
 ---
 
@@ -75,7 +75,7 @@ Apply these before reporting any secret finding:
 
 ## § Prompt injection triggers
 
-Used by: `/cso` Phase 7a (LLM prompt injection), `/cso` Phase 8a (skill file content), `/mcp-audit` Phase 5 (MCP tool descriptions), `/prompt-author` (authoring discipline).
+Used by: `/cso` Phase 7a (LLM prompt injection), `/cso` Phase 8a (skill file content), `/cso` Phase 7c (RAG retrieval sanitization), `/mcp-audit` Phase 5 (MCP tool descriptions).
 
 Phrases that attempt to override, hijack, or exfiltrate model instructions:
 
