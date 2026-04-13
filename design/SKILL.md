@@ -1,11 +1,6 @@
 ---
 name: design
-description: Use when asked to "design this", "make it look good", "generate UI",
-  or "build the frontend". Generates 2-3 HTML design directions, helps the user
-  pick one, then packages the approved direction as a reference for the normal
-  coding workflow. Use when there is no existing UI direction yet. For design-system work,
-  use /design-consultation. For option exploration on an existing direction, use
-  /design-shotgun. For critique, use /design-review or /plan-design-review. (nstack)
+description: Use when asked to "design this", "make it look good", "generate UI", or "build the frontend". Default mode generates 2-3 HTML design directions, helps the user pick one, and packages the approved direction as a reference for the normal coding workflow. Use `/design sketch N` when the direction is unclear and you need multiple visual options quickly — the user says "show me options", "generate variants", "explore directions", or "design brainstorm". For design-system work, use /design-consultation. For critique, use /design-review or /plan-design-review.
 allowed-tools:
   - Bash
   - Read
@@ -18,22 +13,29 @@ allowed-tools:
   - WebSearch
 ---
 
-# /design: Generate A First Coherent Direction
+# /design: UI Direction Generation
 
-This skill is the lightweight entry point for UI generation in nstack.
+Two modes:
 
-Its job is not to run a heavyweight design factory. Its job is to get a project
-from "we need a UI direction" to "we have one coherent direction we can follow."
+- **`/design`** (default) — generates 2-3 HTML design directions, helps the user pick one, and packages the approved direction as a durable design reference. Use when you need ONE direction to move forward with.
+- **`/design sketch N`** — exploration mode. Generates N HTML variants in parallel, presents them as a comparison board, and helps the user identify a direction (or blend elements) — WITHOUT committing to an approved package. Use when the direction is still fuzzy and you want to see options before locking in.
 
-What this skill produces:
+Both modes share the same rendering machinery (parallel Agent-dispatched HTML generation, browse-binary screenshots, DESIGN.md honoring). They differ in count, output artifact, and whether the flow commits to a final direction.
+
+---
+
+## Default mode (`/design`)
+
+Gets a project from "we need a UI direction" to "we have one coherent direction we can follow."
+
+What default mode produces:
 - 2-3 HTML design directions with realistic content
 - screenshots when the browse binary is available
 - one approved direction packaged as a durable design reference
 
 What this skill does NOT produce:
-- a full design system, use `/design-consultation`
-- an exhaustive design critique, use `/design-review`
-- a broad exploration board with many alternatives, use `/design-shotgun`
+- a full design system — use `/design-consultation`
+- an exhaustive design critique — use `/design-review`
 - direct implementation in the project codebase
 
 If a `DESIGN.md` exists, it is binding. This skill explores layout, hierarchy,
@@ -247,10 +249,79 @@ End by stating:
 - actual coding happens in the normal project workflow
 - `/design-review` should be used after the UI exists in the real product
 
+---
+
+## Sketch mode (`/design sketch N`)
+
+Exploration mode. Use when the user isn't ready to commit to one direction and wants to see multiple options side-by-side.
+
+**Invocation:** `/design sketch 4` generates 4 variants. `/design sketch` without a number defaults to 4. Sensible range: 3-6. Above 6 becomes hard to compare meaningfully.
+
+### Sketch phase 1: Same brief, broader net
+
+Run **Phase 1 (Codebase Read)** and **Phase 2 (Brief)** exactly as in default mode. DESIGN.md if present is still binding.
+
+### Sketch phase 2: Parallel N-variant generation
+
+Dispatch N Agents in parallel (not just 3). Use varied aesthetic directions per variant — do not repeat directions:
+
+- Minimal/clean (Linear, Stripe, Vercel)
+- Bold/expressive (Superhuman, Loom)
+- Data-dense/utility (GitHub, Linear issue list, Bloomberg)
+- Editorial/magazine (Medium, long-form product pages)
+- Playful/illustrative (Figma community, Notion marketing)
+- Brutal/raw (Hacker News, Craigslist-inspired)
+
+Pick N distinct directions from the list (or adjacent) — one per agent. Each agent writes `<resolved-TMPDIR>/design-variant-{letter}.html` with the same requirements as default mode (inline CSS, realistic content, 3+ sections, 1200px viewport).
+
+### Sketch phase 3: Comparison board
+
+Screenshot each variant (same browse-binary flow as default mode Phase 4). Save all screenshots to `.nstack/design/sketch-{YYYY-MM-DD}/variant-{letter}.png`.
+
+Show all N screenshots via the Read tool in sequence so the user can compare them inline.
+
+### Sketch phase 4: Identify direction (not commit)
+
+Use AskUserQuestion:
+
+> **What direction feels right?**
+>
+> - Pick one to move forward with (I'll package it as an approved direction via default mode)
+> - Blend — describe what to combine (e.g., "layout of A with colors of D")
+> - Keep exploring — generate another round with adjusted direction
+> - Save findings — write a `sketch-notes.md` summary of what we learned without committing
+
+**If the user picks one to move forward:** hand off into default mode Phase 6 (Package The Approved Direction) using the chosen variant. The sketch mode has served its purpose.
+
+**If the user requests a blend:** generate one additional variant that combines the requested elements, screenshot it, show it, confirm. Then hand off to Phase 6.
+
+**If the user wants to keep exploring:** revise the brief based on what resonated and what didn't, then run sketch phase 2 again with refreshed directions.
+
+**If the user wants save findings:** write `.nstack/design/sketch-{YYYY-MM-DD}/sketch-notes.md` capturing:
+- The brief
+- Which variants resonated and why
+- Which directions to revisit
+- Open questions for the next design session
+
+Close without packaging an approved direction. The sketch mode is exploratory — it's OK to leave without a commit.
+
+### When to use sketch mode vs default
+
+| Situation | Mode |
+|-----------|------|
+| "We need to ship a UI direction, help me pick one" | `/design` |
+| "I don't know what this should look like yet" | `/design sketch 4` |
+| "Show me what's possible before I decide" | `/design sketch 5` |
+| "I want to see 3 options and commit to one" | `/design` (it already does this) |
+
+---
+
 ## Rules
 
 1. Never commit files without asking first.
 2. Show screenshots to the user immediately after capturing — use the Read tool on each PNG before moving on.
-3. If the user says "no browser," skip Phases 4 and 5. Show the HTML file paths and ask the user to open them manually. Ask which variant they prefer, then proceed to Phase 6.
+3. If the user says "no browser," skip Phases 4 and 5 (default) or sketch phase 3. Show the HTML file paths and ask the user to open them manually.
 4. DESIGN.md constraints are non-negotiable. Never override its color palette or typography. If the user asks you to, clarify that DESIGN.md is a binding constraint and ask if they want to update the file first.
 5. Each variant must be genuinely different — not color swaps on the same layout. Different structural approaches, different information hierarchy, different spatial rhythms.
+6. **Sketch mode has no commit.** It is explicitly exploratory. Don't pressure the user to pick one at the end of a sketch session — "keep exploring" and "save findings" are legitimate outcomes.
+7. Sketch artifacts go to `.nstack/design/sketch-{YYYY-MM-DD}/`. Default mode artifacts go to `.nstack/design/final/`. The two directories don't collide.
