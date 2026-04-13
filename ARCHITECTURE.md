@@ -5,9 +5,9 @@ For setup and usage, see README.md. For contributing, see CONTRIBUTING.md.
 
 ---
 
-## Two tiers of capability
+## Three tiers of capability
 
-nstack has two tiers with different runtime contracts. Understanding the split matters before installing.
+nstack is organized into three explicit capability tiers. Each tier is an honest contract with the user about what setup is required for what power. Understanding the split matters before installing.
 
 ---
 
@@ -45,6 +45,49 @@ This is an intentional opt-in tier. The runtime requirement is real and document
 The design cluster is intentionally narrower than gstack's design subsystem.
 Its purpose is to add design judgment, direction-setting, and critique to the
 builder workflow, not to reproduce every part of a heavyweight design platform.
+
+---
+
+**Tier 3 — Live observability skills (per-project integration)**
+
+Future skills that tap into a running application's telemetry: agent-loop tracing, production prompt replay, live RAG auditing, cost observability on real traffic. These skills operate on live systems, not static code.
+
+**Runtime contract:**
+- Per-project integration — each Tier 3 skill publishes its own integration contract (log sink location, environment variables, webhook endpoints, API keys)
+- Setup is explicit and opt-in per skill — never assumed, never silently skipped
+- A Tier 3 skill that cannot reach its integration hard-stops with the specific setup step required
+
+**Why a separate tier:** static analysis (Tier 1) and rendered artifacts (Tier 2) both run from the repo. Live observability requires the running product. That's a genuinely different operational model, not a depth gradient — so it earns its own tier rather than hiding as a flag inside Tier 1.
+
+**What ships here:** nothing yet. Tier 3 is documented as a forward-declared tier so future skills (agent-trace, eval-harness over real traffic) have a home. nstack ships a Tier 3 skill only when the capability earns its setup cost concretely.
+
+---
+
+## Skill consolidation rationale
+
+Skill count is vanity; finding quality is the filter. When two skills share a job-to-be-done and differ only by style or output artifact, merge them. The 0.6.0 release consolidates 5 pairs:
+
+| Merge | Default invocation | Alt mode |
+|---|---|---|
+| `/unfreeze` → `/freeze` | locks edits to a path | `/freeze lift` — clears the lock |
+| `/qa-only` → `/qa` | find + fix bugs | `/qa watch` — observer mode, no writes |
+| `/office-hours` → `/premise` | structured 5-lens challenge | `/premise office` — conversational YC-style, same 5 lenses |
+| `/design-shotgun` → `/design` | 3 variants → pick → package | `/design sketch N` — N variants → comparison board → no commit |
+| `/guard` → `/careful` | destructive-command warnings | `/careful here` — warnings + scope lock on current directory |
+
+Every surviving skill passes the one-sentence test: "I run this when X happens, and the output is Y."
+
+## `/cso` phase absorption
+
+Three would-be-standalone skills fold into `/cso` as phases rather than shipping as separate entry points — because AI-native security is the flagship surface and the depth belongs inside the one skill that audits it.
+
+| Would-be-standalone | Absorbed as |
+|---|---|
+| `/rag-audit` | `/cso` Phase 7c — RAG poisoning, retrieval injection, citation hallucination, chunk boundary leaks |
+| `/cost-audit` (attack-surface half) | `/cso` Phase 7d — unbounded LLM calls, O(n) loops, missing `max_tokens`, financial DoS patterns |
+| `/agent-safety` | `/cso` Phase 8b — agent tool blast-radius, approval gates, loop caps, tool-description injection |
+
+The forward-looking half of `/cost-audit` (cacheable prompts, fallback tiers, projected cost per user) remains under consideration as a Tier 1 standalone skill only if it proves distinct after the `/cso` depth pass.
 
 ---
 

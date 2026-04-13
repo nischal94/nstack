@@ -22,15 +22,23 @@ stack than I actually needed.
 
 So I built nstack instead.
 
-nstack is the layer I wanted on top of superpowers: a zero-mandatory-setup skill pack
-for the gaps neither gstack nor superpowers covered cleanly for AI-native work.
-It focuses on security, QA, evals, migrations, observability, design judgment,
-release rigor, and premise challenge. It is meant to complement the development
-workflow, not compete with it.
+nstack is the layer I wanted on top of superpowers: **the definitive AI-native
+quality layer** for founders building to scale. It focuses on security,
+QA, evals, migrations, observability, design judgment, release rigor, and
+premise challenge. It is meant to complement the development workflow, not
+compete with it — and to be world-class on the surface it claims.
 
-30 skills for security auditing, QA, bug triage, design, premise challenges,
-release notes, retrospectives, session continuity, code health, DX auditing, and safety guardrails for AI-native projects.
-Zero mandatory setup for core skills. Superpowers-compatible.
+The design principle that matters most: **depth per skill over breadth of
+coverage.** One skill that produces a concrete exploit path with a remediation
+step beats three skills that produce pattern-match warnings. Every nstack
+skill earns its place by that bar.
+
+**Three setup tiers, honest about each:**
+- **Tier 1 — Core (zero setup):** Markdown-only skills for security, review, ship, plan, investigate, retro, and more. `git clone` and they work.
+- **Tier 2 — Browser (one-time `./setup`):** Skills that render HTML, take screenshots, or automate a browser — design cluster, QA, benchmark, canary, DevEx audit.
+- **Tier 3 — Live observability (per-project integration):** Forward-declared for future agent-loop tracing, prompt replay, live RAG auditing. Each skill publishes its own integration contract.
+
+Superpowers-compatible. Zero overlap with the development loop.
 
 AI lets a small team move at absurd speed. It also lets a small team ship
 hallucinated UX, prompt injection holes, invisible regressions, weak product
@@ -92,43 +100,59 @@ That sequence shows the core shape of nstack quickly:
 - design direction before UI drift starts
 
 By use case:
-- Starting a new AI product: `/premise`, `/office-hours`, `/design-consultation`, `/autoplan`
-- Building a UI-heavy feature: `/plan-design-review`, `/design-shotgun`, `/design`, `/design-review`
+- Starting a new AI product: `/premise` (or `/premise office` for conversational), `/design-consultation`, `/autoplan`
+- Building a UI-heavy feature: `/plan-design-review`, `/design sketch N` (explore), `/design` (commit), `/design-review`
 - Doing a security and quality pass: `/cso`, `/review`, `/qa`, `/evals`
-- Getting ready to ship: `/review`, `/qa` or `/qa-only`, `/ship`, `/canary`
+- Getting ready to ship: `/review`, `/qa` (or `/qa watch` for report-only), `/ship`, `/canary`
 
 ## Install
 
-Requirements:
-- Claude Code
-- Git
-- Bun v1.0+ only if you want the design skills
+nstack has three setup tiers. You install what you need, when you need it.
 
-### Step 1: Install nstack
+Requirements:
+- Claude Code (always)
+- Git (always)
+- Bun v1.0+ — only for Tier 2 browser skills (design cluster, QA, benchmark, canary, DevEx audit)
+- Per-project hooks — only for Tier 3 live-observability skills (none shipped yet; forward-declared)
+
+### Tier 1 — Core (zero setup)
 
 ```bash
 git clone https://github.com/nischal94/nstack.git ~/.claude/skills/nstack
 ```
 
-Core skills work immediately after clone. No build step. No binaries. No package
-manager required for the core Markdown skills.
+Every Tier 1 skill works in the next Claude Code session. No build step. No
+binaries. No package manager. Includes: `/cso`, `/review`, `/ship`, `/land`,
+`/autoplan`, `/premise`, `/retro`, `/investigate`, `/evals`, `/migrate`,
+`/context-audit`, `/checkpoint`, `/health`, `/careful`, `/freeze`,
+`/document-release`, and (planned for 0.6.0) `/mcp-audit`, `/prompt-author`,
+`/compliance-scaffold`, `/plan-devex-review`.
 
-### Step 2: Optional — enable design skills
+### Tier 2 — Browser (one-time `./setup`)
 
-Design skills (`/design`, `/design-review`, `/design-shotgun`, `/design-consultation`, `/plan-design-review`) use a Bun-powered Playwright CLI for fast, token-free screenshot rendering. To enable:
+For skills that render HTML, take screenshots, or automate a browser —
+the design cluster, QA, benchmark, canary, DevEx audit:
 
 ```bash
 cd ~/.claude/skills/nstack && ./setup
 ```
 
-This downloads Playwright Chromium (~150MB, one-time) and builds the local
-browser binary used by the design cluster.
+This downloads Playwright Chromium (~150MB, one-time, ~2 minutes) and
+builds the local browser binary. Bun must stay on PATH at runtime.
 
-Design runtime notes:
-- Bun is required at both install time and runtime
-- core skills still work without Bun
-- `/design` and `/design-review` hard-stop if the browser binary is missing
-- `/design-consultation`, `/design-shotgun`, and `/plan-design-review` can proceed without screenshots
+Tier 2 runtime notes:
+- Tier 1 skills keep working even without Bun
+- `/design`, `/design-review`, `/qa`, `/benchmark`, `/canary`, `/devex-audit` hard-stop with a setup prompt if the browser binary is missing — never silent fallback
+- `/design-consultation` and `/plan-design-review` can proceed without screenshots (soft-skip)
+
+### Tier 3 — Live observability (per-project integration)
+
+Forward-declared tier for future skills that tap into a running application's
+telemetry: agent-loop tracing, production prompt replay, live RAG auditing,
+cost observability on real traffic. Each Tier 3 skill publishes its own
+integration contract (log sink, env hooks, API keys) and is explicitly
+opt-in per skill. Nothing ships here yet — nstack ships a Tier 3 skill
+only when the capability earns its setup cost concretely.
 
 ### Contributing or want full history?
 

@@ -52,24 +52,34 @@ Show the attack. Step by step. Then show the fix.
 
 ---
 
-## 3. Zero Mandatory Setup for Core Skills
+## 3. Three Setup Tiers
 
-Every core nstack skill works with just Claude Code installed. No Bun, no build
-step, no compiled binaries, no package managers. This is not a limitation —
-it is a design decision.
+nstack is organized into three explicit capability tiers. Each tier is an
+honest contract with the user about what setup is required for what power.
 
-Dependencies break. Build steps fail silently. A skill pack that requires
-a runtime is a skill pack people stop using when the runtime drifts out of
-sync. Markdown skills that work forever beat sophisticated tools that work
-until they don't.
+**Tier 1 — Core (zero setup).** Pure Markdown skills: security audit,
+code review, ship pipeline, plan review, safety guardrails, retrospectives,
+migrations, context audits, everything text-mode. `git clone` and every
+Tier 1 skill works in the next Claude Code session. No Bun, no Playwright,
+no binaries, no package manager, no config.
 
-Design skills are the explicit exception: they require Bun and Playwright for
-fast, token-free screenshot rendering. This is an opt-in capability — one
-`./setup` call, clearly documented, never silently assumed. The principle is
-not "zero dependencies everywhere" but "no mandatory setup for the core workflow."
+**Tier 2 — Browser (one-time `./setup`).** Skills that render HTML, take
+screenshots, or automate a browser: the full design cluster, QA, benchmark,
+canary, DevEx audit. `./setup` installs Bun + Playwright Chromium (~2 min,
+~150MB, one time). Hard-stops with a setup prompt when missing — never
+fails silently.
 
-If a feature cannot be built without a dependency, we document the tradeoff
-explicitly and make the dependency optional — never mandatory for core skills.
+**Tier 3 — Live observability (per-project integration).** Skills that tap
+into a running application's telemetry: agent-loop tracing, production
+prompt replay, live RAG auditing. Each Tier 3 skill documents its
+integration contract (log sink, env hooks, API keys) and is explicitly
+opt-in per skill. nstack ships Tier 3 only when the capability earns the
+setup cost.
+
+This is not a compromise on "zero setup" — it is the honest refinement of it.
+Core stays instant. Higher-capability tiers publish their setup contracts
+clearly rather than pretending they don't need them. Users start in 60
+seconds and go as deep as their product demands.
 
 ---
 
@@ -103,3 +113,25 @@ to answer.
 
 When you're a team, nstack still works — the defaults just don't get in
 the way of people who aren't.
+
+---
+
+## 6. Depth Over Count
+
+Skill count is vanity. Finding quality is the filter.
+
+One excellent skill that produces a concrete exploit path with a remediation
+step beats three skills that produce pattern-match warnings. nstack optimizes
+for depth per skill — richer detection patterns, tighter false-positive rules,
+more concrete severity rubrics — not for breadth of coverage across a long
+skill list.
+
+When a feature could be a new skill or a new phase inside an existing skill,
+prefer the phase. When two skills share a job-to-be-done with only stylistic
+differences, merge them. When a skill fails the one-sentence "I run this when
+X, and the output is Y" test, it is either the wrong abstraction or two
+different skills wearing one name.
+
+This principle is not minimalism for its own sake. It is the operational
+form of zero-noise-over-zero-misses: every surviving skill has to be
+deep enough to be trusted, and a shallow skill erodes trust in the pack.
