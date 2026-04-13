@@ -4,11 +4,11 @@ All notable changes to nstack are documented here.
 
 ---
 
-## [0.6.0] — Unreleased (implementation complete, awaiting tag)
+## [0.6.0] — 2026-04-13
 
 Reframe release: nstack is the definitive AI-native quality layer for founders building at scale. Depth and judgment per skill over breadth of coverage.
 
-All planned work shipped. Final count: 29 skills (26 post-merge + 3 additions).
+All planned work shipped. Final count: 29 skills (26 post-merge + 3 additions), plus an AI-slop detection phase inside `/review` and a first-run deploy-config folded into `/land`.
 
 ### Added
 
