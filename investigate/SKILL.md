@@ -52,6 +52,65 @@ Build a mental timeline: what was deployed/merged when symptoms started?
 
 ---
 
+## Step 2.5: Pattern catalog — check these first
+
+Before forming a hypothesis from scratch, rule out the six common failure modes that account for most production regressions. Each has a fast signature — ruling them in or out takes minutes and narrows the hypothesis space dramatically.
+
+### 1. Race conditions
+
+Signatures:
+- Intermittent, not deterministic (sometimes works, sometimes fails)
+- Fails more under load / concurrency / after deploys
+- Order-dependent behavior
+
+Fast check: was there a recent change involving async calls, parallel dispatch, background jobs, caches populated lazily, or shared mutable state? Grep for `async`, `await`, `Promise.all`, `Thread`, `goroutine`, `asyncio.gather`, `await asyncio`.
+
+### 2. Nil / null / undefined propagation
+
+Signatures:
+- Error mentions `null`, `undefined`, `NoneType`, `nil pointer`, `cannot read property`
+- Works for some inputs, fails for others
+
+Fast check: grep for the variable name in the error, trace backwards to where it's assigned. Was a default value removed? Did an upstream change start returning `null` instead of an empty array/object?
+
+### 3. State corruption / cache staleness
+
+Signatures:
+- First request after restart works, subsequent ones fail (or vice versa)
+- Fixed by clearing cache, restarting process, or redeploying
+- Works in one environment, fails in another
+
+Fast check: identify every cache layer (in-memory dict, Redis, CDN, browser cache, LRU cache decorator). For each, check: was there a schema change? A key format change? A TTL change?
+
+### 4. Config drift
+
+Signatures:
+- Works locally, fails in staging/prod (or vice versa)
+- Worked yesterday, fails today with no code change
+
+Fast check: grep environment-variable reads against the actual environment values. Look for: new env var required but not set; renamed env var; URL changes; feature-flag defaults changed.
+
+### 5. Dependency version drift
+
+Signatures:
+- `npm install` / `pip install` fresh → different behavior than the last deploy
+- Subtle output changes (dates formatted differently, JSON serialized differently, minor API behavior changes)
+
+Fast check: `git log -p -- package-lock.json bun.lockb requirements.txt Cargo.lock Gemfile.lock` in the suspect range. Look for transitive dependency upgrades with semver-minor or patch bumps that may have broken a contract.
+
+### 6. AI-native regressions (check these for AI-native apps)
+
+Signatures:
+- Model output quality degraded (hallucinations increased, refusals increased, format drift)
+- Cost spike with no code change
+- Latency spike with no infrastructure change
+
+Fast check: was there a prompt change (grep for system prompt constants/files in the suspect range)? Was there a model version change (`claude-opus-4-5` → `claude-opus-4-6`, `gpt-4-1106` → `gpt-4-turbo`)? Was `max_tokens` or `temperature` touched? Was the RAG corpus updated?
+
+**For each pattern: rule it in or rule it out explicitly before advancing to Step 3.** The pattern-catalog ruling becomes part of the hypothesis evidence chain.
+
+---
+
 ## Step 3: Diff the suspect range
 
 Once you have a suspect commit range:
@@ -185,6 +244,63 @@ Wait for the user's choice. Do not form a 4th hypothesis without explicit instru
 
 ---
 
+## Step 7.5: Structured DEBUG REPORT (for handoff or closure)
+
+When the hypothesis is confirmed and the fix is underway (or after the fix completes via `superpowers:systematic-debugging`), produce a structured DEBUG REPORT. This becomes the handoff artifact — readable by teammates, attachable to issues, reviewable before the fix merges.
+
+```
+DEBUG REPORT
+════════════
+Issue:           [one-line description of the symptom]
+Investigator:    /investigate → superpowers:systematic-debugging
+Date:            [YYYY-MM-DD]
+
+SYMPTOM
+───────
+[What the user observed. Specific. Reproducible steps if possible.]
+
+ROOT CAUSE
+──────────
+[The specific code / config / data condition that produced the symptom.
+ File:line references. Not "a bug in X" — the exact mechanism.]
+
+PATTERN CLASSIFICATION
+──────────────────────
+[Which of the six pattern-catalog categories this fits (if any),
+ and why the pattern was not caught earlier.]
+
+FIX
+───
+[What changed. File:line references. The minimal diff that resolves the
+ symptom without unrelated refactoring.]
+
+EVIDENCE OF FIX
+───────────────
+[How we know the fix worked. Reproduction is no longer reproducible.
+ Verification script or test case.]
+
+REGRESSION TEST
+───────────────
+[The test that now catches this. Name, file, assertion.
+ "Added" if new, "Updated" if an existing test was strengthened.]
+
+RELATED ISSUES
+──────────────
+[Variants of the same pattern elsewhere in the codebase — a confirmed
+ finding often has siblings. Name each one: file:line + whether it's
+ already handled or still open.]
+
+CAPTURED LEARNINGS
+──────────────────
+[1-2 sentence insight worth remembering for future investigations:
+ what signal would have caught this earlier? What architectural smell
+ predicts this class of bug?]
+```
+
+This report is the investigation's output — not a prose summary. Attach it to the fix PR or save it to `.nstack/debug-reports/{YYYY-MM-DD-slug}.md` for cross-session reference.
+
+---
+
 ## Step 8: Quick verification (non-destructive)
 
 Before handing off, confirm or rule out the current hypothesis without changing code:
@@ -212,3 +328,7 @@ Do NOT run the app, run tests, or modify any files in this phase.
 - **Scope lock is not optional.** State the investigation boundary before forming any hypothesis.
 - **AI-native regressions are subtle.** Model output degrading is not always a code bug — it may be a prompt change, a model version change, or a context length issue. Check all three.
 - **Hand off, don't fix.** This skill ends at hypothesis + verification steps. Use superpowers:systematic-debugging for the fix.
+- **Pattern catalog before freeform hypothesis.** Six patterns (race, nil-prop, state/cache, config, dep drift, AI-native) account for most production regressions. Always rule them in or out first.
+- **Minimal-diff discipline for the fix.** When handing off to `superpowers:systematic-debugging`, state explicitly: "Blast radius should be ≤ N files. If the fix requires touching more, escalate back to this skill for scope expansion." Prevents scope creep during the fix.
+- **Every fix needs a regression test.** The DEBUG REPORT's REGRESSION TEST field is required, not optional. A fix without a test is an IOU to future debugging.
+- **Capture the learning.** The DEBUG REPORT's CAPTURED LEARNINGS field is the feedback loop — write one sentence that would have caught this earlier. Future `/investigate` sessions on similar symptoms benefit from the catalog of past learnings.
