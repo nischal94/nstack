@@ -134,6 +134,82 @@ Branch feat/streaming deleted
 
 ---
 
+## Step 5a: First-run deploy config (if missing)
+
+Before waiting for the deploy, check whether this repo has its deploy configuration persisted in `CLAUDE.md`. If not, detect and capture it once so every future `/land` invocation skips this step.
+
+```bash
+grep -q "## Deploy configuration" CLAUDE.md 2>/dev/null && echo "CONFIG_PRESENT" || echo "CONFIG_MISSING"
+```
+
+If `CONFIG_MISSING`: detect the platform, production URL, and health-check endpoint, then offer to persist. This is a one-time setup, not a per-run prompt.
+
+### Detect platform
+
+```bash
+# In order of specificity
+[ -f fly.toml ] && echo "PLATFORM=fly"
+[ -f vercel.json ] || [ -d .vercel ] && echo "PLATFORM=vercel"
+[ -f railway.toml ] || [ -f railway.json ] && echo "PLATFORM=railway"
+[ -f render.yaml ] && echo "PLATFORM=render"
+[ -f netlify.toml ] && echo "PLATFORM=netlify"
+[ -f Procfile ] && echo "PLATFORM=heroku"
+ls .github/workflows/ 2>/dev/null | grep -iE "deploy|release|prod" && echo "PLATFORM=github-actions"
+```
+
+### Detect production URL
+
+For each platform, the canonical URL pattern:
+- Fly.io: `<app>.fly.dev` where `<app>` is `grep '^app' fly.toml | head -1`
+- Vercel: read `.vercel/project.json` for `projectId` → `gh api` or fall back to asking
+- Railway / Render / Netlify: read config file for `url` / `domain` / `serviceName`
+- Heroku: `<app>.herokuapp.com` from `heroku apps:info`
+- GitHub Actions / custom: ask the user
+
+### Detect health-check endpoint
+
+```bash
+# Common health-check paths in code
+grep -rE "/health|/healthz|/ping|/status" --include="*.py" --include="*.ts" --include="*.js" --include="*.go" --include="*.rs" -l | head -5
+```
+
+Pick the most common one in the codebase; default to `/health` if none found.
+
+### Offer to persist
+
+Use AskUserQuestion:
+
+> "First `/land` run — I didn't find deploy configuration in CLAUDE.md. Here's what I detected:
+>
+> Platform: [detected]
+> Production URL: [detected]
+> Health-check endpoint: [detected]
+>
+> A) Persist this config to CLAUDE.md so future /land runs skip this step
+> B) Use this config for this run only (don't persist)
+> C) Let me correct it — I'll tell you what's wrong"
+
+If A: append to `CLAUDE.md`:
+
+```markdown
+## Deploy configuration
+
+- **Platform:** [detected]
+- **Production URL:** [detected]
+- **Health-check endpoint:** [detected]
+- **Deploy status command:** [detected, e.g. `fly status`, `vercel inspect`]
+
+(Managed by `/land`. Edit here to update.)
+```
+
+Commit the CLAUDE.md change separately (`docs: add deploy configuration for /land`).
+
+If B: proceed without persisting. Skip the commit.
+
+If C: ask which field is wrong, correct it, then re-offer A/B.
+
+---
+
 ## Step 6: Wait for deploy
 
 Detect the deploy platform and wait for it:

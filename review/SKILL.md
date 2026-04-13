@@ -56,6 +56,31 @@ For every issue found, classify it immediately:
 - Missing error handling on async calls where the pattern is established in the codebase
 - Typos in string literals, variable names, or comments
 - Import statements that are unused
+- **AI-slop patterns** (see Step 2a below) that have one right fix
+
+### Step 2a: AI-slop pass
+
+AI-generated code sometimes looks right while being subtly worse than what a human would write. This pass catches patterns that are technically legal but represent code-quality regressions — not to hide that the code was AI-authored, but because the pattern is genuinely worse.
+
+Use Grep on the diff only (not the full codebase) to find:
+
+**Fix these (AUTO-FIX):**
+- **Empty catches on file operations.** `try { fs.unlinkSync(path); } catch {}` silently swallows `EPERM`, `EBUSY`, `EIO`. If the ONLY expected error is `ENOENT` ("file doesn't exist"), use a typed catch: `catch (err) { if (err.code !== 'ENOENT') throw err; }` — or a named helper like `safeUnlink`. Auto-fix to the typed catch when the pattern is clear.
+- **Empty catches on process signaling.** `try { process.kill(pid, 0); } catch {}` swallows `EPERM` (permission denied) while intending to ignore `ESRCH` (no such process). Auto-fix to typed catch.
+- **Redundant `return await` with no enclosing try block.** `async function x() { return await y(); }` costs an extra microtask with no benefit. Auto-fix to `return y();` when there's no surrounding try that would observe `y`'s rejection.
+- **Typed exception catches that match a specific operation** (e.g., URL parsing that can only throw `TypeError`) written as bare `catch {}`. Auto-fix to `catch (err) { if (!(err instanceof TypeError)) throw err; }`.
+
+**Flag these (FLAG — judgment required):**
+- **String-matching on error messages.** `err.message.includes('closed')` is brittle — library error wording changes across versions. Flag with recommendation: check `err.code` / `err.name` instead, or document why the string match is stable.
+- **Pass-through wrappers with only a comment justifying their existence.** E.g., a method whose only body is `return this.session.foo()` with an "alias for active session" comment to game lint exemption rules. Flag: either remove the wrapper and have callers use `session.foo()` directly, or give it a real purpose.
+- **Extension-catch patterns that log-and-continue** in contexts where continuing is actually correct (Chrome extensions, background workers, fire-and-forget cleanup). Flag with NO recommendation to change — this may be the right pattern for the context.
+
+**Do NOT flag these (AI-slop linter gaming, not quality):**
+- Shutdown / emergency-cleanup / disconnect paths using broad `catch {}`. Throwing on `EPERM` during shutdown means the rest of shutdown doesn't run. Broad catch IS correct here.
+- Chrome-extension sidebar / content-script error handlers that log-and-continue. Extensions crash entirely on uncaught errors; log-and-continue is load-bearing.
+- Fire-and-forget operations that can fail for any reason the caller doesn't care about (logging, analytics, best-effort cache invalidation).
+
+Cite the file:line of each finding. Do NOT chase the metric — if a "sloppy" pattern is the right engineering choice for the context, accept it explicitly rather than rewrite it.
 
 **FLAG candidates (never auto-fix):**
 - Security issues — any of them, even obvious ones. Always flag for user decision.
