@@ -1,9 +1,14 @@
 ---
 name: careful
-description: Use when working in an environment where destructive commands should require confirmation before running. Use when the user says "be careful", "careful mode", "don't delete anything without asking", or when working on production data, shared infrastructure, or irreversible operations.
+description: Use when working in an environment where destructive commands should require confirmation before running. Use when the user says "be careful", "careful mode", "don't delete anything without asking", or when working on production data, shared infrastructure, or irreversible operations. Use `/careful here` or `/careful <path>` for full safety mode — warnings + directory-scoped edits combined — before high-stakes work on production code where both scope and safety matter.
 ---
 
 # /careful — Destructive Command Guardrails
+
+Two modes:
+
+- **`/careful`** (default) — warns before destructive or hard-to-reverse commands
+- **`/careful <path>`** or **`/careful here`** — warnings AND directory-scoped edits combined. "here" is sugar for the current working directory. Use this for high-stakes sessions where both scope and safety matter (production code, shared infrastructure, full lockdown).
 
 You are operating in careful mode. Before running any destructive or hard-to-reverse
 command, you pause, describe what it will do, and get explicit confirmation.
@@ -11,6 +16,21 @@ command, you pause, describe what it will do, and get explicit confirmation.
 **This skill changes your behavior for the rest of the session.**
 It does not affect read-only operations — only commands that destroy, overwrite, or
 publish data in ways that are difficult or impossible to undo.
+
+In scoped mode (`/careful <path>` or `/careful here`), it ALSO blocks any write
+outside the specified directory — combining the destructive-warning layer with
+the scope-lock layer for maximum safety.
+
+---
+
+## Arguments
+
+- `/careful` — warnings only, no directory lock
+- `/careful src/api/` — warnings + lock edits to `src/api/` and subdirectories
+- `/careful src/api/auth.ts` — warnings + lock edits to a single file
+- `/careful here` — warnings + lock edits to the current working directory (sugar for `/careful .`)
+- `/freeze lift` — remove the directory lock portion, leaves warnings active
+- "exit careful mode" — remove both warnings and scope lock
 
 ---
 
@@ -82,14 +102,70 @@ If the user says **no**: stop, explain what safe alternatives exist.
 
 ---
 
+## Scoped mode (`/careful <path>` and `/careful here`)
+
+When invoked with a path argument (or `here` for the current working directory), activate both layers:
+
+### Activation banner
+
+```
+CAREFUL MODE — SCOPED
+═════════════════════
+Warnings:   ON  — destructive commands require confirmation
+Scope lock: ON  — edits locked to [path]
+Reads:      unrestricted
+
+This session is now operating under maximum safety constraints.
+To exit: say "exit careful mode" (removes both), or `/freeze lift` (keeps warnings).
+```
+
+### Behavior
+
+**Destructive commands:** apply the confirmation pause above (same as default mode).
+
+**File writes:** apply the `/freeze` enforcement rules — any Edit, Write, or file-creation operation outside the locked path is blocked. See `/freeze` for the full enforcement spec.
+
+### Combined precedence
+
+If a command is both destructive AND writes outside the scoped path:
+- Block the write first (scope violation — the edit can't happen)
+- Do not proceed to the destructive confirmation — the command is already blocked
+
+### Session reminder
+
+At the start of each new task in scoped mode:
+
+```
+[careful mode: warnings ON + edits locked to [path]]
+```
+
+### When to use scoped vs default
+
+| Situation | Invocation |
+|-----------|------------|
+| "Warn me before destructive commands, but let me write anywhere" | `/careful` |
+| "Only touch `src/auth/`, destructive warnings optional" | `/freeze src/auth/` |
+| "High-stakes session — lock scope AND warn me on everything dangerous" | `/careful src/auth/` |
+| "Touching prod infrastructure, full lockdown" | `/careful here` or `/careful .` |
+
+---
+
 ## Staying in careful mode
 
-Careful mode persists for the entire session once activated.
-To exit careful mode, the user must explicitly say "exit careful mode" or run `/unfreeze`.
+Careful mode persists for the entire session once activated. The scope lock (if active) also persists until explicitly cleared.
+
+To exit:
+- "exit careful mode" — removes both warnings and any scope lock
+- `/freeze lift` — removes the scope lock only, leaves warnings active
 
 Remind the user at the start of each new task:
 ```
 [careful mode active — destructive commands require confirmation]
+```
+
+Or in scoped mode:
+```
+[careful mode: warnings ON + edits locked to [path]]
 ```
 
 ---
@@ -100,3 +176,5 @@ Remind the user at the start of each new task:
 - **Be specific about irreversibility.** "This will permanently delete 47 files" is more useful than "this deletes files."
 - **Offer the dry-run.** Most destructive commands have a preview: `rm -n`, `git push --dry-run`, `terraform plan`. Offer it.
 - **Don't be paranoid.** This is not about slowing down routine work — it's about catching the one command that costs hours to recover from.
+- **In scoped mode, enforce both layers.** All rules from default mode apply in full, plus `/freeze` enforcement. When both trigger on the same command, scope block takes precedence.
+- **`/freeze lift` removes the scope lock but leaves warnings active.** "exit careful mode" removes both.
