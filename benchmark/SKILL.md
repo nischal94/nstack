@@ -12,24 +12,22 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-## Binary detection — nstack browse CLI
+## Binary detection — hard-stop if missing
 
 ```bash
-# Binary detection — nstack browse CLI
 NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
 if [ -x "$NSTACK_BROWSE" ]; then
   B="$NSTACK_BROWSE"
-  BROWSE_MODE="binary"
 else
-  B=""
-  BROWSE_MODE="mcp"
-  echo "[nstack] Browser binary not installed. Using Claude-in-Chrome MCP (slower, more token-intensive)."
-  echo "  For faster rendering: cd ~/.claude/skills/nstack && ./setup"
+  cat <<'ERR'
+[nstack] Browser binary not installed. /benchmark requires Tier 2 setup.
+  Install: cd ~/.claude/skills/nstack && ./setup  (~2 min, ~150MB Playwright Chromium)
+ERR
+  exit 1
 fi
 ```
 
-When `BROWSE_MODE="binary"`: use `$B <command>`.
-When `BROWSE_MODE="mcp"`: use `mcp__claude-in-chrome__*` MCP tools.
+All browser operations use `$B <command>`. /benchmark is a batch measurement skill (many page loads, many metrics per page) — running it over Claude-in-Chrome MCP would compound token cost prohibitively. Playwright-only is the deliberate policy.
 
 # /benchmark — Performance Regression Detection
 
@@ -66,7 +64,6 @@ If no `--pages` provided:
 # Binary mode
 $B goto <base-url>
 $B links
-# MCP mode: use mcp__claude-in-chrome__navigate then mcp__claude-in-chrome__get_page_text to extract links
 ```
 
 Extract all navigation links and unique page paths. Deduplicate and normalize to absolute URLs. Limit to the top 10 most important pages (homepage, key user flows) unless `--pages` specifies more.
@@ -88,7 +85,6 @@ $B perf
 
 `$B perf` returns a JSON object with keys: `ttfb`, `fcp`, `lcp`, `domInteractive`, `domComplete`, `loadTime` (all in ms), plus `transferSize` (bytes). Use these fields directly for metric extraction.
 
-MCP mode: `$B perf` has no direct equivalent — use `mcp__claude-in-chrome__navigate` to load the page, then use `mcp__claude-in-chrome__javascript_tool` to evaluate the navigation timing API directly:
 ```js
 JSON.stringify((() => {
   const n = performance.getEntriesByType('navigation')[0];
@@ -110,7 +106,6 @@ Binary mode:
 $B eval "JSON.stringify(performance.getEntriesByType('resource').map(r => ({name: r.name.split('/').pop().split('?')[0], type: r.initiatorType, size: r.transferSize, duration: Math.round(r.duration)})).sort((a,b) => b.duration - a.duration).slice(0,15))"
 ```
 
-MCP mode: use `mcp__claude-in-chrome__javascript_tool` with the same JS expression.
 
 Bundle size check:
 
@@ -120,7 +115,6 @@ $B eval "JSON.stringify(performance.getEntriesByType('resource').filter(r => r.i
 $B eval "JSON.stringify(performance.getEntriesByType('resource').filter(r => r.initiatorType === 'css').map(r => ({name: r.name.split('/').pop().split('?')[0], size: r.transferSize})))"
 ```
 
-MCP mode: use `mcp__claude-in-chrome__javascript_tool` with the same JS expressions.
 
 Network summary:
 
@@ -129,7 +123,6 @@ Binary mode:
 $B eval "(() => { const r = performance.getEntriesByType('resource'); return JSON.stringify({total_requests: r.length, total_transfer: r.reduce((s,e) => s + (e.transferSize||0), 0), by_type: Object.entries(r.reduce((a,e) => { a[e.initiatorType] = (a[e.initiatorType]||0) + 1; return a; }, {})).sort((a,b) => b[1]-a[1])})})()"
 ```
 
-MCP mode: use `mcp__claude-in-chrome__javascript_tool` with the same JS expression.
 
 ### Phase 4: Baseline Capture (--baseline mode)
 

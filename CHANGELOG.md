@@ -46,6 +46,11 @@ A proposed `/office-hours` → `/premise office` merge was reviewed and reverted
 - `/devex-audit` → `/dev-audit` — drops the "devex" acronym that was flagged as jargon during the rename audit; the description still spells out "developer experience audit" explicitly. History file path also renamed (`.claude/devex-history.jsonl` → `.claude/dev-history.jsonl`) — no existing users affected since this ships in 0.6.0 before any broad release.
 - `/plan-devex-review` → `/plan-dev-review` — same reasoning. Trigger aliases in the description preserve the old phrasing ("plan devex review") for search discoverability.
 
+**Browser path policy: Playwright default, Chrome MCP opt-in in `/qa` only**
+- Removed Chrome MCP silent fallback from `/benchmark`, `/canary`, `/dev-audit`. All three are batch-measurement skills — MCP's per-call cost (~2000 tokens) compounds prohibitively. They now hard-stop with an install prompt when the Playwright binary is missing, matching the existing behavior of `/design` and `/design-review`.
+- `/qa` browser path made explicit: default is Playwright binary (hard-stops on missing); `/qa --chrome` is an opt-in that uses Claude-in-Chrome MCP for interactive QA of authenticated surfaces where real-browser auth convenience outweighs the token cost. Eliminates the "silent token leak on first run" failure mode.
+- ARCHITECTURE.md "Why Claude-in-Chrome MCP for /qa" section rewritten to document the new position: Playwright is the default everywhere; MCP remains a legitimate but explicit opt-in for the one case where it's genuinely the best tool.
+
 ### Added (documentation — this session)
 - ETHOS.md — new principle #6 "Depth over count"; principle #3 refined into explicit three setup tiers.
 - ARCHITECTURE.md — three-tier formalization; skill consolidation rationale; `/cso` phase absorption documentation.

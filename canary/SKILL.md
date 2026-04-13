@@ -12,24 +12,22 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-## Binary detection — nstack browse CLI
+## Binary detection — hard-stop if missing
 
 ```bash
-# Binary detection — nstack browse CLI
 NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
 if [ -x "$NSTACK_BROWSE" ]; then
   B="$NSTACK_BROWSE"
-  BROWSE_MODE="binary"
 else
-  B=""
-  BROWSE_MODE="mcp"
-  echo "[nstack] Browser binary not installed. Using Claude-in-Chrome MCP (slower, more token-intensive)."
-  echo "  For faster rendering: cd ~/.claude/skills/nstack && ./setup"
+  cat <<'ERR'
+[nstack] Browser binary not installed. /canary requires Tier 2 setup.
+  Install: cd ~/.claude/skills/nstack && ./setup  (~2 min, ~150MB Playwright Chromium)
+ERR
+  exit 1
 fi
 ```
 
-When `BROWSE_MODE="binary"`: use `$B <command>`.
-When `BROWSE_MODE="mcp"`: use `mcp__claude-in-chrome__*` MCP tools.
+All browser operations use `$B <command>`. /canary runs many screenshots and console checks per polling cycle — Chrome MCP's per-call token cost would compound prohibitively. Playwright-only is the deliberate policy.
 
 # /canary — Post-Deploy Visual Monitor
 
@@ -74,12 +72,6 @@ $B perf
 $B text
 ```
 
-If `BROWSE_MODE="mcp"`:
-- Navigate: `mcp__claude-in-chrome__navigate` to `<page-url>`
-- Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot) — this returns image data to Claude. Write the image data to `.nstack/canary/baselines/<page-name>.png` using the `Write` tool.
-- Console errors: `mcp__claude-in-chrome__read_console_messages`
-- Performance: `mcp__claude-in-chrome__javascript_tool` to measure load time
-- Text: `mcp__claude-in-chrome__get_page_text`
 
 Collect for each page: screenshot path, console error count, page load time, and a text content snapshot.
 
@@ -114,10 +106,6 @@ $B links
 $B snapshot -i
 ```
 
-If `BROWSE_MODE="mcp"`:
-- Navigate: `mcp__claude-in-chrome__navigate` to `<url>`
-- Extract links: use `mcp__claude-in-chrome__javascript_tool` with `JSON.stringify(Array.from(document.querySelectorAll('a[href]')).map(a => a.href).filter(h => h.startsWith(location.origin)).slice(0, 20))` to get internal links
-- Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot) → write image data to `.nstack/canary/discovery.png` using the `Write` tool
 
 Extract the top 5 internal navigation links from the output. Always include the homepage. Present the page list via AskUserQuestion:
 
@@ -143,12 +131,6 @@ $B perf
 $B text
 ```
 
-If `BROWSE_MODE="mcp"`:
-- Navigate: `mcp__claude-in-chrome__navigate` to `<page-url>`
-- Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot) → write image data to `.nstack/canary/screenshots/pre-<page-name>.png` using the `Write` tool
-- Console errors: `mcp__claude-in-chrome__read_console_messages`
-- Performance: `mcp__claude-in-chrome__javascript_tool` to measure load time
-- Text: `mcp__claude-in-chrome__get_page_text`
 
 Record the console error count, load time, and text snapshot for each page. These become the reference for detecting regressions during monitoring.
 
@@ -166,12 +148,6 @@ $B console --errors
 $B perf
 ```
 
-If `BROWSE_MODE="mcp"`:
-- Navigate: `mcp__claude-in-chrome__navigate` to `<page-url>`
-- Screenshot: `mcp__claude-in-chrome__computer` (action: screenshot) — write image data to `.nstack/canary/screenshots/<page-name>-<check-number>.png` using the `Write` tool
-- Console errors: `mcp__claude-in-chrome__read_console_messages`
-- Performance: `mcp__claude-in-chrome__javascript_tool` to measure load time
-- Text: `mcp__claude-in-chrome__get_page_text`
 
 After each check, compare results against the baseline (or pre-deploy snapshot):
 

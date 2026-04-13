@@ -101,21 +101,29 @@ The CLI uses a persistent server daemon pattern — `browse/src/cli.ts` is a thi
 
 ---
 
-## Why Claude-in-Chrome MCP for `/qa` (and not design skills)
+## Why Playwright binary is the default browser path
 
-nstack uses two different browser strategies for two different problems.
+nstack's default browser is the Playwright-powered `browse` binary. Every Tier 2 skill that drives a browser — design cluster, `/qa`, `/benchmark`, `/canary`, `/dev-audit` — hard-stops with a setup prompt when the binary is missing rather than falling back to Claude-in-Chrome MCP.
 
-**`/qa` uses Claude-in-Chrome MCP** because:
-- You're already logged into staging, your admin panel, your authenticated test pages — Claude-in-Chrome is already there
-- It's observable — you can watch Claude navigate your real Chrome window
-- `/qa` is an interactive debugging session, not a batch rendering job
+Reasoning:
 
-**Design skills use the Playwright binary exclusively** because:
-- Design workflows take 4–20 screenshots per run; MCP returns base64 image data inline — that's hundreds of KB of tokens per screenshot
-- Headless is fine for rendering static HTML variants — no auth, no real-browser state needed
-- The binary renders at ~100ms per screenshot with zero token cost after install
+- **Cost.** Chrome MCP is ~2000 tokens per browser operation (schema + protocol overhead), and screenshots return base64 image data inline — hundreds of KB of tokens per screenshot. For any skill that takes more than a handful of screenshots per run (all of them), MCP cost compounds prohibitively.
+- **Speed.** Playwright binary responds in sub-100ms per command after the daemon warms up. MCP averages ~5s round-trip.
+- **Reliability.** The Playwright process is under nstack's control; Chrome MCP depends on a separate MCP server that can be slow, disconnected, or rate-limited unpredictably.
+- **Consistency.** Having all Tier 2 skills on a single code path (rather than maintaining MCP fallback branches in half of them) makes maintenance and testing tractable.
 
-MCP was removed from all design skills (`/design`, `/design-review`, `/design-consultation`, `/plan-design-review`) for this reason. The token cost was too high to justify as a fallback path.
+### The one exception: `/qa --chrome`
+
+`/qa` is the single skill where Chrome MCP has genuine value Playwright can't easily replicate: operating your real, already-open, logged-in Chrome browser during interactive QA of authenticated surfaces (admin panels, paid-account staging).
+
+Rather than silently fall back to MCP when `./setup` is missing, `/qa` makes the choice explicit:
+
+- `/qa` (default) → Playwright binary. Hard-stops if binary is absent.
+- `/qa --chrome` → Chrome MCP. Explicit opt-in. User accepts the per-call token cost for the auth-convenience benefit.
+
+This preserves the legitimate MCP use case while eliminating the "silent token leak on first run" failure mode. Every `--chrome` invocation is an informed user decision.
+
+Design skills, `/benchmark`, `/canary`, and `/dev-audit` have no equivalent auth-convenience case — their browser operations are either headless rendering (design cluster) or batch measurement (the rest). MCP adds cost without adding value. They hard-stop on missing binary with no opt-in alternative.
 
 ---
 

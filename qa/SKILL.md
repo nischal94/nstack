@@ -10,31 +10,43 @@ You are a QA lead with a real browser. You test web applications like a real use
 - **`/qa`** (default) — find bugs, fix them with atomic commits, write regression tests, re-verify. Closes the loop.
 - **`/qa watch`** — report-only. Test, document, and score — but NEVER write code, edit files, or commit. Use when the user wants a bug report without changes.
 
-## Setup
+## Browser selection — Playwright default, Chrome MCP opt-in
+
+`/qa` has two browser paths, chosen per invocation:
+
+**Default (Playwright binary)** — headless, fast, zero token cost per operation. Used by `/qa` without a flag.
+
+**Chrome MCP opt-in (`/qa --chrome`)** — runs Claude inside your already-open logged-in Chrome. Preserves cookies, sessions, extensions, autofills. Observable (you watch Claude navigate your real browser). Useful specifically for interactive QA of authenticated pages — admin panels, paid-account staging, anywhere you'd hate to re-authenticate. Costs ~2000 tokens per browser operation.
+
+**Use `/qa --chrome` when:** you need Claude to operate your real logged-in Chrome and you're willing to pay the token cost for the auth convenience.
+
+**Use plain `/qa` when:** you're testing unauthenticated flows, or the pages can be reached by programmatic auth (cookie import, token headers).
+
+### Binary detection
 
 ```bash
-# Binary detection — nstack browse CLI
 NSTACK_BROWSE="$HOME/.claude/skills/nstack/browse/dist/browse"
 if [ -x "$NSTACK_BROWSE" ]; then
   B="$NSTACK_BROWSE"
   BROWSE_MODE="binary"
 else
   B=""
-  BROWSE_MODE="mcp"
-  echo "[nstack] Browser binary not installed. Using Claude-in-Chrome MCP (slower, more token-intensive)."
-  echo "  For faster rendering: cd ~/.claude/skills/nstack && ./setup"
+  BROWSE_MODE="none"
 fi
 ```
 
-When `BROWSE_MODE="binary"`: use `$B <command>`.
-When `BROWSE_MODE="mcp"`: use `mcp__claude-in-chrome__*` MCP tools.
+### Path selection
 
-If binary absent AND MCP unavailable:
-```
-[nstack] No browser available. /qa requires either:
-  1. nstack browser binary: cd ~/.claude/skills/nstack && ./setup
-  2. Claude-in-Chrome MCP running in this session
-```
+- **`/qa --chrome` invoked** → use `mcp__claude-in-chrome__*` tools regardless of binary presence.
+- **`/qa` (default) invoked AND `$B` exists** → use `$B <command>` throughout.
+- **`/qa` (default) invoked AND `$B` absent** → hard-stop:
+  ```
+  [nstack] Browser binary not installed. /qa requires Tier 2 setup.
+    Install: cd ~/.claude/skills/nstack && ./setup  (~2 min, ~150MB Playwright Chromium)
+    OR invoke with `/qa --chrome` to use Claude-in-Chrome MCP instead (higher token cost, but requires no setup and preserves your Chrome auth).
+  ```
+
+No silent fallback. The user chooses the browser path consciously; the skill never leaks tokens without them knowing.
 
 ## Arguments
 
@@ -112,7 +124,7 @@ This is the **primary mode** for developers verifying their work. When invoked w
    $B goto http://localhost:8080 2>/dev/null && echo "Found app on :8080"
    ```
 
-   If `BROWSE_MODE="mcp"`: use `mcp__claude-in-chrome__navigate` to try each port in turn.
+   If `/qa --chrome` invoked: use `mcp__claude-in-chrome__navigate` to try each port in turn.
 
    If no local app is found, check for a staging/preview URL. If nothing works, ask the user.
 
