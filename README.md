@@ -74,28 +74,6 @@ It assumes you are building one person's version of all of them, with AI as the 
 nstack is the sharper judgment layer — security-first, enterprise-ready,
 AI-native. It fits beside superpowers cleanly and doesn't try to replace it.
 
-## Quick start
-
-If you only try five commands, try these:
-
-1. `/cso` on any AI-facing repo
-2. `/review` on any non-trivial diff
-3. `/qa` on a running app
-4. `/design-consultation` before building a new UI-heavy surface
-5. `/plan-design-review` before writing UI code
-
-That sequence shows the core shape of nstack quickly:
-- security before trust is assumed
-- review before changes are merged
-- QA before “works on my machine” becomes a belief
-- design direction before UI drift starts
-
-By use case:
-- Starting a new AI product: `/premise` (quick gate), `/office-hours` (deep YC-style diagnostic), `/design-consultation`, `/autoplan`
-- Building a UI-heavy feature: `/plan-design-review`, `/design sketch N` (explore), `/design` (commit), `/design-review`
-- Doing a security and quality pass: `/cso`, `/review`, `/qa`, `/evals`
-- Getting ready to ship: `/review`, `/qa` (or `/qa watch` for report-only), `/ship`, `/canary`
-
 ## Install
 
 nstack has three setup tiers. You install what you need, when you need it.
