@@ -84,6 +84,45 @@ Also check for a prior `/devex-audit` score in `.claude/devex-history.jsonl` —
 
 ---
 
+## Step 0.5: Boomerang Baseline — plan vs reality
+
+This is the most valuable signal in a live DX audit: comparing what the plan claimed to deliver against what actually shipped. If a prior `/plan-devex-review` ran on this repo, its projected scores and TTHW estimates become the baseline we measure reality against.
+
+```bash
+# Look for prior plan-devex-review output in docs/ or the plan file itself
+ls -t docs/plan-devex-review-*.md 2>/dev/null | head -1
+grep -l "Developer Experience Review" docs/*.md 2>/dev/null | head -5
+```
+
+If a plan-devex-review output is found, extract:
+- The target persona (from Step 0A of the plan review)
+- The target TTHW tier (from Step 0C)
+- The target magical-moment delivery vehicle (from Step 0D)
+- The per-pass projected scores (1-8)
+
+Display a Boomerang table inline at the top of this audit's output:
+
+```
+BOOMERANG (plan vs reality)
+═══════════════════════════
+Dimension             | Plan said   | Reality       | Delta
+Target persona        | [planned]   | [seen today]  | [match / drift]
+Target TTHW           | < N min     | measured N m  | ±N min
+Magical moment        | [vehicle]   | [what ships]  | [present / absent / different]
+Getting Started       | N/10        | N/10          | ±N
+API/CLI Design        | N/10        | N/10          | ±N
+Error Messages        | N/10        | N/10          | ±N
+... (one row per pass)
+```
+
+Flag with `🟢 on-track`, `🟡 minor drift`, `🔴 plan-missed` per row. The plan-missed rows become the highest-priority recommendations in the final output.
+
+If no plan-devex-review output exists for this repo, note "No prior plan — running first-time audit; next run becomes the boomerang baseline."
+
+Skip this step silently if neither prior audit history nor plan output exists.
+
+---
+
 ## Step 1: Getting Started Audit
 
 **What to test:** Can a new developer reach a working hello world without help?
@@ -314,6 +353,7 @@ TOP 3 FIXES
    Problem: [specific friction point]
    Fix: [concrete change, with file or URL if applicable]
    Why it matters: [adoption or retention impact]
+   Plan alignment: [on-track / drifted from plan / new regression]
 
 2. ...
 
@@ -337,6 +377,19 @@ Set any skipped passes to `null`.
 
 ---
 
+## Completion Status
+
+When reporting the audit result, end with one of these status labels — not a prose summary:
+
+- **DONE** — All 8 passes evaluated with evidence. Scorecard, Top 3 Fixes, and Boomerang (if applicable) all produced.
+- **DONE_WITH_CONCERNS** — Audit completed but specific dimensions lacked evidence. List which passes were INFERRED vs TESTED and why, and list any findings you're only moderately confident in.
+- **BLOCKED** — Cannot complete the audit. State what is blocking (e.g., "product requires paid account to reach hello world", "CLI requires a runtime not present on this machine") and what was attempted.
+- **NEEDS_CONTEXT** — Missing information required to continue. State exactly what you need from the user.
+
+Escalation is always OK. Bad work is worse than no work. You will not be penalized for escalating. If you have attempted a pass three times without clear evidence, STOP and escalate via DONE_WITH_CONCERNS or BLOCKED.
+
+---
+
 ## Rules
 
 - **Measure, don't guess.** Every score needs evidence — screenshot, bash output, or file citation
@@ -344,3 +397,5 @@ Set any skipped passes to `null`.
 - **INFERRED scores are valid** — but label them clearly; don't pretend you tested what you read
 - **One pass at a time** — complete each pass fully before moving to the next
 - **If browser is unavailable** — continue with bash and file inspection; mark all browser-dependent passes as INFERRED
+- **Boomerang first, scores second.** If a plan-devex-review output exists, display the Boomerang table at the top — plan-vs-reality drift is the single highest-signal finding and should be visible before the per-pass scores
+- **End with status, not prose.** DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT — parseable by downstream workflows
