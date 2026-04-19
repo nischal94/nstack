@@ -1,0 +1,49 @@
+version: 2
+
+# Dependabot configuration for the template. By default only GitHub Actions
+# updates are enabled — they're language-agnostic and always safe.
+#
+# When using this template for a real project, uncomment the ecosystem
+# block(s) matching your stack. WARNING: enabling on a stale repo will
+# produce a burst of upgrade PRs immediately. Set open-pull-requests-limit
+# low (1-2) at first if the repo has many outdated deps.
+
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "dependencies"
+      - "ci"
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
+
+  # - package-ecosystem: "pip"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "weekly"
+  #     day: "monday"
+  #   open-pull-requests-limit: 5
+  #   labels: ["dependencies"]
+  #   commit-message:
+  #     prefix: "chore(deps)"
+  #     include: "scope"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "weekly"
+  #     day: "monday"
+  #   open-pull-requests-limit: 5
+  #   labels: ["dependencies"]
+  #   commit-message:
+  #     prefix: "chore(deps)"
+  #     include: "scope"
+
+  # - package-ecosystem: "docker"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "weekly"
+  #   labels: ["dependencies", "docker"]
