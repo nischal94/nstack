@@ -1,0 +1,31 @@
+name: actionlint
+
+# Static analysis for GitHub Actions workflow YAML. Catches typos in
+# expressions, undefined contexts, unsafe shell patterns, and broken
+# `if:` conditions BEFORE they fail at runtime in some unlucky branch.
+#
+# Only runs when workflow files themselves change — nothing to lint
+# otherwise.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+
+jobs:
+  actionlint:
+    name: actionlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run actionlint
+        run: |
+          bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          ./actionlint -color

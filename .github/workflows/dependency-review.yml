@@ -1,0 +1,41 @@
+name: Dependency Review
+
+# Blocks PRs that introduce dependencies with known vulnerabilities or
+# disallowed licenses. Different from Dependabot — this is a PRE-MERGE
+# gate, while Dependabot only opens upgrade PRs AFTER a vuln is shipped.
+#
+# Only runs when a PR actually changes a manifest. Free on public repos.
+
+on:
+  pull_request:
+    paths:
+      - "**/package.json"
+      - "**/package-lock.json"
+      - "**/pnpm-lock.yaml"
+      - "**/yarn.lock"
+      - "**/requirements*.txt"
+      - "**/pyproject.toml"
+      - "**/uv.lock"
+      - "**/Pipfile.lock"
+      - "**/poetry.lock"
+      - "**/go.mod"
+      - "**/go.sum"
+      - "**/Cargo.toml"
+      - "**/Cargo.lock"
+      - "**/Gemfile.lock"
+      - "**/composer.lock"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependency-review:
+    name: dependency-review
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: on-failure

@@ -1,0 +1,28 @@
+name: gitleaks
+
+# Scans the PR diff (and on push, the full history) for committed secrets.
+# Complements GitHub's native secret scanning — gitleaks catches custom
+# patterns and runs at PR-time so leaks are caught BEFORE merge.
+#
+# Free for personal accounts and public repos. For private orgs, gitleaks
+# requires a license key (see https://gitleaks.io/products.html).
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
