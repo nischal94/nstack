@@ -4,6 +4,19 @@ All notable changes to nstack are documented here.
 
 ---
 
+## [0.6.1] — 2026-04-21
+
+### Changed
+
+- **`/ship`**: Added Step 3.5 — dispatches `build-validator` subagent before self-review to catch type errors, missing imports, and broken exports that a passing test suite can miss.
+
+### Added
+
+- `scripts/nstack_status_latest.sh` — reports HEAD, working tree status, and runs skill sync check
+- `scripts/verify_claude_skill_sync.sh` — verifies that design cluster skills in `~/.claude/skills/` are in sync with the nstack repo
+
+---
+
 ## [0.6.0] — 2026-04-13
 
 Reframe release: nstack is the definitive AI-native quality layer for founders building at scale. Depth and judgment per skill over breadth of coverage.
