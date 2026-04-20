@@ -96,6 +96,17 @@ If no tests found: warn the user and ask whether to continue anyway.
 
 ---
 
+## Step 3.5: Validate the build
+
+Dispatch the `build-validator` subagent to verify the project builds, type-checks, and lints cleanly.
+
+Tests passing ≠ build passing. Type errors, missing imports, and broken exports can slip through a green test suite.
+
+If `build-validator` reports `BLOCKED`: **stop**. Fix the build errors, then re-run `/ship`.
+If it reports `SHIP READY`: continue.
+
+---
+
 ## Step 4: Self-review the diff
 
 ```bash
