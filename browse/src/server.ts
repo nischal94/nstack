@@ -630,8 +630,8 @@ function wrapError(err: any): string {
   if (msg.includes('resolved to') && msg.includes('elements')) {
     return `Selector matched multiple elements. Be more specific or use @refs from 'snapshot'.`;
   }
-  // Pass through other errors
-  return msg;
+  // Pass through other errors — first line only to avoid leaking stack frames
+  return msg.split('\n')[0];
 }
 
 async function handleCommand(body: any): Promise<Response> {
