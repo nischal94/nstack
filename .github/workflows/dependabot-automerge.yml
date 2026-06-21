@@ -10,14 +10,16 @@ name: Dependabot auto-merge
 
 on: pull_request_target
 
-permissions:
-  contents: write
-  pull-requests: write
+# Default to no permissions; the automerge job grants only what it needs.
+permissions: {}
 
 jobs:
   automerge:
     if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write       # enable auto-merge
+      pull-requests: write  # mark the PR for auto-merge
     steps:
       - name: Fetch Dependabot metadata
         id: meta
